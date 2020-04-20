@@ -1,0 +1,52 @@
+{
+    "master": {
+        "enable" : 1,
+        "restPort" : 11706,
+        "streaminPort" : 11707,
+        "streaminProcNum" : 3
+    },
+    "slave": {
+        "restPort" : 15515,
+        "streaminPort" : 15516,
+        "streaminProcNum" : 3,
+        "workdir" : "/home/ubuntu/webdir"
+    },
+    "video": {
+        "max": 3,
+        "defaultPixW": 1920,
+        "defaultPixH": 1080,
+        "frameSizeMax": 2097152,
+        "queueLen": 10
+    },
+    "capture": {
+        "max": 3,
+        "frameSizeMax": 2097152,
+        "queueLen": 10,
+        "picSaveDays": 7
+    },
+    "shm": {
+        "key" : 11760000,
+        "headSize" : 1073741824
+    },
+    "alg": {
+    },
+    "msgKey": {
+        "main" : 11760001,
+        "work" : 11760002,
+        "rest" : 11760003,
+        "gb28181" : 11760004,
+        "gat1400" : 11760005,
+        "streamin" : 11760100,
+        "decode" : 11760500,
+        "alg" : 11760600,
+        "obj" : 11761000
+    },
+    "storage": {
+        "type":"aliyun",
+        "port":11708,
+        "path":"/home/ubuntu/webdir/storage",
+        "fileSeconds":600,
+        "recordDays": 7
+    }
+}
+
