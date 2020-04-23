@@ -20,6 +20,7 @@
 #include "misc.h"
 #include "rest.h"
 #include "db.h"
+#include "share.h"
 
 static void master_request_login(struct evhttp_request *req, void *arg) {
     request_first_stage;
@@ -33,10 +34,10 @@ static void master_request_system_init(struct evhttp_request *req, void *arg) {
     request_first_stage;
     CommonParams *pParams = (CommonParams *)arg;
     char *buf = (char *)pParams->arga;
-    //char **ppbody = (char **)pParams->argb;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
 
-    app_debug("##test, buf:%s, localIp:%s", buf, pAiotcParams->localIp);
+    dbWrite(pAiotcParams->dbArgs, "systemInit", "original", buf, 
+                        "original.msgOutParams.type", NULL, "mq");
 }
 
 static void master_request_alg_support(struct evhttp_request *req, void *arg) {
@@ -47,24 +48,42 @@ static void master_request_slave_add(struct evhttp_request *req, void *arg) {
     request_first_stage;
     CommonParams *pParams = (CommonParams *)arg;
     char *buf = (char *)pParams->arga;
-    //char **ppbody = (char **)pParams->argb;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
 
-    app_debug("##test, buf:%s, localIp:%s", buf, pAiotcParams->localIp);
+    char *slaveIp = getStrValFromJson(buf, "slaveIp", NULL, NULL);
+    if(slaveIp == NULL) {
+        return ;
+    }
+    dbWrite(pAiotcParams->dbArgs, "slave", "original", buf, 
+                        "original.slaveIp", NULL, slaveIp);
+    free(slaveIp);
 }
 
 static void master_request_slave_del(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+
+    char *slaveIp = getStrValFromJson(buf, "slaveIp", NULL, NULL);
+    if(slaveIp == NULL) {
+        return ;
+    }
+    dbDel(pAiotcParams->dbArgs, "slave", "original.slaveIp", NULL, slaveIp);
+    free(slaveIp);
 }
 
 static void master_request_obj_add(struct evhttp_request *req, void *arg) {
     request_first_stage;
     CommonParams *pParams = (CommonParams *)arg;
     char *buf = (char *)pParams->arga;
-    //char **ppbody = (char **)pParams->argb;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
 
-    app_debug("##test, buf:%s, localIp:%s", buf, pAiotcParams->localIp);
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+    if(id < 0) {
+        return ;
+    }
+    dbWrite(pAiotcParams->dbArgs, "obj", "original", buf, "original.id", &id, NULL);
 }
 
 static urlMap master_url_map[] = {
@@ -125,15 +144,27 @@ static int mstartRestTask(aiotcParams *pAiotcParams) {
     return 0;
 }
 
+static int masterInit(aiotcParams *pAiotcParams) {
+    dbOpen(pAiotcParams->dbArgs);
+    return 0;
+}
+
+static int masterUninit(aiotcParams *pAiotcParams) {
+    dbClose(pAiotcParams->dbArgs);
+    return 0;
+}
+
 int masterProcess(void *arg) {
     aiotcParams *pAiotcParams = (aiotcParams *)arg;
 
+    masterInit(pAiotcParams);
     mstartRestTask(pAiotcParams);
 
     while(pAiotcParams->running) {
         sleep(2);
     }
 
+    masterUninit(pAiotcParams);
     app_debug("run over");
 
     return 0;

@@ -36,10 +36,11 @@
 #define APREFIX_YELLOW "\033[1;33m"
 
 #define app_debug(format, args...) \
-    printf(APREFIX_GREEN"DEBUG : FILE -> %s, LINE -> %d, %s, "  format APREFIX_NONE"\n", __FILE__, __LINE__, __func__, ## args); \
     do { \
         struct timeval tv; \
         struct tm _time; \
+        printf(APREFIX_GREEN"DEBUG : FILE -> %s, LINE -> %d, %s, "  format APREFIX_NONE"\n", \
+                __FILE__, __LINE__, __func__, ## args); \
         gettimeofday(&tv, NULL); \
         localtime_r(&tv.tv_sec, &_time); \
         FILE *fp = fopen(DEBUG_LOG_FILE, "a+"); \
@@ -56,11 +57,13 @@
             } \
         } \
     } while(0)
+
 #define app_warring(format, args...) \
-    printf(APREFIX_YELLOW"WARRING : FILE -> %s, LINE -> %d, %s, "  format APREFIX_NONE"\n", __FILE__, __LINE__, __func__, ## args); \
     do { \
         struct timeval tv; \
         struct tm _time; \
+        printf(APREFIX_YELLOW"WARRING : FILE -> %s, LINE -> %d, %s, "  format APREFIX_NONE"\n", \
+                __FILE__, __LINE__, __func__, ## args); \
         gettimeofday(&tv, NULL); \
         localtime_r(&tv.tv_sec, &_time); \
         FILE *fp = fopen(DEBUG_LOG_FILE, "a+"); \
@@ -77,11 +80,13 @@
             } \
         } \
     } while(0)
+
 #define app_err(format, args...) \
-    printf(APREFIX_RED"ERR : FILE -> %s, LINE -> %d, %s, "  format APREFIX_NONE"\n", __FILE__, __LINE__, __func__, ## args); \
     do { \
         struct timeval tv; \
         struct tm _time; \
+        printf(APREFIX_RED"ERR : FILE -> %s, LINE -> %d, %s, "  format APREFIX_NONE"\n", \
+                __FILE__, __LINE__, __func__, ## args); \
         gettimeofday(&tv, NULL); \
         localtime_r(&tv.tv_sec, &_time); \
         FILE *fp = fopen(DEBUG_LOG_FILE, "a+"); \

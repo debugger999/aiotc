@@ -23,6 +23,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "mongoc.h"
+
+#define DB_NAME "aiotc"
 
 typedef struct {
     int masterEnable;
@@ -48,6 +51,13 @@ typedef struct {
     int captureQueLen;
     int captureSaveDays;
 
+    char dbType[32];
+    char dbHost[64];
+    int dbPort;
+    char dbUser[64];
+    char dbPassword[64];
+    char dbName[64];
+
     char workdir[256];
 
     void *arg; // aiotcParams
@@ -55,19 +65,23 @@ typedef struct {
 
 typedef struct {
     char type[16]; // "sqlite"/"mysql"/"mongodb"
-    char ip[64];
-    int port;
+    mongoc_uri_t *uri;
+    mongoc_client_t *client;
+    mongoc_database_t *database;
+    char uri_string[256];
     void *arg; // aiotcParams
 } dbParams;
 
 int configInit(configParams *pConfigParams);
 int dbInit(aiotcParams *pAiotcParams);
-int dbOpen(dbParams *params, void **handle);
-int dbRead(void *handle);
-int dbWrite(void *handle);
-int dbDel(void *handle);
-int dbTraverse(void *handle);
-int dbSearch(void *handle);
-int dbClose(void *handle);
+int dbOpen(void *dbArgs);
+int dbWrite(void *dbArgs, const char *table, const char *name, char *json, 
+        const char *selectName, const void *selIntVal, const void *selStrVal);
+int dbUpdate(void *dbArgs, const char *table, 
+        const char *selectName, const void *selIntVal, const void *selStrVal, 
+        const char *updateName, const void *updIntVal, const void *updStrVal);
+int dbDel(void *dbArgs, const char *table, 
+        const char *selectName, const void *selIntVal, const void *selStrVal);
+int dbClose(void *dbArgs);
 
 #endif

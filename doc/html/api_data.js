@@ -492,13 +492,6 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "preview",
-            "description": "<p>预览模式,支持hls,http-flv等</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
             "field": "deviceId",
             "description": "<p>设备ID</p>"
           }
@@ -507,7 +500,7 @@ define({ "api": [
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"ehome\",\n        \"preview\":\"hls\",\n        \"deviceId\":\"12345678\"\n    }\n}",
+          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"ehome\",\n        \"deviceId\":\"12345678\"\n    }\n}",
           "type": "json"
         }
       ]
@@ -587,13 +580,6 @@ define({ "api": [
             "optional": false,
             "field": "subType",
             "description": "<p>数据类型</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "preview",
-            "description": "<p>预览模式,支持hls,http-flv等</p>"
           },
           {
             "group": "Parameter",
@@ -762,13 +748,6 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "preview",
-            "description": "<p>预览模式,支持hls,http-flv等</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
             "field": "sipId",
             "description": "<p>视频流sipId，一般与某个像机绑定</p>"
           },
@@ -798,7 +777,7 @@ define({ "api": [
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"gb28181\",\n        \"tcpEnable\":0,\n        \"preview\":\"hls\",\n        \"sipId\": \"32020200002000000003\",\n        \"hostSipId\": \"32020200002000000001\",\n        \"hostIp\": \"192.168.0.64\",\n        \"hostSipPort\": 5060\n    }\n}",
+          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"gb28181\",\n        \"tcpEnable\":0,\n        \"sipId\": \"32020200002000000003\",\n        \"hostSipId\": \"32020200002000000001\",\n        \"hostIp\": \"192.168.0.64\",\n        \"hostSipPort\": 5060\n    }\n}",
           "type": "json"
         }
       ]
@@ -890,13 +869,6 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "preview",
-            "description": "<p>预览模式,支持hls,http-flv等</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
             "field": "url",
             "description": "<p>rtsp视频流地址</p>"
           }
@@ -905,7 +877,7 @@ define({ "api": [
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"rtsp\",\n        \"tcpEnable\":0,\n        \"preview\":\"hls\",\n        \"url\":\"rtsp://192.168.0.64/h264/ch1/main/av_stream\"\n    }\n}",
+          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"rtsp\",\n        \"tcpEnable\":0,\n        \"url\":\"rtsp://192.168.0.64/h264/ch1/main/av_stream\"\n    }\n}",
           "type": "json"
         }
       ]
@@ -990,13 +962,6 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "preview",
-            "description": "<p>预览模式,支持hls,http-flv等</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
             "field": "ip",
             "description": "<p>IP地址</p>"
           },
@@ -1026,7 +991,7 @@ define({ "api": [
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"hikSdk\",\n        \"preview\":\"hls\",\n        \"ip\":\"192.168.0.64\",\n        \"port\":8000,\n        \"userName\":\"admin\",\n        \"passWord\":\"admin\"\n    }\n}",
+          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"hikSdk\",\n        \"ip\":\"192.168.0.64\",\n        \"port\":8000,\n        \"userName\":\"admin\",\n        \"passWord\":\"admin\"\n    }\n}",
           "type": "json"
         }
       ]
@@ -1118,13 +1083,6 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "preview",
-            "description": "<p>预览模式,支持hls,http-flv等</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
             "field": "sn",
             "description": "<p>设备序列号</p>"
           }
@@ -1133,7 +1091,7 @@ define({ "api": [
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"tcp\",\n        \"source\": \"streamSdk\",\n        \"preview\":\"hls\",\n        \"sn\":\"12345678\"\n    }\n}",
+          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"tcp\",\n        \"source\": \"streamSdk\",\n        \"sn\":\"12345678\"\n    }\n}",
           "type": "json"
         }
       ]
@@ -1314,7 +1272,7 @@ define({ "api": [
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"id\":99,\n}",
+          "content": "{\n    \"id\":99\n}",
           "type": "json"
         }
       ]
@@ -1371,6 +1329,13 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
+            "field": "type",
+            "description": "<p>预览模式,支持hls,http-flv,ws等</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
             "field": "comment",
             "description": "<p>设备类型为camera,才支持视频预览,此命令依赖/obj/stream/start</p>"
           }
@@ -1379,7 +1344,7 @@ define({ "api": [
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"id\":99\n}",
+          "content": "{\n    \"id\": 99,\n    \"type\": \"hls\"\n}",
           "type": "json"
         }
       ]
@@ -1848,7 +1813,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "alg",
-            "description": "<p>该设备绑定的算法,每个设备可以启动多个任务绑定多个算法</p>"
+            "description": "<p>每个设备可以启动多个算法，详见[算法支持]接口</p>"
           },
           {
             "group": "Parameter",

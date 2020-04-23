@@ -76,11 +76,19 @@ static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
     pAiotcParams->shmArgs = shmMalloc(pShmParams->headsp, sizeof(shmParams));
     pAiotcParams->configArgs = shmMalloc(pShmParams->headsp, sizeof(configParams));
     pAiotcParams->pidsArgs = shmMalloc(pShmParams->headsp, sizeof(pidsParams));
+    pAiotcParams->dbArgs = shmMalloc(pShmParams->headsp, sizeof(dbParams));
     memset(pAiotcParams->masterArgs, 0, sizeof(masterParams));
     memset(pAiotcParams->restArgs, 0, sizeof(restParams));
     memset(pAiotcParams->shmArgs, 0, sizeof(shmParams));
     memset(pAiotcParams->configArgs, 0, sizeof(configParams));
     memset(pAiotcParams->pidsArgs, 0, sizeof(pidsParams));
+    memset(pAiotcParams->dbArgs, 0, sizeof(dbParams));
+    ((masterParams *)pAiotcParams->masterArgs)->arg = pAiotcParams;
+    ((restParams *)pAiotcParams->restArgs)->arg = pAiotcParams;
+    ((shmParams *)pAiotcParams->shmArgs)->arg = pAiotcParams;
+    ((configParams *)pAiotcParams->configArgs)->arg = pAiotcParams;
+    ((pidsParams *)pAiotcParams->pidsArgs)->arg = pAiotcParams;
+    ((dbParams *)pAiotcParams->dbArgs)->arg = pAiotcParams;
 
     return 0;
 }
@@ -102,9 +110,9 @@ static int init(aiotcParams **ppAiotcParams) {
     memset(pAiotcParams, 0, sizeof(aiotcParams));
 
     initPtr(pAiotcParams, &shmParam);
-    dbInit(pAiotcParams);
-    memcpy(pAiotcParams->shmArgs, &shmParam, sizeof(shmParams));
     memcpy(pAiotcParams->configArgs, &configParam, sizeof(configParams));
+    memcpy(pAiotcParams->shmArgs, &shmParam, sizeof(shmParams));
+    dbInit(pAiotcParams);
 
     pAiotcParams->running = 1;
     *ppAiotcParams = pAiotcParams;

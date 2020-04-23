@@ -136,7 +136,6 @@
  * @apiParam {int}      [id]            设备ID,master支持自动分配
  * @apiParam {String}   subType         数据类型,tcp类型可以支持局域网设备接入互联网云平台
  * @apiParam {String}   source          tcp接入可以兼容多种类型，典型如streamSdk
- * @apiParam {String}   preview         预览模式,支持hls,http-flv等
  * @apiParam {String}   sn              设备序列号
  * @apiParamExample {json} 请求样例：
  *                          {
@@ -146,7 +145,6 @@
  *                              "data":{
  *                                  "subType":"tcp",
  *                                  "source": "streamSdk",
- *                                  "preview":"hls",
  *                                  "sn":"12345678"
  *                              }
  *                          }
@@ -166,7 +164,6 @@
  * @apiParam {String}   type            设备类型
  * @apiParam {int}      [id]            设备ID,master支持自动分配
  * @apiParam {String}   subType         数据类型,Ehome为海康设备接入互联网协议
- * @apiParam {String}   preview         预览模式,支持hls,http-flv等
  * @apiParam {String}   deviceId        设备ID
  * @apiParamExample {json} 请求样例：
  *                          {
@@ -175,7 +172,6 @@
  *                              "id":99,
  *                              "data":{
  *                                  "subType":"ehome",
- *                                  "preview":"hls",
  *                                  "deviceId":"12345678"
  *                              }
  *                          }
@@ -195,7 +191,6 @@
  * @apiParam {String}   type            设备类型
  * @apiParam {int}      [id]            设备ID,master支持自动分配
  * @apiParam {String}   subType         数据类型
- * @apiParam {String}   preview         预览模式,支持hls,http-flv等
  * @apiParam {String}   deviceId        设备Id，一般与某个像机绑定
  * @apiParam {int}      mode            0:推送模式 1:订阅模式
  * @apiParam {String}   [slaveIp]       推送模式时需要指定服务器IP
@@ -243,7 +238,6 @@
  * @apiParam {int}      [id]            设备ID,master支持自动分配
  * @apiParam {String}   subType         数据类型
  * @apiParam {int}      tcpEnable       rtsp模式下的tcp使能, 1:tcp,0:udp
- * @apiParam {String}   preview         预览模式,支持hls,http-flv等
  * @apiParam {String}   url             rtsp视频流地址
  * @apiParamExample {json} 请求样例：
  *                          {
@@ -253,7 +247,6 @@
  *                              "data":{
  *                                  "subType":"rtsp",
  *                                  "tcpEnable":0,
- *                                  "preview":"hls",
  *                                  "url":"rtsp://192.168.0.64/h264/ch1/main/av_stream"
  *                              }
  *                          }
@@ -274,7 +267,6 @@
  * @apiParam {int}      [id]            设备ID,master支持自动分配
  * @apiParam {String}   subType         数据类型
  * @apiParam {int}      tcpEnable       gb28181模式下的tcp使能, 1:tcp,0:udp
- * @apiParam {String}   preview         预览模式,支持hls,http-flv等
  * @apiParam {String}   sipId           视频流sipId，一般与某个像机绑定
  * @apiParam {String}   hostSipId       远程下级域sipId，可以同时对接多个下级域服务器
  * @apiParam {String}   hostIp          远程下级域IP地址
@@ -287,7 +279,6 @@
  *                              "data":{
  *                                  "subType":"gb28181",
  *                                  "tcpEnable":0,
- *                                  "preview":"hls",
  *                                  "sipId": "32020200002000000003",
  *                                  "hostSipId": "32020200002000000001",
  *                                  "hostIp": "192.168.0.64",
@@ -310,7 +301,6 @@
  * @apiParam {String}   type            设备类型
  * @apiParam {int}      [id]            设备ID,master支持自动分配
  * @apiParam {String}   subType         像机类型,海康,大华等各厂家通过subType不同可以共用此接口,目前支持hikSdk/dhSdk
- * @apiParam {String}   preview         预览模式,支持hls,http-flv等
  * @apiParam {String}   ip              IP地址
  * @apiParam {int}      port            端口
  * @apiParam {String}   userName        用户名
@@ -322,7 +312,6 @@
  *                              "id":99,
  *                              "data":{
  *                                  "subType":"hikSdk",
- *                                  "preview":"hls",
  *                                  "ip":"192.168.0.64",
  *                                  "port":8000,
  *                                  "userName":"admin",
@@ -374,10 +363,12 @@
  * @apiVersion 0.1.0
  * @apiDescription 详细描述
  * @apiParam    {int}       id          设备ID
+ * @apiParam    {String}    type        预览模式,支持hls,http-flv,ws等
  * @apiParam    {String}    comment     设备类型为camera,才支持视频预览,此命令依赖/obj/stream/start
  * @apiParamExample {json} 请求样例：
  *                          {
- *                              "id":99
+ *                              "id": 99,
+ *                              "type": "hls"
  *                          }
  * @apiSuccess (200) {int}      code    0:成功 1:失败
  * @apiSuccess (200) {String}   msg     信息
@@ -534,7 +525,7 @@
  * @apiVersion 0.1.0
  * @apiDescription 详细描述
  * @apiParam    {int}       id          设备ID
- * @apiParam    {String}    alg         该设备绑定的算法,每个设备可以启动多个任务绑定多个算法
+ * @apiParam    {String}    alg         每个设备可以启动多个算法，详见[算法支持]接口
  * @apiParam    {String}    comment     此命令依赖/obj/stream/start或/obj/capture/start
  * @apiParamExample {json} 请求样例：
  *                          {

@@ -81,6 +81,7 @@ int request_cb(struct evhttp_request *req, void (*httpTask)(struct evhttp_reques
     }
     cbuf[POST_BUF_MAX - 1] = '\0';
 
+    app_debug("%s", cbuf);
     CommonParams params;
     params.arga = cbuf;
     params.argb = &pbody;

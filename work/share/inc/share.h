@@ -71,6 +71,8 @@ int putToShmQueue(void *pShmArg, node_common *new_node, int max);
 int freeShmQueue(void *pShmArg, int (*callBack)(void *arg));
 int conditionTrue(node_common *p, void *arg);
 
+int getIntValFromJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3);
+char *getStrValFromJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 int getIntValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 char *getStrValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 double getDoubleValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);

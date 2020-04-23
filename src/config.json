@@ -28,6 +28,16 @@
         "key" : 11760000,
         "headSize" : 1073741824
     },
+    "db": {
+        "type": "mongodb",
+        "mongodb": {
+            "host": "10.10.1.230",
+            "port": 27017,
+            "user": "null",
+            "password": "null",
+            "dbName": "null"
+        }
+    },
     "alg": {
     },
     "msgKey": {

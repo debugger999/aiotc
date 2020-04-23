@@ -59,6 +59,7 @@ typedef struct {
     void *shmArgs; // shmParams
     void *configArgs; // configParams
     void *pidsArgs; // pidsParams
+    void *dbArgs; // dbParams
     int running;
 } aiotcParams;
 
