@@ -23,6 +23,7 @@
 #include "master.h"
 #include "rest.h"
 #include "pids.h"
+#include "system.h"
 
 static int creatProcByPid(pid_t oldPid, aiotcParams *pAiotcParams) {
     pid_t pid;
@@ -77,18 +78,31 @@ static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
     pAiotcParams->configArgs = shmMalloc(pShmParams->headsp, sizeof(configParams));
     pAiotcParams->pidsArgs = shmMalloc(pShmParams->headsp, sizeof(pidsParams));
     pAiotcParams->dbArgs = shmMalloc(pShmParams->headsp, sizeof(dbParams));
+    pAiotcParams->systemArgs = shmMalloc(pShmParams->headsp, sizeof(systemParams));
     memset(pAiotcParams->masterArgs, 0, sizeof(masterParams));
     memset(pAiotcParams->restArgs, 0, sizeof(restParams));
     memset(pAiotcParams->shmArgs, 0, sizeof(shmParams));
     memset(pAiotcParams->configArgs, 0, sizeof(configParams));
     memset(pAiotcParams->pidsArgs, 0, sizeof(pidsParams));
     memset(pAiotcParams->dbArgs, 0, sizeof(dbParams));
+    memset(pAiotcParams->systemArgs, 0, sizeof(systemParams));
     ((masterParams *)pAiotcParams->masterArgs)->arg = pAiotcParams;
     ((restParams *)pAiotcParams->restArgs)->arg = pAiotcParams;
     ((shmParams *)pAiotcParams->shmArgs)->arg = pAiotcParams;
     ((configParams *)pAiotcParams->configArgs)->arg = pAiotcParams;
     ((pidsParams *)pAiotcParams->pidsArgs)->arg = pAiotcParams;
     ((dbParams *)pAiotcParams->dbArgs)->arg = pAiotcParams;
+    ((systemParams *)pAiotcParams->systemArgs)->arg = pAiotcParams;
+
+    systemParams *pSystemParams = (systemParams *)pAiotcParams->systemArgs;
+    if(sem_init(&pSystemParams->mutex_slave, 1, 1) < 0) {
+      app_err("sem init failed");
+      return -1;
+    }
+    if(sem_init(&pSystemParams->mutex_obj, 1, 1) < 0) {
+      app_err("sem init failed");
+      return -1;
+    }
 
     return 0;
 }
@@ -123,11 +137,16 @@ static int init(aiotcParams **ppAiotcParams) {
 static int destroy(aiotcParams *pAiotcParams) {
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
     ncx_slab_pool_t *headsp = pShmParams->headsp;
+    systemParams *pSystemParams = (systemParams *)pAiotcParams->systemArgs;
 
+    sem_destroy(&pSystemParams->mutex_slave);
+    sem_destroy(&pSystemParams->mutex_obj);
     shmFree(headsp, pAiotcParams->masterArgs);
     shmFree(headsp, pAiotcParams->restArgs);
     shmFree(headsp, pAiotcParams->configArgs);
     shmFree(headsp, pAiotcParams->pidsArgs);
+    shmFree(headsp, pAiotcParams->dbArgs);
+    shmFree(headsp, pAiotcParams->systemArgs);
     shmFree(headsp, pAiotcParams->shmArgs);
     shmFree(headsp, pAiotcParams);
     shmDestroy(headsp);

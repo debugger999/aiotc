@@ -56,10 +56,12 @@ typedef struct {
     char localIp[128];
     void *masterArgs; // masterParams
     void *restArgs; // restParams
+    void *objArgs; // objParams
     void *shmArgs; // shmParams
     void *configArgs; // configParams
     void *pidsArgs; // pidsParams
     void *dbArgs; // dbParams
+    void *systemArgs; // systemParams
     int running;
 } aiotcParams;
 

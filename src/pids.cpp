@@ -22,19 +22,26 @@
 #include "work.h"
 #include "pids.h"
 #include "stream.h"
+#include "rtsp.h"
 
-// main进程尽量简单，只做进程守护
-// 所有进程都需要通过main创建，可以通过消息通知
-// 进程是无状态的，master、rest、work等进程如果重启，依赖共享内存中的相关模块参数
-// obj、capture、alg等进程如果重启，依赖共享内存中obj状态及进程负载重新分配启动相关任务
+// main进程尽量简单，只做进程守护，所有进程都需要通过main创建，
+// 进程是无状态的，进程创建后只能被动接收任务命令，进程挂掉后，main守护启动，不做其他事情
+// main保证相关模块永远都有一个空闲进程(前提是cpu、gpu、mem有剩余)，如obj、task等，
+// obj/task可以是多进程，也可以是单进程多线程，
+// 存在一个obj任务监控模块，发现obj任务停止，表示任务刚添加还没有启动或相关任务进程挂掉重启，
+// 寻找一个最空闲的进程(如没有，通知main创建)，把obj任务分配上去。
+// 动态的stop、del命令需要有资源同步机制，如shm的user
+// 做到进程无状态最重要两点：
+// 所有参数都在共享内存中，大家零拷贝共享，避免消息同步；
+// 进程任务启动依赖obj任务监控模块，避免rest命令传输启动导致的进程间状态耦合和维护；
 // 为了防止各种算法进程编译库冲突，alg模块独立为自己的编译工程，不适合fork
 static PidOps g_pid_ops[] = {
     {"master",  "null",         -1,     masterProcess},
     {"rest",    "null",         -1,     restProcess},
     {"work",    "null",         -1,     workProcess},
     {"obj",     "tcp",          -1,     streamProcess},
-    /*
     {"obj",     "rtsp",         -1,     rtspProcess},
+    /*
     {"obj",     "gb28181",      -1,     gb28181Process},
     {"obj",     "gat1400",      -1,     gat1400Process},
     {"obj",     "ehome",        -1,     ehomeProcess},

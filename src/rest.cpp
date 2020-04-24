@@ -19,6 +19,7 @@
 #include "rest.h"
 #include "db.h"
 #include "misc.h"
+#include "system.h"
 
 static int sendHttpReply(struct evhttp_request *req, char *buf) {
     struct evbuffer *evb;
@@ -97,6 +98,7 @@ int request_cb(struct evhttp_request *req, void (*httpTask)(struct evhttp_reques
 }
 
 static void request_login(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_logout(struct evhttp_request *req, void *arg) {
@@ -107,51 +109,67 @@ static void request_system_init(struct evhttp_request *req, void *arg) {
 }
 
 static void request_slave_add(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_slave_del(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_obj_add(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_obj_del(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_stream_start(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_stream_stop(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_preview_start(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_preview_stop(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_record_start(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_record_stop(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_record_play(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_capture_start(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_capture_stop(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_alg_support(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_task_start(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static void request_task_stop(struct evhttp_request *req, void *arg) {
+    request_first_stage;
 }
 
 static urlMap rest_url_map[] = {
@@ -256,7 +274,6 @@ int restProcess(void *arg) {
     aiotcParams *pAiotcParams = (aiotcParams *)arg;
 
     startRestTask(pAiotcParams);
-
     while(pAiotcParams->running) {
         sleep(2);
     }

@@ -16,6 +16,7 @@ SRC += platform.cpp
 SRC += work.cpp
 SRC += rest.cpp db.cpp misc.cpp shm.cpp pids.cpp
 SRC += stream/stream.cpp
+SRC += rtsp/rtsp.cpp
 
 LDFLAGS = -L../work/share/lib
 LDFLAGS += -L../work/cjson/lib

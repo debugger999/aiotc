@@ -16,15 +16,22 @@
  *
  ******************************************************************************/
 
-#ifndef __AIOTC_OBJ_H__
-#define __AIOTC_OBJ_H__
+#ifndef __AIOTC_SYSTEM_H__
+#define __AIOTC_SYSTEM_H__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "platform.h"
+#include "share.h"
 
 typedef struct {
+    char *sysOrgData;
+
+    sem_t mutex_slave;
+    queue_common slaveQueue;
+
+    sem_t mutex_obj;
+    queue_common objQueue;
+
     void *arg; // aiotcParams
-} objParams;
+} systemParams;
 
 #endif

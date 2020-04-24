@@ -16,15 +16,13 @@
  *
  ******************************************************************************/
 
-#ifndef __AIOTC_OBJ_H__
-#define __AIOTC_OBJ_H__
+#ifndef __AIOTC_RTSP_H__
+#define __AIOTC_RTSP_H__
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct {
-    void *arg; // aiotcParams
-} objParams;
+int rtspProcess(void *arg);
 
 #endif

@@ -30,6 +30,7 @@ typedef struct {
     char subName[32];
     pid_t pid;
     ProcFunc proc;
+    int load;
 } PidOps;
 
 PidOps *getOpsByPid(pid_t pid);

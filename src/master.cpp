@@ -21,6 +21,8 @@
 #include "rest.h"
 #include "db.h"
 #include "share.h"
+#include "shm.h"
+#include "system.h"
 
 static void master_request_login(struct evhttp_request *req, void *arg) {
     request_first_stage;
@@ -35,13 +37,21 @@ static void master_request_system_init(struct evhttp_request *req, void *arg) {
     CommonParams *pParams = (CommonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
+    systemParams *pSystemParams = (systemParams *)pAiotcParams->systemArgs;
+
+    if(pSystemParams->sysOrgData != NULL) {
+        shmFree(pShmParams->headsp, pSystemParams->sysOrgData);
+    }
+    pSystemParams->sysOrgData = (char *)shmMalloc(pShmParams->headsp, strlen(buf) + 1);
+    if(pSystemParams->sysOrgData == NULL) {
+        app_err("shm malloc failed, %ld", strlen(buf) + 1);
+        return ;
+    }
+    strcpy(pSystemParams->sysOrgData, buf);
 
     dbWrite(pAiotcParams->dbArgs, "systemInit", "original", buf, 
                         "original.msgOutParams.type", NULL, "mq");
-}
-
-static void master_request_alg_support(struct evhttp_request *req, void *arg) {
-    request_first_stage;
 }
 
 static void master_request_slave_add(struct evhttp_request *req, void *arg) {
@@ -86,34 +96,83 @@ static void master_request_obj_add(struct evhttp_request *req, void *arg) {
     dbWrite(pAiotcParams->dbArgs, "obj", "original", buf, "original.id", &id, NULL);
 }
 
+static void master_request_obj_del(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_stream_start(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_stream_stop(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_preview_start(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_preview_stop(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_record_start(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_record_stop(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_record_play(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_capture_start(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_capture_stop(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_alg_support(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_task_start(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
+static void master_request_task_stop(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+}
+
 static urlMap master_url_map[] = {
     {"/system/login",       master_request_login},
     {"/system/logout",      master_request_logout},
     {"/system/init",        master_request_system_init},
-    {"/alg/support",        master_request_alg_support},
     {"/system/slave/add",   master_request_slave_add},
     {"/system/slave/del",   master_request_slave_del},
     {"/obj/add/tcp",        master_request_obj_add},
-    /*
-    {"/obj/add/ehome",      request_obj_add},
-    {"/obj/add/gat1400",    request_obj_add},
-    {"/obj/add/rtsp",       request_obj_add},
-    {"/obj/add/gb28181",    request_obj_add},
-    {"/obj/add/sdk",        request_obj_add},
-    {"/obj/del",            request_obj_del},
-    {"/obj/stream/start",   request_stream_start},
-    {"/obj/stream/stop",    request_stream_stop},
-    {"/obj/preview/start",  request_preview_start},
-    {"/obj/preview/stop",   request_preview_stop},
-    {"/obj/record/start",   request_record_start},
-    {"/obj/record/stop",    request_record_stop},
-    {"/obj/record/play",    request_record_play},
-    {"/obj/capture/start",  request_capture_start},
-    {"/obj/capture/stop",   request_capture_stop},
-    {"/alg/support",        request_alg_support},
-    {"/task/start",         request_task_start},
-    {"/task/stop",          request_task_stop},
-    */
+    {"/obj/add/ehome",      master_request_obj_add},
+    {"/obj/add/gat1400",    master_request_obj_add},
+    {"/obj/add/rtsp",       master_request_obj_add},
+    {"/obj/add/gb28181",    master_request_obj_add},
+    {"/obj/add/sdk",        master_request_obj_add},
+    {"/obj/del",            master_request_obj_del},
+    {"/obj/stream/start",   master_request_stream_start},
+    {"/obj/stream/stop",    master_request_stream_stop},
+    {"/obj/preview/start",  master_request_preview_start},
+    {"/obj/preview/stop",   master_request_preview_stop},
+    {"/obj/record/start",   master_request_record_start},
+    {"/obj/record/stop",    master_request_record_stop},
+    {"/obj/record/play",    master_request_record_play},
+    {"/obj/capture/start",  master_request_capture_start},
+    {"/obj/capture/stop",   master_request_capture_stop},
+    {"/alg/support",        master_request_alg_support},
+    {"/task/start",         master_request_task_start},
+    {"/task/stop",          master_request_task_stop},
     {NULL, NULL}
 };
 
