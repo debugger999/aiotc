@@ -1,0 +1,1623 @@
+2020-04-23 11:06:47.806, debug, main.cpp:180,main, Built: 11:06:39 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 11:06:47.809, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f3aa0d5f000, total size : 1210056704
+2020-04-23 11:06:47.809, debug, main.cpp:158,creatProcess, master pid : 20935
+2020-04-23 11:06:47.810, debug, main.cpp:158,creatProcess, rest pid : 20936
+2020-04-23 11:06:47.810, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 11:06:47.817, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 11:06:47.817, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 11:09:48.259, debug, main.cpp:180,main, Built: 11:09:43 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 11:09:48.262, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fed3bcdc000, total size : 1210056704
+2020-04-23 11:09:48.263, debug, main.cpp:158,creatProcess, master pid : 20970
+2020-04-23 11:09:48.263, debug, main.cpp:158,creatProcess, rest pid : 20971
+2020-04-23 11:09:48.263, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 11:09:48.298, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 11:09:48.298, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 11:09:57.700, debug, master.cpp:39,master_request_system_init, ##test, buf:{
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}, localIp:10.10.1.157
+2020-04-23 11:09:57.700, debug, master.cpp:39,master_request_system_init, ##test, buf:/system/init, localIp:10.10.1.157
+2020-04-23 14:09:52.885, debug, main.cpp:180,main, Built: 14:09:46 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 14:09:52.888, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f3152e5b000, total size : 1210056704
+2020-04-23 14:09:52.889, debug, main.cpp:158,creatProcess, master pid : 21189
+2020-04-23 14:09:52.889, debug, main.cpp:158,creatProcess, rest pid : 21190
+2020-04-23 14:09:52.889, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 14:09:52.891, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 14:09:52.892, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 14:09:57, error, pid:21189 db.cpp:155,dbWrite, bson from json failed, /system/init, Got parse error at "/", position 0: "SPECIAL_EXPECTED"
+
+2020-04-23 14:12:41.792, debug, main.cpp:180,main, Built: 14:09:46 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 14:12:41.796, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f7ce6c7d000, total size : 1210056704
+2020-04-23 14:12:41.796, debug, main.cpp:158,creatProcess, master pid : 21199
+2020-04-23 14:12:41.796, debug, main.cpp:158,creatProcess, rest pid : 21200
+2020-04-23 14:12:41.797, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 14:12:41.798, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 14:12:41.799, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 14:13:12.443, debug, main.cpp:180,main, Built: 14:13:08 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 14:13:12.446, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f1f80222000, total size : 1210056704
+2020-04-23 14:13:12.447, debug, main.cpp:158,creatProcess, master pid : 21229
+2020-04-23 14:13:12.447, debug, main.cpp:158,creatProcess, rest pid : 21230
+2020-04-23 14:13:12.447, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 14:13:12.498, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 14:13:12.498, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 14:13:15.201, debug, master.cpp:38,master_request_system_init, ##test
+2020-04-23 14:13:15.204, debug, master.cpp:38,master_request_system_init, ##test
+2020-04-23 14:13:15, error, pid:21229 db.cpp:155,dbWrite, bson from json failed, /system/init, Got parse error at "/", position 0: "SPECIAL_EXPECTED"
+
+2020-04-23 14:19:14.241, debug, main.cpp:180,main, Built: 14:19:09 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 14:19:14.244, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f8f22178000, total size : 1210056704
+2020-04-23 14:19:14.244, debug, main.cpp:158,creatProcess, master pid : 21267
+2020-04-23 14:19:14.245, debug, main.cpp:158,creatProcess, rest pid : 21268
+2020-04-23 14:19:14.245, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 14:19:14.283, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 14:19:14.283, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 14:19:19.563, debug, master.cpp:38,master_request_system_init, ##test
+2020-04-23 15:23:41.070, debug, main.cpp:180,main, Built: 15:23:35 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 15:23:41.074, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f55bfc00000, total size : 1210056704
+2020-04-23 15:23:41.074, debug, main.cpp:158,creatProcess, master pid : 21667
+2020-04-23 15:23:41.075, debug, main.cpp:158,creatProcess, rest pid : 21668
+2020-04-23 15:23:41.075, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 15:23:41.112, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:23:41.112, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 15:26:43.436, debug, main.cpp:180,main, Built: 15:23:35 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 15:26:43.439, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7ff428a49000, total size : 1210056704
+2020-04-23 15:26:43.439, debug, main.cpp:158,creatProcess, master pid : 21673
+2020-04-23 15:26:43.440, debug, main.cpp:158,creatProcess, rest pid : 21674
+2020-04-23 15:26:43.440, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 15:26:43.483, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:26:43.483, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 15:36:13.699, debug, main.cpp:180,main, Built: 15:36:07 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 15:36:13.703, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f6495aea000, total size : 1210056704
+2020-04-23 15:36:13.703, debug, main.cpp:158,creatProcess, master pid : 21728
+2020-04-23 15:36:13.703, debug, main.cpp:158,creatProcess, rest pid : 21729
+2020-04-23 15:36:13.704, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 15:36:13.746, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:36:13.746, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 15:36:17.225, debug, db.cpp:162,dbWrite, limit:0,batch size:0,more:1
+2020-04-23 15:36:28.179, debug, db.cpp:162,dbWrite, limit:0,batch size:0,more:1
+2020-04-23 15:38:46.253, debug, main.cpp:180,main, Built: 15:38:41 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 15:38:46.256, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f53fc207000, total size : 1210056704
+2020-04-23 15:38:46.256, debug, main.cpp:158,creatProcess, master pid : 21758
+2020-04-23 15:38:46.256, debug, main.cpp:158,creatProcess, rest pid : 21759
+2020-04-23 15:38:46.257, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 15:38:46.297, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:38:46.297, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 15:38:51.104, debug, db.cpp:162,dbWrite, limit:0,batch size:0,more:1
+2020-04-23 15:38:52.562, debug, db.cpp:162,dbWrite, limit:0,batch size:0,more:1
+2020-04-23 15:38:53.492, debug, db.cpp:162,dbWrite, limit:0,batch size:0,more:1
+2020-04-23 15:38:54.217, debug, db.cpp:162,dbWrite, limit:0,batch size:0,more:1
+2020-04-23 15:38:54.963, debug, db.cpp:162,dbWrite, limit:0,batch size:0,more:1
+2020-04-23 15:39:59.226, debug, main.cpp:180,main, Built: 15:38:41 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 15:39:59.230, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f03b5f7a000, total size : 1210056704
+2020-04-23 15:39:59.230, debug, main.cpp:158,creatProcess, master pid : 21763
+2020-04-23 15:39:59.230, debug, main.cpp:158,creatProcess, rest pid : 21764
+2020-04-23 15:39:59.230, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 15:39:59.252, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:39:59.252, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 15:40:05.397, debug, db.cpp:162,dbWrite, limit:0,batch size:0,more:1
+2020-04-23 15:46:34.832, debug, main.cpp:180,main, Built: 15:46:29 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 15:46:34.835, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f2f16198000, total size : 1210056704
+2020-04-23 15:46:34.835, debug, main.cpp:158,creatProcess, master pid : 21798
+2020-04-23 15:46:34.836, debug, main.cpp:158,creatProcess, rest pid : 21799
+2020-04-23 15:46:34.836, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 15:46:34.873, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:46:34.873, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 15:46:38.678, debug, db.cpp:165,dbWrite, limit:0,batch size:0,more:1
+2020-04-23 15:46:41.784, debug, db.cpp:165,dbWrite, limit:0,batch size:0,more:1
+2020-04-23 15:51:14.322, debug, main.cpp:180,main, Built: 15:50:45 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 15:51:14.326, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f57cf068000, total size : 1210056704
+2020-04-23 15:51:14.326, debug, main.cpp:158,creatProcess, master pid : 21848
+2020-04-23 15:51:14.326, debug, main.cpp:158,creatProcess, rest pid : 21849
+2020-04-23 15:51:14.327, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 15:51:14.360, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:51:14.360, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 15:51:18.110, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:51:20.086, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:51:49.054, debug, main.cpp:180,main, Built: 15:51:43 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 15:51:49.058, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7ff2bb5c8000, total size : 1210056704
+2020-04-23 15:51:49.058, debug, main.cpp:158,creatProcess, master pid : 21878
+2020-04-23 15:51:49.058, debug, main.cpp:158,creatProcess, rest pid : 21879
+2020-04-23 15:51:49.059, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 15:51:49.094, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:51:49.095, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 15:51:51.866, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:51:53.874, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:51:57.292, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:52:52.172, debug, main.cpp:180,main, Built: 15:52:46 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 15:52:52.175, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fd154d97000, total size : 1210056704
+2020-04-23 15:52:52.176, debug, main.cpp:158,creatProcess, master pid : 21907
+2020-04-23 15:52:52.176, debug, main.cpp:158,creatProcess, rest pid : 21908
+2020-04-23 15:52:52.176, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 15:52:52.213, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:52:52.214, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 15:52:54.319, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:52:55.191, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:53:45.434, debug, main.cpp:180,main, Built: 15:52:46 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 15:53:45.436, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f557a2b3000, total size : 1210056704
+2020-04-23 15:53:45.437, debug, main.cpp:158,creatProcess, master pid : 21912
+2020-04-23 15:53:45.437, debug, main.cpp:158,creatProcess, rest pid : 21913
+2020-04-23 15:53:45.437, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 15:53:45.499, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:53:45.499, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 15:53:50.185, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:53:51.222, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:53:52.104, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:53:52.793, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:53:53.517, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:53:54.068, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:53:54.645, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:55:46.923, debug, main.cpp:180,main, Built: 15:55:40 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 15:55:46.926, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f6c31063000, total size : 1210056704
+2020-04-23 15:55:46.926, debug, main.cpp:158,creatProcess, master pid : 21966
+2020-04-23 15:55:46.927, debug, main.cpp:158,creatProcess, rest pid : 21967
+2020-04-23 15:55:46.928, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 15:55:46.958, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:55:46.958, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 15:55:51.825, debug, db.cpp:167,dbWrite, limit:0,batch size:0,more:1,id:0
+2020-04-23 15:55:52, warring, pid:21965 main.cpp:67,main_child_quit_signal, child process 21966 quit, exit status 134, restart it ...
+2020-04-23 15:55:52.493, debug, main.cpp:47,creatProcByPid, restart master pid : 21971
+2020-04-23 15:55:52.495, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 15:55:52.495, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 16:09:13.732, debug, main.cpp:180,main, Built: 16:09:08 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 16:09:13.736, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f53af3a8000, total size : 1210056704
+2020-04-23 16:09:13.736, debug, main.cpp:158,creatProcess, master pid : 22030
+2020-04-23 16:09:13.736, debug, main.cpp:158,creatProcess, rest pid : 22031
+2020-04-23 16:09:13.737, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 16:09:13.770, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 16:09:13.770, debug, master.cpp:106,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 17:11:05.948, debug, main.cpp:180,main, Built: 17:10:42 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 17:11:05.952, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f91a218a000, total size : 1210056704
+2020-04-23 17:11:05.952, debug, main.cpp:158,creatProcess, master pid : 22294
+2020-04-23 17:11:05.952, debug, main.cpp:158,creatProcess, rest pid : 22295
+2020-04-23 17:11:05.953, debug, rest.cpp:233,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 17:11:05.954, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 17:11:05.954, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 17:14:33.757, debug, main.cpp:180,main, Built: 17:14:18 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 17:14:33.760, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f13189c9000, total size : 1210056704
+2020-04-23 17:14:33.761, debug, main.cpp:158,creatProcess, master pid : 22330
+2020-04-23 17:14:33.761, debug, main.cpp:158,creatProcess, rest pid : 22331
+2020-04-23 17:14:33.761, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 17:14:33.763, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 17:14:33.763, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 17:14:37.507, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 17:25:05.608, debug, main.cpp:180,main, Built: 17:24:51 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 17:25:05.612, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f198b0dd000, total size : 1210056704
+2020-04-23 17:25:05.612, debug, main.cpp:158,creatProcess, master pid : 22369
+2020-04-23 17:25:05.612, debug, main.cpp:158,creatProcess, rest pid : 22370
+2020-04-23 17:25:05.612, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 17:25:05.631, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 17:25:05.631, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 17:25:38.259, debug, main.cpp:180,main, Built: 17:24:51 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 17:25:38.262, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fc05d6fe000, total size : 1210056704
+2020-04-23 17:25:38.262, debug, main.cpp:158,creatProcess, master pid : 22374
+2020-04-23 17:25:38.262, debug, main.cpp:158,creatProcess, rest pid : 22375
+2020-04-23 17:25:38.263, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 17:25:38.264, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 17:25:38.264, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 17:25:43.423, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 17:25:43, error, pid:22374 db.cpp:279,dbUpdate, update failed, (null):original, invalid argument for update: corrupt BSON
+
+2020-04-23 17:28:17.015, debug, main.cpp:180,main, Built: 17:27:48 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 17:28:17.019, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fa281c6e000, total size : 1210056704
+2020-04-23 17:28:17.019, debug, main.cpp:158,creatProcess, master pid : 22404
+2020-04-23 17:28:17.019, debug, main.cpp:158,creatProcess, rest pid : 22405
+2020-04-23 17:28:17.020, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 17:28:17.021, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 17:28:17.021, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 17:28:21.261, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 17:28:35.982, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 17:28:36.645, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 17:30:12.458, debug, main.cpp:180,main, Built: 17:30:05 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 17:30:12.461, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7ff25804b000, total size : 1210056704
+2020-04-23 17:30:12.462, debug, main.cpp:158,creatProcess, master pid : 22435
+2020-04-23 17:30:12.462, debug, main.cpp:158,creatProcess, rest pid : 22436
+2020-04-23 17:30:12.462, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 17:30:12.464, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 17:30:12.464, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 17:30:17.960, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 17:39:32.575, debug, main.cpp:180,main, Built: 17:39:15 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 17:39:32.579, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f4c497a2000, total size : 1210056704
+2020-04-23 17:39:32.634, debug, main.cpp:158,creatProcess, master pid : 22470
+2020-04-23 17:39:32.634, debug, main.cpp:158,creatProcess, rest pid : 22471
+2020-04-23 17:39:32.635, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 17:39:32.638, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 17:39:32.638, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 17:39:54.752, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 18:26:47.399, debug, main.cpp:180,main, Built: 18:26:33 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 18:26:47.402, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fcde52e3000, total size : 1210056704
+2020-04-23 18:26:47.403, debug, main.cpp:158,creatProcess, master pid : 22631
+2020-04-23 18:26:47.403, debug, main.cpp:158,creatProcess, rest pid : 22632
+2020-04-23 18:26:47.403, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 18:26:47.437, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 18:26:47.438, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 18:26:50.524, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 18:44:51.105, debug, main.cpp:180,main, Built: 18:44:26 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 18:44:51.109, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fbe8e814000, total size : 1210056704
+2020-04-23 18:44:51.110, debug, main.cpp:158,creatProcess, master pid : 22702
+2020-04-23 18:44:51.110, debug, main.cpp:158,creatProcess, rest pid : 22703
+2020-04-23 18:44:51.110, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 18:44:51.147, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 18:44:51.147, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 18:44:57.689, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 18:44:58.977, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 18:51:52.711, debug, main.cpp:180,main, Built: 18:51:30 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 18:51:52.714, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f82a25b9000, total size : 1210056704
+2020-04-23 18:51:52.714, debug, main.cpp:158,creatProcess, master pid : 22787
+2020-04-23 18:51:52.715, debug, main.cpp:158,creatProcess, rest pid : 22788
+2020-04-23 18:51:52.715, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 18:51:52.988, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 18:51:52.989, debug, master.cpp:113,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 18:52:19.031, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 18:52:19, error, pid:22787 db.cpp:292,dbUpdate, update failed, systemInit:original.msgOutParams.port, Cannot create field 'port' in element {msgOutParams: [ { type: "mq", host: "192.168.0.10", port: 5672, userName: "guest", passWord: "guest", exchange: "aiotc.exchange.message", routingKey: "" } ]}
+
+2020-04-23 18:52:19, error, pid:22787 db.cpp:292,dbUpdate, update failed, systemInit:original.msgOutParams.host, Cannot create field 'host' in element {msgOutParams: [ { type: "mq", host: "192.168.0.10", port: 5672, userName: "guest", passWord: "guest", exchange: "aiotc.exchange.message", routingKey: "" } ]}
+
+2020-04-23 18:57:26.853, debug, main.cpp:180,main, Built: 18:57:19 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 18:57:26.857, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fcf38269000, total size : 1210056704
+2020-04-23 18:57:26.857, debug, main.cpp:158,creatProcess, master pid : 22823
+2020-04-23 18:57:26.857, debug, main.cpp:158,creatProcess, rest pid : 22824
+2020-04-23 18:57:26.858, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 18:57:26.859, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 18:57:26.860, debug, master.cpp:116,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 18:57:30.574, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 18:58:02.619, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 18:58:06.136, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 19:26:22.514, debug, main.cpp:180,main, Built: 19:25:58 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 19:26:22.518, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fcf88b94000, total size : 1210056704
+2020-04-23 19:26:22.518, debug, main.cpp:158,creatProcess, master pid : 22915
+2020-04-23 19:26:22.518, debug, main.cpp:158,creatProcess, rest pid : 22916
+2020-04-23 19:26:22.519, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 19:26:22.520, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 19:26:22.520, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 19:26:28.119, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 19:26:34.090, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 19:26:37.625, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 19:29:13.372, debug, main.cpp:180,main, Built: 19:29:06 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 19:29:13.376, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f7288224000, total size : 1210056704
+2020-04-23 19:29:13.376, debug, main.cpp:158,creatProcess, master pid : 22946
+2020-04-23 19:29:13.377, debug, main.cpp:158,creatProcess, rest pid : 22947
+2020-04-23 19:29:13.377, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 19:29:13.409, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 19:29:13.409, debug, master.cpp:107,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 19:29:19.060, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 19:29:23.204, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 19:29:26.223, debug, rest.cpp:84,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-23 19:42:50.463, debug, main.cpp:180,main, Built: 19:42:43 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 19:42:50.467, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fa2ab631000, total size : 1210056704
+2020-04-23 19:42:50.467, debug, main.cpp:158,creatProcess, master pid : 23089
+2020-04-23 19:42:50.467, debug, main.cpp:158,creatProcess, rest pid : 23090
+2020-04-23 19:42:50.468, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 19:42:50.469, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 19:42:50.469, debug, master.cpp:113,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 19:42:56.643, debug, rest.cpp:84,request_cb, {
+    "slaveIp":"192.168.0.100",
+    "restPort":11762,
+    "streamPort":11764,
+    "internetIp":"8.8.8.8"
+}
+2020-04-23 19:42:57.412, debug, rest.cpp:84,request_cb, {
+    "slaveIp":"192.168.0.100",
+    "restPort":11762,
+    "streamPort":11764,
+    "internetIp":"8.8.8.8"
+}
+2020-04-23 19:42:58.043, debug, rest.cpp:84,request_cb, {
+    "slaveIp":"192.168.0.100",
+    "restPort":11762,
+    "streamPort":11764,
+    "internetIp":"8.8.8.8"
+}
+2020-04-23 19:43:16.065, debug, rest.cpp:84,request_cb, {
+    "slaveIp":"192.168.0.101",
+    "restPort":11762,
+    "streamPort":11764,
+    "internetIp":"8.8.8.8"
+}
+2020-04-23 19:43:19.632, debug, rest.cpp:84,request_cb, {
+    "slaveIp":"192.168.0.102",
+    "restPort":11762,
+    "streamPort":11764,
+    "internetIp":"8.8.8.8"
+}
+2020-04-23 19:43:20.632, debug, rest.cpp:84,request_cb, {
+    "slaveIp":"192.168.0.102",
+    "restPort":11762,
+    "streamPort":11764,
+    "internetIp":"8.8.8.8"
+}
+2020-04-23 19:54:32.085, debug, main.cpp:180,main, Built: 19:54:27 Apr 23 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-23 19:54:32.088, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f428e267000, total size : 1210056704
+2020-04-23 19:54:32.089, debug, main.cpp:158,creatProcess, master pid : 23134
+2020-04-23 19:54:32.089, debug, main.cpp:158,creatProcess, rest pid : 23135
+2020-04-23 19:54:32.090, debug, rest.cpp:234,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-23 19:54:32.091, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-23 19:54:32.091, debug, master.cpp:126,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-23 19:54:43.354, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":1,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-23 19:54:47.417, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":2,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-23 19:54:51.086, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-23 19:54:51.922, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-23 19:54:52.259, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-23 19:54:52.616, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-23 19:54:52.986, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-23 19:54:53.304, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-23 19:54:55.013, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-23 19:54:55.460, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-23 19:54:55.965, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-23 19:54:56.430, debug, rest.cpp:84,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "preview":"hls",
+        "sn":"12345678"
+    }
+}
+2020-04-24 18:37:40.843, debug, main.cpp:199,main, Built: 18:37:35 Apr 24 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-24 18:37:41.829, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f0ccd458000, total size : 1210056704
+2020-04-24 18:37:41.830, debug, main.cpp:177,creatProcess, master pid : 25583
+2020-04-24 18:37:41.830, debug, main.cpp:177,creatProcess, rest pid : 25584
+2020-04-24 18:37:41.839, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-24 18:37:41.988, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-24 18:37:41.998, debug, master.cpp:185,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-24 18:38:15.115, debug, main.cpp:199,main, Built: 18:38:10 Apr 24 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-24 18:38:15.118, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f4de1964000, total size : 1210056704
+2020-04-24 18:38:15.118, debug, main.cpp:177,creatProcess, master pid : 25617
+2020-04-24 18:38:15.118, debug, main.cpp:177,creatProcess, rest pid : 25618
+2020-04-24 18:38:15.119, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-24 18:38:15.166, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-24 18:38:15.166, debug, master.cpp:185,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-24 18:38:34.539, debug, rest.cpp:85,request_cb, {
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-04-26 11:35:07.924, debug, main.cpp:199,main, Built: 11:32:59 Apr 26 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-26 11:35:07.970, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f399db96000, total size : 1210056704
+2020-04-26 11:35:07.971, debug, main.cpp:177,creatProcess, master pid : 3847
+2020-04-26 11:35:07.971, debug, main.cpp:177,creatProcess, rest pid : 3848
+2020-04-26 11:35:07.972, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-26 11:35:07.991, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-26 11:35:07.992, debug, master.cpp:185,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-26 11:41:11.956, debug, main.cpp:199,main, Built: 11:32:59 Apr 26 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-26 11:41:11.960, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f9193d60000, total size : 1210056704
+2020-04-26 11:41:11.960, debug, main.cpp:177,creatProcess, master pid : 3910
+2020-04-26 11:41:11.961, debug, main.cpp:177,creatProcess, rest pid : 3911
+2020-04-26 11:41:11.961, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-26 11:41:11.963, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-26 11:41:11.963, debug, master.cpp:185,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-26 11:41:59.732, debug, rest.cpp:85,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"rtsp",
+        "tcpEnable":0,
+        "url":"rtsp://10.10.1.230:8554/daxinggong.264"
+    }
+}
+2020-04-26 11:42:17.048, debug, rest.cpp:85,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"rtsp",
+        "tcpEnable":0,
+        "url":"rtsp://10.10.1.230:8554/daxinggong.264"
+    }
+}
+2020-04-26 11:42:17.733, debug, rest.cpp:85,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":3,
+    "data":{
+        "subType":"rtsp",
+        "tcpEnable":0,
+        "url":"rtsp://10.10.1.230:8554/daxinggong.264"
+    }
+}
+2020-04-26 12:40:44.456, debug, main.cpp:199,main, Built: 11:59:38 Apr 26 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-26 12:40:44.462, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f6472feb000, total size : 1210056704
+2020-04-26 12:40:44.462, debug, main.cpp:177,creatProcess, master pid : 4142
+2020-04-26 12:40:44.463, debug, main.cpp:177,creatProcess, rest pid : 4143
+2020-04-26 12:40:44.463, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-26 12:40:44.465, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-26 12:40:44.465, debug, master.cpp:189,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-26 12:41:05.625, debug, rest.cpp:85,request_cb, {
+    "name":"test",
+    "type":"camera",
+    "id":99,
+    "data":{
+        "subType":"tcp",
+        "source": "streamSdk",
+        "sn":"12345678"
+    }
+}
+2020-04-26 14:38:28.201, debug, main.cpp:199,main, Built: 14:38:11 Apr 26 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-26 14:38:28.220, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7ff54ea57000, total size : 1210056704
+2020-04-26 14:38:28.220, debug, main.cpp:177,creatProcess, master pid : 4488
+2020-04-26 14:38:28.220, debug, main.cpp:177,creatProcess, rest pid : 4489
+2020-04-26 14:38:28.221, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-26 14:38:28.222, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-26 14:38:28.222, debug, master.cpp:189,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-26 14:38:40.966, debug, rest.cpp:85,request_cb, {
+    "id":99
+}
+2020-04-26 14:38:40.966, debug, master.cpp:108,master_request_stream_start, ##test, {
+    "id":99
+}
+2020-04-26 14:46:59.354, debug, main.cpp:199,main, Built: 14:46:53 Apr 26 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-26 14:46:59.358, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f4ba8230000, total size : 1210056704
+2020-04-26 14:46:59.358, debug, main.cpp:177,creatProcess, master pid : 4559
+2020-04-26 14:46:59.358, debug, main.cpp:177,creatProcess, rest pid : 4560
+2020-04-26 14:46:59.359, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-26 14:46:59.361, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-26 14:46:59.361, debug, master.cpp:195,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-26 14:47:17.641, debug, rest.cpp:85,request_cb, {
+    "id":99
+}
+2020-04-26 14:47:42.350, debug, rest.cpp:85,request_cb, {
+    "id":999
+}
+2020-04-26 14:50:22.993, debug, main.cpp:199,main, Built: 14:50:15 Apr 26 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-26 14:50:22.997, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fbc6d047000, total size : 1210056704
+2020-04-26 14:50:22.997, debug, main.cpp:177,creatProcess, master pid : 4612
+2020-04-26 14:50:22.998, debug, main.cpp:177,creatProcess, rest pid : 4613
+2020-04-26 14:50:22.998, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-26 14:50:23.000, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-26 14:50:23.000, debug, master.cpp:195,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-26 14:50:29.962, debug, rest.cpp:85,request_cb, {
+    "id":9999
+}
+2020-04-26 14:50:41.629, debug, rest.cpp:85,request_cb, {
+    "id":9999
+}
+2020-04-26 14:50:42.231, debug, rest.cpp:85,request_cb, {
+    "id":9999
+}
+2020-04-26 14:52:00.334, debug, main.cpp:199,main, Built: 14:50:15 Apr 26 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-26 14:52:00.338, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f0ee8a6d000, total size : 1210056704
+2020-04-26 14:52:00.338, debug, main.cpp:177,creatProcess, master pid : 4621
+2020-04-26 14:52:00.338, debug, main.cpp:177,creatProcess, rest pid : 4622
+2020-04-26 14:52:00.339, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-26 14:52:00.340, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-26 14:52:00.340, debug, master.cpp:195,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-26 15:24:29.261, debug, main.cpp:199,main, Built: 15:24:24 Apr 26 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-26 15:24:29.265, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fe76f5be000, total size : 1210056704
+2020-04-26 15:24:29.265, debug, main.cpp:177,creatProcess, master pid : 4857
+2020-04-26 15:24:29.265, debug, main.cpp:177,creatProcess, rest pid : 4858
+2020-04-26 15:24:29.265, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-26 15:24:29.267, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-26 15:24:29.267, debug, master.cpp:225,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-26 15:24:55.265, debug, rest.cpp:85,request_cb, {
+    "id":99
+}
+2020-04-26 15:25:03.994, debug, rest.cpp:85,request_cb, {
+    "id":99
+}
+2020-04-26 15:25:11.537, debug, rest.cpp:85,request_cb, {
+    "id":99
+}
+2020-04-26 15:25:55.772, debug, rest.cpp:85,request_cb, {
+    "id":99
+}
+2020-04-26 15:28:50.684, debug, main.cpp:199,main, Built: 15:28:44 Apr 26 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-26 15:28:50.688, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fecf84e2000, total size : 1210056704
+2020-04-26 15:28:50.688, debug, main.cpp:177,creatProcess, master pid : 4928
+2020-04-26 15:28:50.688, debug, main.cpp:177,creatProcess, rest pid : 4929
+2020-04-26 15:28:50.689, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-26 15:28:50.690, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-26 15:28:50.690, debug, master.cpp:225,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-26 15:28:57.708, debug, rest.cpp:85,request_cb, /obj/preview/stop:{
+    "id":99
+}
+2020-04-26 15:29:36.162, debug, rest.cpp:85,request_cb, /obj/record/stop:{
+    "id":99
+}
+2020-04-26 15:29:43.075, debug, rest.cpp:85,request_cb, /obj/capture/stop:{
+    "id":99
+}
+2020-04-26 15:29:49.982, debug, rest.cpp:85,request_cb, /obj/stream/stop:{
+    "id":99
+}
+2020-04-27 14:23:11.455, debug, main.cpp:199,main, Built: 16:05:06 Apr 26 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-27 14:23:11.518, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fd7ff47b000, total size : 1210056704
+2020-04-27 14:23:11.518, debug, main.cpp:177,creatProcess, master pid : 1576
+2020-04-27 14:23:11.518, debug, main.cpp:177,creatProcess, rest pid : 1577
+2020-04-27 14:23:11.519, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-27 14:23:11.523, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-27 14:23:11.524, debug, master.cpp:225,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-27 14:24:01.048, debug, main.cpp:199,main, Built: 16:05:06 Apr 26 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-27 14:24:01.051, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f4a1bfb5000, total size : 1210056704
+2020-04-27 14:24:01.051, debug, main.cpp:177,creatProcess, master pid : 1582
+2020-04-27 14:24:01.052, debug, main.cpp:177,creatProcess, rest pid : 1583
+2020-04-27 14:24:01.052, debug, rest.cpp:252,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-27 14:24:01.054, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-27 14:24:01.054, debug, master.cpp:225,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-27 14:30:52.203, debug, main.cpp:199,main, Built: 14:30:43 Apr 27 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-27 14:30:52.206, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f986a64c000, total size : 1210056704
+2020-04-27 14:30:52.207, debug, main.cpp:177,creatProcess, master pid : 1622
+2020-04-27 14:30:52.207, debug, main.cpp:177,creatProcess, rest pid : 1623
+2020-04-27 14:30:52.207, debug, rest.cpp:253,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-27 14:30:52.209, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-27 14:30:52.210, debug, master.cpp:225,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-27 14:30:56.033, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 14:30:56.033, debug, rest.cpp:86,request_cb, /system/login:{
+    "userName":"admin",
+    "passWord":"xxxxxxxx"
+}
+2020-04-27 15:17:52.422, debug, main.cpp:199,main, Built: 14:30:43 Apr 27 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-27 15:17:52.426, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f945bd19000, total size : 1210056704
+2020-04-27 15:17:52.426, debug, main.cpp:177,creatProcess, master pid : 1743
+2020-04-27 15:17:52.426, debug, main.cpp:177,creatProcess, rest pid : 1744
+2020-04-27 15:17:52.427, debug, rest.cpp:253,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-27 15:17:52.428, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-27 15:17:52.428, debug, master.cpp:225,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-27 15:32:41.348, debug, main.cpp:199,main, Built: 15:32:36 Apr 27 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-27 15:32:41.351, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f7474e5b000, total size : 1210056704
+2020-04-27 15:32:41.352, debug, main.cpp:177,creatProcess, master pid : 1905
+2020-04-27 15:32:41.352, debug, main.cpp:177,creatProcess, rest pid : 1906
+2020-04-27 15:32:41.352, debug, rest.cpp:260,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-27 15:32:41.354, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-27 15:32:41.354, debug, master.cpp:225,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-27 15:35:22.582, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:35:22.582, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:36:08.399, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:36:08.399, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:36:09.791, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:36:09.791, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:36:11.173, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:36:11.173, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:36:35.639, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:36:35.639, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:21.260, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:21.260, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:22.090, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:22.090, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:22.450, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:22.450, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:22.692, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:22.692, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:22.924, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:22.924, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:23.090, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:23.090, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:23.268, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:23.268, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:23.440, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:23.440, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:23.635, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:23.635, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:23.822, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:23.822, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:24.017, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:24.017, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:24.184, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:24.184, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:24.393, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:24.393, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:24.706, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:24.706, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:25.184, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:25.184, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:28.580, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:28.580, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:28.830, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:28.830, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:29.025, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:29.025, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:29.203, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:29.203, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:29.377, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:29.377, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:29.547, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:29.547, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:29.719, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:29.719, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:29.899, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:29.899, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:30.063, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:30.064, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:30.243, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:30.243, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:32.149, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:32.149, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:32.380, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:32.380, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:32.585, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:32.586, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:32.773, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:32.773, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:32.978, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:32.978, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:33.141, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:33.141, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:37:35.828, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:35.828, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:38.986, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:38.986, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:37:39.171, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:37:39.171, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":-1,"tokenType":"default"}
+2020-04-27 15:42:05.513, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:42:05.513, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:51:19.058, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:51:19.060, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 15:52:02.352, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 15:52:02.352, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:06:29.503, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:06:29.503, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:06:31.373, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:06:31.373, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:06:31.538, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:06:31.538, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:06:31.678, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:06:31.678, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:06:31.842, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:06:31.842, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:08:17.041, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:08:17.041, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:08:17.825, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:08:17.825, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:08:17.972, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:08:17.972, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:08:18.152, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:08:18.153, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:10:27.735, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:10:27.735, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:10:28.375, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:10:28.375, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:10:28.570, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:10:28.570, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:10:28.728, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:10:28.728, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:10:28.884, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:10:28.884, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:10:35.510, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:10:35.510, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-27 16:15:25.784, debug, rest.cpp:50,request_cb, ##test
+2020-04-27 16:15:25.784, debug, rest.cpp:86,request_cb, /system/login/authorize/login:{"username":"admin","password":"admin","expires":3600000,"tokenType":"default"}
+2020-04-28 19:46:04.780, debug, main.cpp:199,main, Built: 15:32:36 Apr 27 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-28 19:46:04.784, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fd4ca3a0000, total size : 1210056704
+2020-04-28 19:46:04.784, debug, main.cpp:177,creatProcess, master pid : 4809
+2020-04-28 19:46:04.784, debug, main.cpp:177,creatProcess, rest pid : 4810
+2020-04-28 19:46:04.785, debug, rest.cpp:260,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-28 19:46:04.786, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-28 19:46:04.786, debug, master.cpp:225,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-28 19:50:02.227, debug, rest.cpp:50,request_cb, ##test
+2020-04-28 19:50:02.227, debug, rest.cpp:86,request_cb, /system/loginadsfa:{
+    "userName":"admin",
+    "passWord":"xxxxxxxx"
+}
+2020-04-28 19:50:08.867, debug, rest.cpp:50,request_cb, ##test
+2020-04-28 19:50:08.867, debug, rest.cpp:86,request_cb, /system/login:{
+    "userName":"admin",
+    "passWord":"xxxxxxxx"
+}
+2020-04-29 10:43:49.730, debug, main.cpp:199,main, Built: 15:32:36 Apr 27 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-29 10:43:49.943, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f9a560b6000, total size : 1210056704
+2020-04-29 10:43:49.943, debug, main.cpp:177,creatProcess, master pid : 16076
+2020-04-29 10:43:49.944, debug, main.cpp:177,creatProcess, rest pid : 16077
+2020-04-29 10:43:49.961, debug, rest.cpp:260,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-29 10:43:49.984, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-29 10:43:49.984, debug, master.cpp:225,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-29 10:44:16.605, debug, rest.cpp:50,request_cb, ##test
+2020-04-29 10:44:16.605, debug, rest.cpp:86,request_cb, /login:{"username":"admin","password":"123456"}
+2020-04-29 10:47:01.382, debug, main.cpp:199,main, Built: 10:46:41 Apr 29 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-29 10:47:01.384, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f8e12406000, total size : 1210056704
+2020-04-29 10:47:01.385, debug, main.cpp:177,creatProcess, master pid : 16115
+2020-04-29 10:47:01.385, debug, main.cpp:177,creatProcess, rest pid : 16116
+2020-04-29 10:47:01.385, debug, rest.cpp:260,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-29 10:47:01.423, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-29 10:47:01.424, debug, master.cpp:228,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-29 10:47:04, warring, pid:16115 rest.cpp:178,request_gencb, ##test
+2020-04-29 10:47:04.812, debug, rest.cpp:85,request_cb, /login:{"username":"admin","password":"123456"}
+2020-04-29 10:48:00.935, debug, main.cpp:199,main, Built: 10:47:55 Apr 29 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-29 10:48:00.938, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7efc52ce7000, total size : 1210056704
+2020-04-29 10:48:00.939, debug, main.cpp:177,creatProcess, master pid : 16150
+2020-04-29 10:48:00.939, debug, main.cpp:177,creatProcess, rest pid : 16151
+2020-04-29 10:48:00.955, debug, rest.cpp:262,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-29 10:48:00.963, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-29 10:48:00.963, debug, master.cpp:228,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-29 10:51:56.352, debug, rest.cpp:85,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 10:51:56.352, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:02:20.293, debug, main.cpp:199,main, Built: 11:02:13 Apr 29 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-29 11:02:20.297, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f569ebc7000, total size : 1210056704
+2020-04-29 11:02:20.298, debug, main.cpp:177,creatProcess, master pid : 16202
+2020-04-29 11:02:20.298, debug, main.cpp:177,creatProcess, rest pid : 16203
+2020-04-29 11:02:20.298, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-29 11:02:20.300, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-29 11:02:20.300, debug, master.cpp:228,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-29 11:02:35.159, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:02:35.159, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:03:12.007, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:03:12.007, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:08:57.813, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:08:57.813, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:09:08.046, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:09:08.046, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:09:55.271, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:09:55.271, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:12:22.015, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:12:22.015, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:13:53.124, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:13:53.124, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:14:28.572, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:14:28.572, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:16:16.617, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:16:16.617, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:16:27.959, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:16:27.959, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:17:43.487, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:17:43.503, debug, master.cpp:31,master_request_login, ##test, buf:{"username":"admin","password":"123456"}
+2020-04-29 11:46:10.845, debug, main.cpp:199,main, Built: 11:45:55 Apr 29 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-29 11:46:10.849, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f0bd2593000, total size : 1210056704
+2020-04-29 11:46:10.850, debug, main.cpp:177,creatProcess, master pid : 16362
+2020-04-29 11:46:10.850, debug, main.cpp:177,creatProcess, rest pid : 16363
+2020-04-29 11:46:10.850, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-29 11:46:10.894, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-29 11:46:10.894, debug, master.cpp:248,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-29 11:46:29.013, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:47:33.188, debug, main.cpp:199,main, Built: 11:47:28 Apr 29 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-29 11:47:33.191, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fba54f1d000, total size : 1210056704
+2020-04-29 11:47:33.192, debug, main.cpp:177,creatProcess, master pid : 16395
+2020-04-29 11:47:33.192, debug, main.cpp:177,creatProcess, rest pid : 16396
+2020-04-29 11:47:33.192, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-29 11:47:33.194, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-29 11:47:33.194, debug, master.cpp:248,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-29 11:47:39.091, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:48:17.589, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"1111111111"}
+2020-04-29 11:48:34.112, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:48:45.191, debug, main.cpp:199,main, Built: 11:47:28 Apr 29 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-29 11:48:45.194, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f0105c40000, total size : 1210056704
+2020-04-29 11:48:45.195, debug, main.cpp:177,creatProcess, master pid : 16400
+2020-04-29 11:48:45.195, debug, main.cpp:177,creatProcess, rest pid : 16401
+2020-04-29 11:48:45.195, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-29 11:48:45.196, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-29 11:48:45.197, debug, master.cpp:248,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-04-29 11:56:47.107, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456a"}
+2020-04-29 11:56:51.461, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:57:49.420, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 11:57:55.298, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456a"}
+2020-04-29 11:57:57.734, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 12:00:19.991, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 13:49:17.980, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 13:50:01.180, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 13:50:10.596, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 13:51:41.343, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 13:51:45.410, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 14:23:26.180, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 14:23:27.847, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 14:23:29.202, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 14:23:34.570, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 14:23:55.226, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 14:24:00.553, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 14:28:03.660, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 14:28:18.383, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 14:33:00.995, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 14:33:24.633, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 14:36:06.428, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 14:38:59.869, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 14:40:45.982, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 14:41:13.390, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 14:42:38.053, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 14:42:45.543, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 14:50:35.611, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 14:50:41.504, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 14:53:06.381, debug, rest.cpp:86,request_cb, /system/logout:test
+2020-04-29 14:57:27.625, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456aa"}
+2020-04-29 14:58:16.622, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 15:08:40.561, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 15:13:10.750, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 15:13:17.933, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 15:32:11.063, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 15:56:55.395, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 16:23:41.841, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 16:33:42.503, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 17:15:04.489, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 17:15:41.678, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 17:53:35.291, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 17:59:31.701, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 17:59:36.860, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin啊","password":"123456"}
+2020-04-29 17:59:42.377, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-29 17:59:57.136, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-30 10:35:54.912, debug, rest.cpp:86,request_cb, /system/login:{"username":"admin","password":"123456"}
+2020-04-30 14:12:22.719, debug, main.cpp:199,main, Built: 11:47:28 Apr 29 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-04-30 14:12:22.864, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7ff82e943000, total size : 1210056704
+2020-04-30 14:12:22.864, debug, main.cpp:177,creatProcess, master pid : 17157
+2020-04-30 14:12:22.865, debug, main.cpp:177,creatProcess, rest pid : 17158
+2020-04-30 14:12:22.865, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-04-30 14:12:22.912, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-04-30 14:12:22.912, debug, master.cpp:248,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-05-06 10:51:22.983, debug, main.cpp:199,main, Built: 11:47:28 Apr 29 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-05-06 10:51:23.029, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f09423bc000, total size : 1210056704
+2020-05-06 10:51:23.030, debug, main.cpp:177,creatProcess, master pid : 1542
+2020-05-06 10:51:23.030, debug, main.cpp:177,creatProcess, rest pid : 1543
+2020-05-06 10:51:23.030, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-05-06 10:51:23.035, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-05-06 10:51:23.035, debug, master.cpp:248,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-05-06 11:26:22.595, debug, main.cpp:199,main, Built: 11:25:09 May  6 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-05-06 11:26:22.601, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7fd3c16f1000, total size : 1210056704
+2020-05-06 11:26:22.601, debug, main.cpp:177,creatProcess, master pid : 1871
+2020-05-06 11:26:22.602, debug, main.cpp:177,creatProcess, rest pid : 1872
+2020-05-06 11:26:22.602, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-05-06 11:26:22.604, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-05-06 11:26:22.604, debug, master.cpp:248,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-05-06 11:26:29.546, debug, rest.cpp:86,request_cb, /system/login:{
+    "userName":"admin",
+    "passWord":"xxxxxxxx"
+}
+2020-05-06 11:28:20.771, debug, main.cpp:199,main, Built: 11:27:57 May  6 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-05-06 11:28:20.774, debug, shm.cpp:64,shmInit, shm key : 11760000, shmAddr : 0x7f49bfc7f000, total size : 1210056704
+2020-05-06 11:28:20.774, debug, main.cpp:177,creatProcess, master pid : 1906
+2020-05-06 11:28:20.775, debug, main.cpp:177,creatProcess, rest pid : 1907
+2020-05-06 11:28:20.775, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-05-06 11:28:20.777, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-05-06 11:28:20.777, debug, master.cpp:248,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-05-06 11:28:40.869, debug, rest.cpp:86,request_cb, /system/login:{
+    "userName":"admin",
+    "passWord":"123456"
+}
+2020-05-06 11:28:47.555, debug, rest.cpp:86,request_cb, /system/init:{
+    "masterIp":"192.168.0.100",
+    "msgOutParams":[
+        {
+            "type":"mq",
+            "host":"192.168.0.10",
+            "port":5672,
+            "userName":"guest",
+            "passWord":"guest",
+            "exchange":"aiotc.exchange.message",
+            "routingKey":""
+        }
+    ],
+    "gb28181Params":{
+        "localHostIp":"192.168.0.99",
+        "localSipId":"34010000002000000001",
+        "localPort":5060
+    },
+    "gat1400Params":{
+        "localGatHostIp":"34010000002000000001",
+        "localGatServerId":"32020200002000000002",
+        "localGatPort":7100
+    }
+}
+2020-05-06 11:28:52.768, debug, rest.cpp:86,request_cb, /system/slave/add:{
+    "slaveIp":"192.168.0.100",
+    "restPort":11762,
+    "streamPort":11764,
+    "internetIp":"8.8.8.8"
+}
+2020-05-06 11:29:05.471, debug, rest.cpp:86,request_cb, /obj/add/ehome:{
+    "name":"test",
+    "type":"camera",
+    "id":1,
+    "data":{
+        "subType":"ehome",
+        "deviceId":"12345678"
+    }
+}
+2020-05-06 11:29:35.405, debug, rest.cpp:86,request_cb, /obj/add/rtsp:{
+    "name":"test",
+    "type":"camera",
+    "id":2,
+    "data":{
+        "subType":"rtsp",
+        "tcpEnable":0,
+        "url":"rtsp://10.10.1.230:8554/daxinggong.264"
+    }
+}
+2020-05-06 11:29:44.308, debug, rest.cpp:86,request_cb, /obj/stream/start:{
+    "id":2
+}
+2020-05-06 11:29:52.845, debug, rest.cpp:86,request_cb, /obj/preview/start:{
+    "id":2,
+    "type": "hls"
+}
+2020-05-06 16:25:22.190, debug, main.cpp:201,main, Built: 16:25:00 May  6 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-05-06 16:25:22.194, debug, shm.cpp:68,shmInit, shm key : 11760000, shmAddr : 0x7fb4ab9eb000, total size : 1200619520
+2020-05-06 16:25:22.194, debug, main.cpp:177,creatProcess, master pid : 2514
+2020-05-06 16:25:22.194, debug, main.cpp:177,creatProcess, rest pid : 2515
+2020-05-06 16:25:22.195, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-05-06 16:25:22.196, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-05-06 16:25:22.196, debug, master.cpp:265,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-05-06 16:25:34.519, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"FaceCapture"
+}
+2020-05-06 16:25:41.888, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"VehCapture"
+}
+2020-05-06 16:25:42.530, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"VehCapture"
+}
+2020-05-06 16:25:43.101, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"VehCapture"
+}
+2020-05-06 16:35:27.398, debug, main.cpp:201,main, Built: 16:35:22 May  6 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-05-06 16:35:27.402, debug, shm.cpp:68,shmInit, shm key : 11760000, shmAddr : 0x7f3af519d000, total size : 1200619520
+2020-05-06 16:35:27.402, debug, main.cpp:177,creatProcess, master pid : 2561
+2020-05-06 16:35:27.402, debug, main.cpp:177,creatProcess, rest pid : 2562
+2020-05-06 16:35:27.403, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-05-06 16:35:27.404, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-05-06 16:35:27.405, debug, master.cpp:281,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-05-06 16:35:42.168, debug, rest.cpp:86,request_cb, /task/stop:{
+    "id":2,
+    "alg":"VehCapture"
+}
+2020-05-06 16:35:55.937, debug, rest.cpp:86,request_cb, /task/stop:{
+    "id":2,
+    "alg":"VehCapture"
+}
+2020-05-06 16:36:30.099, debug, rest.cpp:86,request_cb, /task/stop:{
+    "id":2,
+    "alg":"FaceCapture"
+}
+2020-05-06 16:37:04.992, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"FaceCapture"
+}
+2020-05-06 17:06:00.499, debug, main.cpp:201,main, Built: 17:05:23 May  6 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-05-06 17:06:00.502, debug, shm.cpp:68,shmInit, shm key : 11760000, shmAddr : 0x7fa019db4000, total size : 1200619520
+2020-05-06 17:06:00.503, debug, main.cpp:177,creatProcess, master pid : 2651
+2020-05-06 17:06:00.503, debug, main.cpp:177,creatProcess, rest pid : 2652
+2020-05-06 17:06:00.503, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-05-06 17:06:00.505, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-05-06 17:06:00.505, debug, master.cpp:284,master_restapi_thread, 10.10.1.157:11706 starting ...
+2020-05-06 17:06:18.263, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"FaceCapture"
+}
+2020-05-06 17:06:18, warring, pid:2651 master.cpp:219,master_request_task_start, obj:2 alg:FaceCapture already exsit
+2020-05-06 17:06:21.821, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"FaceCapture"
+}
+2020-05-06 17:06:21, warring, pid:2651 master.cpp:219,master_request_task_start, obj:2 alg:FaceCapture already exsit
+2020-05-06 17:06:34.251, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"VehCapture"
+}
+2020-05-06 17:06:35.030, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"VehCapture"
+}
+2020-05-06 17:06:35, warring, pid:2651 master.cpp:219,master_request_task_start, obj:2 alg:VehCapture already exsit
+2020-05-06 17:06:35.948, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"VehCapture"
+}
+2020-05-06 17:06:35, warring, pid:2651 master.cpp:219,master_request_task_start, obj:2 alg:VehCapture already exsit
+2020-05-06 17:06:41.079, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"FaceCapture"
+}
+2020-05-06 17:06:41, warring, pid:2651 master.cpp:219,master_request_task_start, obj:2 alg:FaceCapture already exsit
+2020-05-06 17:06:42.133, debug, rest.cpp:86,request_cb, /task/start:{
+    "id":2,
+    "alg":"FaceCapture"
+}
+2020-05-06 17:06:42, warring, pid:2651 master.cpp:219,master_request_task_start, obj:2 alg:FaceCapture already exsit
+2020-05-07 17:13:31.622, debug, main.cpp:209,main, Built: 17:13:26 May  7 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-05-07 17:13:31.793, debug, shm.cpp:68,shmInit, shm key : 11760000, shmAddr : 0x7f653e281000, total size : 1200619520
+2020-05-07 17:13:57.081, debug, main.cpp:209,main, Built: 17:13:26 May  7 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-05-07 17:13:57.083, debug, shm.cpp:68,shmInit, shm key : 11760000, shmAddr : 0x7fffae790000, total size : 1200619520
+2020-05-07 17:17:16.539, debug, main.cpp:212,main, Built: 17:17:10 May  7 2020, version:V0.01.202004010001, aiotcProc starting ...
+2020-05-07 17:17:16.542, debug, shm.cpp:68,shmInit, shm key : 11760000, shmAddr : 0x7f4f35c5d000, total size : 1200619520
+2020-05-07 17:17:16.543, debug, main.cpp:188,creatProcess, master pid : 19075
+2020-05-07 17:17:16.543, debug, main.cpp:188,creatProcess, rest pid : 19076
+2020-05-07 17:17:16.543, debug, rest.cpp:264,rest_api_thread, 10.10.1.157:15515 starting ...
+2020-05-07 17:17:16.815, debug, db.cpp:133,dbOpen, open mongodb://10.10.1.230:27017 success
+2020-05-07 17:17:16.815, debug, master.cpp:416,master_restapi_thread, 10.10.1.157:11706 starting ...

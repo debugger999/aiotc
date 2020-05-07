@@ -1,6 +1,6 @@
 {
     "master": {
-        "enable" : 1,
+        "enable" : 2,
         "restPort" : 11706,
         "streaminPort" : 11707,
         "streaminProcNum" : 3

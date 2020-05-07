@@ -9,6 +9,8 @@ CFLAGS += -fPIC
 
 CFLAGS += -I../inc -I../../../inc
 CFLAGS += -I../../cjson/inc
+CFLAGS += -I../../slab/inc
+CFLAGS += -I../../mongodb/inc
 
 LDFLAGS =
 LDFLAGS += -llzma -ldl -lz -lm -lpthread -lrt

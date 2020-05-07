@@ -14,7 +14,8 @@ SRC = main.cpp
 SRC += master.cpp
 SRC += platform.cpp
 SRC += work.cpp
-SRC += rest.cpp db.cpp misc.cpp shm.cpp pids.cpp
+SRC += rest.cpp db.cpp 
+SRC += misc.cpp shm.cpp pids.cpp
 SRC += stream/stream.cpp
 SRC += rtsp/rtsp.cpp
 
@@ -23,6 +24,7 @@ LDFLAGS += -L../work/cjson/lib
 LDFLAGS += -L../work/slab/lib
 LDFLAGS += -L../work/libevent/lib
 LDFLAGS += -L../work/mongodb/lib
+LDFLAGS += -L../work/lib
 LDFLAGS += -lshare -lcjson -lslab
 LDFLAGS += -lmongoc -lbson
 LDFLAGS += -levent_pthreads -levent

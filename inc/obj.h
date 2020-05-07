@@ -22,8 +22,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "share.h"
 
 typedef struct {
+    int id;
+    char name[32];
+    char type[16];
+    char subtype[16];
+    void *task; // taskParams
+    void *slave;
+    char *originaldata;
+    void *arg; // aiotcParams
+} objParam;
+
+typedef struct {
+    sem_t mutex_obj;
+    queue_common objQueue;
     void *arg; // aiotcParams
 } objParams;
 

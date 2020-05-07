@@ -28,7 +28,7 @@
 #define DB_NAME "aiotc"
 
 typedef struct {
-    int masterEnable;
+    int masterEnable; // 1:master, 0:slave, 2:master&slave
     int masterRestPort;
     int masterStreaminPort;
     int masterStreaminProcNum;
@@ -77,9 +77,12 @@ int dbInit(aiotcParams *pAiotcParams);
 int dbOpen(void *dbArgs);
 int dbWrite(void *dbArgs, const char *table, const char *name, char *json, 
         const char *selectName, const void *selIntVal, const void *selStrVal);
-int dbUpdate(void *dbArgs, const char *table, 
+int dbUpdate(void *dbArgs, const char *table, bool upsert, const char *cmd,
         const char *selectName, const void *selIntVal, const void *selStrVal, 
         const char *updateName, const void *updIntVal, const void *updStrVal);
+int dbUpdateIntById(char *buf, void *dbArgs, const char *name, int val);
+int dbExsit(void *dbArgs, const char *table, 
+        const char *selectName, const void *selIntVal, const void *selStrVal);
 int dbDel(void *dbArgs, const char *table, 
         const char *selectName, const void *selIntVal, const void *selStrVal);
 int dbClose(void *dbArgs);

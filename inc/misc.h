@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "share.h"
 
 typedef int (*CommonObjFunc)(void *buf, void *arg);
 typedef int (*COMMONCALLBACK)(void *argA, void *argB, void *argC);
@@ -37,5 +38,6 @@ typedef struct {
 } CommonParams;
 
 int dirCheck(const char *dir);
+int conditionByObjId(node_common *p, void *arg);
 
 #endif

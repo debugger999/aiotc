@@ -1848,20 +1848,13 @@
             "optional": false,
             "field": "msg",
             "description": "<p>信息</p>"
-          },
-          {
-            "group": "200",
-            "type": "int",
-            "optional": false,
-            "field": "taskId",
-            "description": "<p>任务ID</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "返回样例:",
-          "content": "{\"code\":0,\"msg\":\"success\",\"data\":{\"taskId\":99}}",
+          "content": "{\"code\":0,\"msg\":\"success\",\"data\":{}}",
           "type": "json"
         }
       ]
@@ -1884,15 +1877,22 @@
             "group": "Parameter",
             "type": "int",
             "optional": false,
-            "field": "taskId",
-            "description": "<p>任务ID</p>"
+            "field": "id",
+            "description": "<p>设备ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "alg",
+            "description": "<p>算法名称</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"taskId\":99,\n}",
+          "content": "{\n    \"id\":999,\n    \"alg\":\"FaceCapture\"\n}",
           "type": "json"
         }
       ]

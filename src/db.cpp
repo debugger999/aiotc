@@ -272,7 +272,55 @@ end:
     return 0;
 }
 
-int dbUpdate(void *dbArgs, const char *table, 
+int dbExsit(void *dbArgs, const char *table, 
+        const char *selectName, const void *selIntVal, const void *selStrVal) {
+    char *str;
+    int exsit = 0;
+    const bson_t *doc;
+    bson_t *selector = NULL;
+    mongoc_cursor_t *cursor = NULL;
+    mongoc_collection_t *collection = NULL;
+    dbParams *pDBParams = (dbParams *)dbArgs;
+
+    collection = mongoc_client_get_collection(pDBParams->client, DB_NAME, table);
+    if(collection == NULL) {
+        app_err("get collection failed, %s", table);
+        goto end;
+    }
+
+    if(selIntVal != NULL) {
+        selector = BCON_NEW(selectName, "{", "$eq", BCON_INT32(*(int *)selIntVal), "}");
+    }
+    else if(selStrVal != NULL) {
+        selector = BCON_NEW(selectName, "{", "$eq", BCON_UTF8((char *)selStrVal), "}");
+    }
+    else {
+        selector = bson_new();
+        bson_init(selector);
+    }
+    cursor = mongoc_collection_find_with_opts(collection, selector, NULL, NULL);
+    if(mongoc_cursor_next(cursor, &doc)) {
+        str = bson_as_json (doc, NULL);
+        //printf ("%s\n", str);
+        bson_free (str);
+        exsit = 1;
+    }
+
+end:
+    if(selector != NULL) {
+        bson_destroy(selector);
+    }
+    if(cursor != NULL) {
+        mongoc_cursor_destroy(cursor);
+    }
+    if(collection != NULL) {
+        mongoc_collection_destroy(collection);
+    }
+
+    return exsit;
+}
+
+int dbUpdate(void *dbArgs, const char *table, bool upsert, const char *cmd,
         const char *selectName, const void *selIntVal, const void *selStrVal, 
         const char *updateName, const void *updIntVal, const void *updStrVal) {
     bson_error_t error;
@@ -286,7 +334,7 @@ int dbUpdate(void *dbArgs, const char *table,
         goto end;
     }
 
-    opts = BCON_NEW ("upsert", BCON_BOOL (true));
+    opts = BCON_NEW ("upsert", BCON_BOOL(upsert));
     if(selIntVal != NULL) {
         selector = BCON_NEW(selectName, "{", "$eq", BCON_INT32(*(int *)selIntVal), "}");
     }
@@ -299,10 +347,10 @@ int dbUpdate(void *dbArgs, const char *table,
     }
 
     if(updIntVal != NULL) {
-        update = BCON_NEW("$set", "{", updateName, BCON_INT32(*(int *)updIntVal), "}");
+        update = BCON_NEW(cmd, "{", updateName, BCON_INT32(*(int *)updIntVal), "}");
     }
     else if(updStrVal != NULL) {
-        update = BCON_NEW("$set", "{", updateName, BCON_UTF8((char *)updStrVal), "}");
+        update = BCON_NEW(cmd, "{", updateName, BCON_UTF8((char *)updStrVal), "}");
     }
     else {
         app_warring("update val is null");
@@ -327,6 +375,16 @@ end:
     if(collection != NULL) {
         mongoc_collection_destroy(collection);
     }
+    return 0;
+}
+
+int dbUpdateIntById(char *buf, void *dbArgs, const char *name, int val) {
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+    if(id < 0) {
+        return -1;
+    }
+    dbUpdate(dbArgs, "obj", 0, "$set", "original.id", &id, NULL, name, &val, NULL);
+
     return 0;
 }
 

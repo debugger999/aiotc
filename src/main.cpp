@@ -22,6 +22,7 @@
 #include "shm.h"
 #include "master.h"
 #include "rest.h"
+#include "obj.h"
 #include "pids.h"
 #include "system.h"
 
@@ -79,6 +80,7 @@ static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
     pAiotcParams->pidsArgs = shmMalloc(pShmParams->headsp, sizeof(pidsParams));
     pAiotcParams->dbArgs = shmMalloc(pShmParams->headsp, sizeof(dbParams));
     pAiotcParams->systemArgs = shmMalloc(pShmParams->headsp, sizeof(systemParams));
+    pAiotcParams->objArgs = shmMalloc(pShmParams->headsp, sizeof(objParams));
     memset(pAiotcParams->masterArgs, 0, sizeof(masterParams));
     memset(pAiotcParams->restArgs, 0, sizeof(restParams));
     memset(pAiotcParams->shmArgs, 0, sizeof(shmParams));
@@ -86,6 +88,7 @@ static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
     memset(pAiotcParams->pidsArgs, 0, sizeof(pidsParams));
     memset(pAiotcParams->dbArgs, 0, sizeof(dbParams));
     memset(pAiotcParams->systemArgs, 0, sizeof(systemParams));
+    memset(pAiotcParams->objArgs, 0, sizeof(objParams));
     ((masterParams *)pAiotcParams->masterArgs)->arg = pAiotcParams;
     ((restParams *)pAiotcParams->restArgs)->arg = pAiotcParams;
     ((shmParams *)pAiotcParams->shmArgs)->arg = pAiotcParams;
@@ -93,13 +96,19 @@ static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
     ((pidsParams *)pAiotcParams->pidsArgs)->arg = pAiotcParams;
     ((dbParams *)pAiotcParams->dbArgs)->arg = pAiotcParams;
     ((systemParams *)pAiotcParams->systemArgs)->arg = pAiotcParams;
+    ((systemParams *)pAiotcParams->objArgs)->arg = pAiotcParams;
 
-    systemParams *pSystemParams = (systemParams *)pAiotcParams->systemArgs;
-    if(sem_init(&pSystemParams->mutex_slave, 1, 1) < 0) {
+    masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    if(sem_init(&pMasterParams->mutex_slave, 1, 1) < 0) {
       app_err("sem init failed");
       return -1;
     }
-    if(sem_init(&pSystemParams->mutex_obj, 1, 1) < 0) {
+    if(sem_init(&pMasterParams->mutex_mobj, 1, 1) < 0) {
+      app_err("sem init failed");
+      return -1;
+    }
+    if(sem_init(&pObjParams->mutex_obj, 1, 1) < 0) {
       app_err("sem init failed");
       return -1;
     }
@@ -137,10 +146,12 @@ static int init(aiotcParams **ppAiotcParams) {
 static int destroy(aiotcParams *pAiotcParams) {
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
     ncx_slab_pool_t *headsp = pShmParams->headsp;
-    systemParams *pSystemParams = (systemParams *)pAiotcParams->systemArgs;
+    masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
 
-    sem_destroy(&pSystemParams->mutex_slave);
-    sem_destroy(&pSystemParams->mutex_obj);
+    sem_destroy(&pMasterParams->mutex_slave);
+    sem_destroy(&pMasterParams->mutex_mobj);
+    sem_destroy(&pObjParams->mutex_obj);
     shmFree(headsp, pAiotcParams->masterArgs);
     shmFree(headsp, pAiotcParams->restArgs);
     shmFree(headsp, pAiotcParams->configArgs);
@@ -187,7 +198,9 @@ static int createTasks(aiotcParams *pAiotcParams) {
     if(pConfigParams->masterEnable) {
         creatProcess("master", pAiotcParams);
     }
-    creatProcess("rest", pAiotcParams);
+    if(pConfigParams->masterEnable == 0 || pConfigParams->masterEnable == 2) {
+        creatProcess("rest", pAiotcParams);
+    }
 
     return 0;
 }

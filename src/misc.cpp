@@ -17,6 +17,8 @@
  ******************************************************************************/
 
 #include "platform.h"
+#include "share.h"
+#include "obj.h"
 
 static int createDir(const char *sPathName) {
     char dirName[4096];
@@ -54,5 +56,11 @@ int dirCheck(const char *dir) {
         return createDir(dir);
     else
         return closedir(pdir);   
+}
+
+int conditionByObjId(node_common *p, void *arg) {
+    int id = *(int *)arg;
+    objParam *pObjParam = (objParam *)p->name;
+    return id == pObjParam->id;
 }
 

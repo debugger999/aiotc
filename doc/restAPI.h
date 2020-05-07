@@ -534,9 +534,8 @@
  *                          }
  * @apiSuccess (200) {int}      code    0:成功 1:失败
  * @apiSuccess (200) {String}   msg     信息
- * @apiSuccess (200) {int}      taskId  任务ID
  * @apiSuccessExample {json} 返回样例:
- *                          {"code":0,"msg":"success","data":{"taskId":99}}
+ *                          {"code":0,"msg":"success","data":{}}
  */
 
  /**
@@ -544,10 +543,12 @@
  * @apiGroup 3 Task
  * @apiVersion 0.1.0
  * @apiDescription 详细描述
- * @apiParam {int}      taskId          任务ID
+ * @apiParam    {int}       id          设备ID
+ * @apiParam    {String}    alg         算法名称
  * @apiParamExample {json} 请求样例：
  *                          {
- *                              "taskId":99,
+ *                              "id":999,
+ *                              "alg":"FaceCapture"
  *                          }
  * @apiSuccess (200) {int}      code    0:成功 1:失败
  * @apiSuccess (200) {String}   msg     信息

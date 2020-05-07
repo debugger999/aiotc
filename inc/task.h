@@ -23,4 +23,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define OBJ_ALG_MAX 4
+
+typedef struct {
+    int livestream;
+    int preview;
+    int capture;
+    int record;
+    char alg[OBJ_ALG_MAX][32];
+} taskParams;
+
 #endif

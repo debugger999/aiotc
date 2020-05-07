@@ -40,7 +40,13 @@ typedef struct {
 
 int shmInit(configParams *pConfigParams, shmParams *pShmParams);
 int shmDestroy(void *ptr);
-void *shmMalloc(ncx_slab_pool_t *pool, size_t size);
-void shmFree(ncx_slab_pool_t *pool, void *ptr);
+
+inline void *shmMalloc(ncx_slab_pool_t *pool, size_t size) {
+    return ncx_slab_alloc(pool, size);
+}
+
+inline void shmFree(ncx_slab_pool_t *pool, void *ptr) {
+    ncx_slab_free(pool, ptr); 
+}
 
 #endif

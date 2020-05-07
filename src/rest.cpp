@@ -21,7 +21,7 @@
 #include "misc.h"
 #include "system.h"
 
-static int sendHttpReply(struct evhttp_request *req, char *buf) {
+static int sendHttpReply(struct evhttp_request *req, int code, char *buf) {
     struct evbuffer *evb;
 
     evb = evbuffer_new();
@@ -32,14 +32,15 @@ static int sendHttpReply(struct evhttp_request *req, char *buf) {
         evbuffer_add_printf(evb, "{\"code\":0,\"msg\":\"success\",\"data\":{}}");
     }
 
-    evhttp_send_reply(req, HTTP_OK, "OK", evb);
+    evhttp_send_reply(req, code, "OK", evb);
     evbuffer_free(evb);
 
     return 0;
 }
 
 int request_cb(struct evhttp_request *req, void (*httpTask)(struct evhttp_request *, void *), void *arg) {
-    //char *url;
+    char *url;
+    int code = HTTP_OK;
     char *pbody = NULL;
     const char *cmdtype = NULL;
     struct evkeyvalq *headers;
@@ -59,7 +60,7 @@ int request_cb(struct evhttp_request *req, void (*httpTask)(struct evhttp_reques
         case EVHTTP_REQ_PATCH: cmdtype = "PATCH"; break;
         default: cmdtype = "unknown"; break;
     }
-    //url = (char *)evhttp_request_get_uri(req);
+    url = (char *)evhttp_request_get_uri(req);
     if(cmdtype != NULL) {
         //printf("received a %s request for %s\n", cmdtype, url);
     }
@@ -82,14 +83,17 @@ int request_cb(struct evhttp_request *req, void (*httpTask)(struct evhttp_reques
     }
     cbuf[POST_BUF_MAX - 1] = '\0';
 
-    app_debug("%s", cbuf);
-    CommonParams params;
-    params.arga = cbuf;
-    params.argb = &pbody;
-    params.argc = arg;
-    httpTask((struct evhttp_request *)(-1), &params);
+    app_debug("%s:%s", url, cbuf);
+    if(httpTask != NULL) {
+        CommonParams params;
+        params.arga = cbuf;
+        params.argb = &pbody;
+        params.argc = arg;
+        params.argd = &code;
+        httpTask((struct evhttp_request *)(-1), &params);
+    }
 
-    sendHttpReply(req, pbody);
+    sendHttpReply(req, code, pbody);
     if(pbody != NULL) {
         free(pbody);
     }
@@ -172,6 +176,13 @@ static void request_task_stop(struct evhttp_request *req, void *arg) {
     request_first_stage;
 }
 
+/*
+static void request_gencb(struct evhttp_request *req, void *arg) {
+    app_warring("##test");
+    request_cb(req, NULL, NULL);
+}
+*/
+
 static urlMap rest_url_map[] = {
     {"/system/login",       request_login},
     {"/system/logout",      request_logout},
@@ -230,6 +241,7 @@ int http_task(urlMap *url_map, int port, aiotcParams *pAiotcParams) {
             break;
         }
     }
+    //evhttp_set_gencb(http, request_gencb, NULL);
 
     /* Now we tell the evhttp what port to listen on */
     handle = evhttp_bind_socket_with_handle(http, "0.0.0.0", port);

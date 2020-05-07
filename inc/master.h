@@ -20,8 +20,21 @@
 #define __AIOTC_MASTER_H__
 
 #include "platform.h"
+#include "share.h"
+
+#define MASTER_OBJ_MAX  10000
 
 typedef struct {
+    char ip[32];
+    int online;     // sec
+    int offline;    // sec
+} slaveParams;
+
+typedef struct {
+    sem_t mutex_slave;
+    queue_common slaveQueue;
+    sem_t mutex_mobj;
+    queue_common mobjQueue;
     int running;
     void *arg; // aiotcParams
 } masterParams;

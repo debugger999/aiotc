@@ -63,12 +63,11 @@ int putToQueue(queue_common *queue, node_common *new_node, int max);
 int putToQueueDelFirst(queue_common *queue, node_common *new_node, int max,int (*callBack)(void *arg));
 int getFromQueue(queue_common *queue, node_common **new_p);
 int delFromQueue(queue_common *queue, void *arg, node_common **new_p, int (*condition)(node_common *p, void *arg));
-int delFromQueueFix(queue_common *queue, void *arg, node_common **new_p, int (*condition)(node_common *p, void *arg));
 int searchFromQueue(queue_common *queue, void *arg, node_common **new_p, int (*condition)(node_common *p, void *arg));
 int traverseQueue(queue_common *queue, void *arg, int (*callBack)(node_common *p, void *arg));
 int freeQueue(queue_common *queue, int (*callBack)(void *arg));
-int putToShmQueue(void *pShmArg, node_common *new_node, int max);
-int freeShmQueue(void *pShmArg, int (*callBack)(void *arg));
+int putToShmQueue(void *sp, queue_common *queue, node_common *new_node, int max);
+int freeShmQueue(void *sp, queue_common *queue, int (*callBack)(void *arg));
 int conditionTrue(node_common *p, void *arg);
 
 int getIntValFromJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3);
@@ -78,5 +77,25 @@ char *getStrValFromFile(const char *fileName, const char *nameSub1, const char *
 double getDoubleValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 char *getArrayBufFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3, int &size);
 long long int getSysFreeMem(void);
+
+inline void semWait(sem_t *mutex) {
+    int tryCnt = 0;
+    while(sem_wait(mutex) == -1 && tryCnt < 10000) {
+        if(errno != EINTR) {
+            app_warring("sem wait failed, %d:%s", errno, strerror(errno));
+            break;
+        }
+        if(tryCnt == 0) {
+            app_warring("sem wait failed, %d:%s", errno, strerror(errno));
+        }
+        tryCnt ++;
+    }
+}
+
+inline void semPost(sem_t *mutex) {
+    if(sem_post(mutex) == -1) {
+        app_warring("sem post failed, %d:%s", errno, strerror(errno));
+    }
+}
 
 #endif

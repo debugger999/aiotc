@@ -38,10 +38,14 @@ static int initHeadShm(shmParams *pShmParams, int shmHeadSize) {
 int shmInit(configParams *pConfigParams, shmParams *pShmParams) {
     int alignSize = 1024*1024;
 
-    pShmParams->shmTotalSize = (long long int)pConfigParams->videoFrameSizeMax*pConfigParams->videoQueLen*pConfigParams->videoMax +
-                               (long long int)pConfigParams->captureFrameSizeMax*pConfigParams->captureQueLen*pConfigParams->captureMax +
-                               (long long int)pConfigParams->shmHeadSize;
-    pShmParams->shmTotalSize = pShmParams->shmTotalSize/alignSize*alignSize + alignSize*10;
+    pShmParams->shmTotalSize = (long long int)pConfigParams->shmHeadSize;
+    if(pConfigParams->masterEnable == 0 || pConfigParams->masterEnable == 2) {
+        pShmParams->shmTotalSize += (long long int)pConfigParams->videoFrameSizeMax*
+                                    pConfigParams->videoQueLen*pConfigParams->videoMax +
+                                   (long long int)pConfigParams->captureFrameSizeMax*
+                                   pConfigParams->captureQueLen*pConfigParams->captureMax;
+    }
+    pShmParams->shmTotalSize = pShmParams->shmTotalSize/alignSize*alignSize + alignSize;
 
     //clearShmAndMsg(pMediaServerParams);
 
@@ -68,13 +72,5 @@ int shmInit(configParams *pConfigParams, shmParams *pShmParams) {
 
 int shmDestroy(void *ptr) {
     return 0;
-}
-
-void *shmMalloc(ncx_slab_pool_t *pool, size_t size) {
-    return ncx_slab_alloc(pool, size);
-}
-
-void shmFree(ncx_slab_pool_t *pool, void *ptr) {
-    ncx_slab_free(pool, ptr); 
 }
 

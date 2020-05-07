@@ -19,6 +19,7 @@
 #include "platform.h"
 #include "typedef.h"
 #include "cJSON.h"
+#include "shm.h"
 #include "share.h"
 
 int getLocalIp(char hostIp[128]) {
@@ -951,5 +952,55 @@ int freeQueue(queue_common *queue, int (*callBack)(void *arg)) {
 
 int conditionTrue(node_common *p, void *arg) {
     return 1;
+}
+
+int putToShmQueue(void *sp, queue_common *queue, node_common *new_node, int max) {
+    if(queue->queLen < max) {
+        node_common *new_p;
+        new_p = (node_common *)shmMalloc((ncx_slab_pool_t *)sp, sizeof(node_common));
+        if (new_p == NULL) {
+            printf("err, %s:%d, malloc failed\n", __FILE__, __LINE__);
+            return -1;
+        }
+        memcpy(new_p, new_node, sizeof(node_common));
+        new_p->next = NULL;
+        if (queue->head == NULL) {
+            queue->head = new_p;
+            queue->tail = new_p;
+        } else {
+            queue->tail->next = new_p;
+            queue->tail = new_p;
+        }
+        queue->queLen ++;
+    }
+    else {
+        static int cnt = 0;
+        if (cnt++ % 200 == 0) {
+            printf("shm, queLen is too large, %d\n", queue->queLen);
+        }
+    }
+
+    return 0;
+}
+
+int freeShmQueue(void *sp, queue_common *queue, int (*callBack)(void *arg)) {
+    node_common *p1;
+    node_common *p = queue->head;
+
+    while(p != NULL) {
+        p1 = p;
+        p = p->next;
+        if(callBack != NULL) {
+            callBack(p1);
+        }
+        if(p1->arg != NULL) {
+            shmFree((ncx_slab_pool_t *)sp, p1->arg);
+        }
+        shmFree((ncx_slab_pool_t *)sp, p1);
+    }
+    queue->head = queue->tail = NULL;
+    queue->queLen = 0;
+
+    return 0;
 }
 
