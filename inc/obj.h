@@ -29,8 +29,9 @@ typedef struct {
     char name[32];
     char type[16];
     char subtype[16];
+    int  attachSlave;
+    void *slave; // slaveParams
     void *task; // taskParams
-    void *slave;
     char *originaldata;
     void *arg; // aiotcParams
 } objParam;

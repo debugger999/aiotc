@@ -20,7 +20,194 @@
 #include "db.h"
 #include "misc.h"
 #include "system.h"
+#include "typedef.h"
 
+static void closeCallback(struct evhttp_connection* connection, void* arg) {
+    if(arg != NULL) {
+        event_base_loopexit((struct event_base*)arg, NULL);
+    }
+}
+
+static void readCallback(struct evhttp_request* req, void* arg) {
+    ev_ssize_t len;
+    struct evbuffer *evbuf;
+    unsigned char *buf;
+    httpAckParams *pAckParams = (httpAckParams *)arg;
+    int max = pAckParams->max;
+    struct event_base *base = (struct event_base *)pAckParams->arg;
+
+    if(req == NULL) {
+        app_warring("req is null");
+        return ;
+    }
+    evbuf = evhttp_request_get_input_buffer(req);
+    len = evbuffer_get_length(evbuf);
+    if(len < max) {
+        buf = evbuffer_pullup(evbuf, len);
+        if(buf != NULL) {
+            memcpy(pAckParams->buf, buf, len);
+            pAckParams->buf[len] = '\0';
+        }
+    }
+    else {
+        printf("warring : http read size exception, %ld:%d\n", len, max);
+    }
+    evbuffer_drain(evbuf, len);
+
+    event_base_loopexit(base, NULL);
+}
+
+static void errCallback(enum evhttp_request_error error, void* arg) {
+    httpAckParams *pAckParams = (httpAckParams *)arg;
+    struct event_base *base = NULL;
+
+    if(pAckParams != NULL) {
+        base = (struct event_base *)pAckParams->arg;
+        if(base) {
+            event_base_loopexit(base, NULL);
+        }
+    }
+}
+
+static int httpClient(enum evhttp_cmd_type httpCmd, char *url, char *data, 
+                            httpAckParams *pAckParams, int timeoutSec) {
+    int ret = -1;
+    int port;
+    char buf[64];
+    int len = 0;
+    char requesturl[256];
+    const char *host, *path, *query;
+    struct timeval timeOut;
+    struct event_base *base = NULL;
+    struct evdns_base *dnsbase =NULL;
+    struct evhttp_uri *http_uri = NULL;
+    struct evhttp_connection *evcon = NULL;
+    struct evhttp_request *request = NULL;
+    struct evkeyvalq *output_headers = NULL;
+    struct evbuffer *output_buffer = NULL;
+
+    http_uri = evhttp_uri_parse(url);
+    if (NULL == http_uri) {
+        ret = URL_ERR;
+        printf("parse url failed, url:%s\n", url);
+        goto err;
+    }
+    host = evhttp_uri_get_host(http_uri);
+    if (NULL == host) {
+        ret = URL_ERR;
+        printf("parse host failed, url:%s\n", url);
+        goto err;
+    }
+    port = evhttp_uri_get_port(http_uri);
+    if (port == -1) {
+        ret = URL_ERR;
+        printf("parse port failed, url:%s\n", url);
+        goto err;
+    }
+
+    path = evhttp_uri_get_path(http_uri);
+    if(path == NULL) {
+        ret = URL_ERR;
+        printf("get path failed, url:%s\n", url);
+        goto err;
+    }
+    if(strlen(path) == 0) {
+        path = "/";
+    }
+    memset(requesturl, 0, sizeof(requesturl));
+
+    query = evhttp_uri_get_query(http_uri);
+    if(NULL == query) {
+        snprintf(requesturl, sizeof(requesturl) - 1, "%s", path);
+    } else {
+        snprintf(requesturl, sizeof(requesturl) - 1, "%s?%s", path, query);
+    }
+    requesturl[sizeof(requesturl) - 1] = '\0';
+    
+    base = event_base_new();
+    if (NULL == base) {
+        printf("create event base failed, url:%s\n", url);
+        goto err;
+    }
+    dnsbase = evdns_base_new(base, EVDNS_BASE_INITIALIZE_NAMESERVERS);
+    if (NULL == dnsbase) {
+        printf("create dns base failed!\n");
+        goto err;
+    }
+    evcon = evhttp_connection_base_new(base, dnsbase, host, port);
+    if (NULL == evcon) {
+        printf("base new failed, url:%s\n", url);
+        goto err;
+    }
+    evhttp_connection_set_retries(evcon, 3);
+    evhttp_connection_set_timeout(evcon, timeoutSec);
+    evhttp_connection_set_closecb(evcon, closeCallback, base);
+    pAckParams->arg = base;
+    request = evhttp_request_new(readCallback, pAckParams);
+    if(request == NULL) {
+        printf("request new failed, url:%s\n", url);
+        goto err;
+    }
+    evhttp_request_set_error_cb(request, errCallback);
+
+    output_headers = evhttp_request_get_output_headers(request);
+    evhttp_add_header(output_headers, "Host", host);
+    evhttp_add_header(output_headers, "Connection", "keep-alive");
+    evhttp_add_header(output_headers, "Content-Type", "application/json");
+    if(data != NULL) {
+        len = strlen(data);
+        output_buffer = evhttp_request_get_output_buffer(request);
+        evbuffer_add(output_buffer, data, len);
+    }
+
+    evutil_snprintf(buf, sizeof(buf)-1, "%lu", (long unsigned int)len);
+    evhttp_add_header(output_headers, "Content-Length", buf);
+
+    //app_debug("url:%s, requesturl:%s", url, requesturl);
+    ret = evhttp_make_request(evcon, request, httpCmd, requesturl);
+    if (ret != 0) {
+        printf("make request failed\n");
+        goto err;
+    }
+    timeOut.tv_sec = timeoutSec;
+    timeOut.tv_usec = 0;
+    event_base_loopexit(base, &timeOut);
+    ret = event_base_dispatch(base);
+    if(ret != 0) {
+        printf("dispatch failed\n");
+        goto err;
+    }
+    ret = 0;
+
+err:
+    if(evcon != NULL) {
+        evhttp_connection_free(evcon);
+    }
+    if(dnsbase != NULL) {
+        evdns_base_free(dnsbase, 0);
+    }
+    if(base != NULL) {
+        event_base_free(base);
+    }
+    if(http_uri != NULL) {
+        evhttp_uri_free(http_uri);
+    }
+    //if(request != NULL) {
+    //    evhttp_request_free(request);
+    //}
+
+    return ret;
+}
+
+int httpPost(char *url, char *data, httpAckParams *pAckParams, int timeoutSec) {
+    httpClient(EVHTTP_REQ_POST, url, data, pAckParams, timeoutSec);
+
+    return 0;
+}
+
+int httpGet(char *url, httpAckParams *pAckParams, int timeoutSec) {
+    return httpClient(EVHTTP_REQ_GET, url, NULL, pAckParams, timeoutSec);
+}
 static int sendHttpReply(struct evhttp_request *req, int code, char *buf) {
     struct evbuffer *evb;
 
@@ -83,7 +270,9 @@ int request_cb(struct evhttp_request *req, void (*httpTask)(struct evhttp_reques
     }
     cbuf[POST_BUF_MAX - 1] = '\0';
 
-    app_debug("%s:%s", url, cbuf);
+    if(strcmp(cmdtype, "GET")) {
+        app_debug("%s:%s", url, cbuf);
+    }
     if(httpTask != NULL) {
         CommonParams params;
         params.arga = cbuf;
@@ -110,6 +299,15 @@ static void request_logout(struct evhttp_request *req, void *arg) {
 
 static void request_system_init(struct evhttp_request *req, void *arg) {
     request_first_stage;
+}
+
+static void request_system_load(struct evhttp_request *req, void *arg) {
+    request_first_stage;
+    CommonParams *pParams = (CommonParams *)arg;
+    char **ppbody = (char **)pParams->argb;
+
+    *ppbody = (char *)malloc(256);
+     strcpy(*ppbody, "{\"code\":0,\"msg\":\"success\",\"data\":{\"load\":50}}"); // TODO
 }
 
 static void request_slave_add(struct evhttp_request *req, void *arg) {
@@ -189,6 +387,7 @@ static urlMap rest_url_map[] = {
     {"/system/init",        request_system_init},
     {"/system/slave/add",   request_slave_add},
     {"/system/slave/del",   request_slave_del},
+    {"/system/slave/load",  request_system_load},
     {"/obj/add/tcp",        request_obj_add},
     {"/obj/add/ehome",      request_obj_add},
     {"/obj/add/gat1400",    request_obj_add},

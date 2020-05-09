@@ -61,7 +61,7 @@ static ncx_uint_t  ncx_slab_exact_size;
 static ncx_uint_t  ncx_slab_exact_shift;
 static ncx_uint_t  ncx_pagesize;
 static ncx_uint_t  ncx_pagesize_shift;
-static ncx_uint_t  ncx_real_pages;
+// static ncx_uint_t  ncx_real_pages;
 
 void
 ncx_slab_init(ncx_slab_pool_t *pool)
@@ -120,8 +120,8 @@ ncx_slab_init(ncx_slab_pool_t *pool)
                   ncx_align_ptr((uintptr_t) p + pages * sizeof(ncx_slab_page_t),
                                  ncx_pagesize);
 
-    ncx_real_pages = (pool->end - pool->start) / ncx_pagesize;
-    pool->pages->slab = ncx_real_pages;
+    pool->ncx_real_pages = (pool->end - pool->start) / ncx_pagesize;
+    pool->pages->slab = pool->ncx_real_pages;
 }
 
 
@@ -715,7 +715,7 @@ ncx_slab_free_pages(ncx_slab_pool_t *pool, ncx_slab_page_t *page,
         }
     }
 
-    if ((page - pool->pages + page->slab) < ncx_real_pages) {
+    if ((page - pool->pages + page->slab) < pool->ncx_real_pages) {
         next = page + page->slab;
         if (ncx_slab_empty(pool, next) && (void *)next->prev != NULL) 
         {

@@ -60,7 +60,7 @@ int connectServer(char *ip, int port);
 int blockSend(unsigned int connfd, char *src, int size);
 int blockRecv(unsigned int connfd, char *dst, int size, int timeOutSec);
 int putToQueue(queue_common *queue, node_common *new_node, int max);
-int putToQueueDelFirst(queue_common *queue, node_common *new_node, int max,int (*callBack)(void *arg));
+int putToQueueDelFirst(queue_common *queue, node_common *new_node, int max, int (*callBack)(void *arg));
 int getFromQueue(queue_common *queue, node_common **new_p);
 int delFromQueue(queue_common *queue, void *arg, node_common **new_p, int (*condition)(node_common *p, void *arg));
 int searchFromQueue(queue_common *queue, void *arg, node_common **new_p, int (*condition)(node_common *p, void *arg));
@@ -72,6 +72,7 @@ int conditionTrue(node_common *p, void *arg);
 
 int getIntValFromJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 char *getStrValFromJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3);
+char *getObjBufFromJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 int getIntValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 char *getStrValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 double getDoubleValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);

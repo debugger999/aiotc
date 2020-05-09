@@ -54,8 +54,16 @@ typedef struct {
     void *arg;
 } urlMap;
 
+typedef struct {
+    char *buf;
+    int max;
+    void *arg;
+} httpAckParams;
+
 int restProcess(void *args);
 int http_task(urlMap *url_map, int port, aiotcParams *pAiotcParams);
 int request_cb(struct evhttp_request *req, void (*httpTask)(struct evhttp_request *, void *), void *arg);
+int httpPost(char *url, char *data, httpAckParams *pAckParams, int timeoutSec);
+int httpGet(char *url, httpAckParams *pAckParams, int timeoutSec);
 
 #endif

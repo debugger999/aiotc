@@ -446,7 +446,7 @@ err:
     return val;
 }
 
-char *getObjBufFromJson(char *buf, char *nameSub1, char *nameSub2, char *nameSub3) {
+char *getObjBufFromJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3) {
     char name[256];
     char *val = NULL;
     cJSON *root, *pSub1, *pSub2, *pSub3;

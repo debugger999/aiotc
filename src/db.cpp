@@ -139,26 +139,6 @@ err:
     return -1;
 }
 
-int collectionExsit(mongoc_collection_t *collection) {
-    char *str;
-    bson_t query;
-    const bson_t *doc;
-    int exsit = 0;
-
-    bson_init(&query);
-    mongoc_cursor_t *cursor = mongoc_collection_find_with_opts(collection, &query, NULL, NULL);
-    if(mongoc_cursor_next(cursor, &doc)) {
-        str = bson_as_json (doc, NULL);
-        //printf ("%s\n", str);
-        bson_free (str);
-        exsit = 1;
-    }
-    bson_destroy(&query);
-    mongoc_cursor_destroy(cursor);
-    
-    return exsit;
-}
-
 static int checkDel(mongoc_collection_t *collection, 
         const char *selectName, const void *selIntVal, const void *selStrVal) {
     bool r;
@@ -234,7 +214,7 @@ end:
     return 0;
 }
 
-int dbTraverse(void *dbArgs, const char *table, char *json) {
+int dbTraverse(void *dbArgs, const char *table, void *arg, int (*callBack)(char *buf, void *arg)) {
     char *str;
     bson_t query;
     const bson_t *doc;
@@ -249,14 +229,13 @@ int dbTraverse(void *dbArgs, const char *table, char *json) {
         goto end;
     }
 
-    //bson_t *selector = NULL;
-    //selector = BCON_NEW("gb28181Params.localSipId", BCON_UTF8("34010000002000000001"));
-    //mongoc_cursor_t *cursor = mongoc_collection_find_with_opts(collection, selector, NULL, NULL);
-    //bson_destroy(selector);
     cursor = mongoc_collection_find_with_opts(collection, &query, NULL, NULL);
     while(mongoc_cursor_next(cursor, &doc)) {
         str = bson_as_json (doc, NULL);
-        printf ("%s\n", str);
+        //printf ("%s\n", str);
+        if(callBack != NULL) {
+            callBack(str, arg);
+        }
         bson_free (str);
     }
 

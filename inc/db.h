@@ -83,6 +83,7 @@ int dbUpdate(void *dbArgs, const char *table, bool upsert, const char *cmd,
 int dbUpdateIntById(char *buf, void *dbArgs, const char *name, int val);
 int dbExsit(void *dbArgs, const char *table, 
         const char *selectName, const void *selIntVal, const void *selStrVal);
+int dbTraverse(void *dbArgs, const char *table, void *arg, int (*callBack)(char *buf, void *arg));
 int dbDel(void *dbArgs, const char *table, 
         const char *selectName, const void *selIntVal, const void *selStrVal);
 int dbClose(void *dbArgs);

@@ -23,4 +23,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct {
+    char name[32];
+    int running;
+} algParams;
+
 #endif

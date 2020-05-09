@@ -27,6 +27,7 @@ typedef struct {
 
 	//ncx_shmtx_t		 mutex;
     sem_t           *mutex;
+    ncx_uint_t      ncx_real_pages;
 
     void             *addr;
 } ncx_slab_pool_t;

@@ -26,6 +26,11 @@
 
 typedef struct {
     char ip[32];
+    char internetIp[32];
+    int restPort;
+    int streamPort;
+    int systemInit;
+    int load;
     int online;     // sec
     int offline;    // sec
 } slaveParams;
