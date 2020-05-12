@@ -31,6 +31,7 @@ typedef struct {
     pid_t pid;
     ProcFunc proc;
     int load;
+    int  lastReboot;
 } PidOps;
 
 PidOps *getOpsByPid(pid_t pid);

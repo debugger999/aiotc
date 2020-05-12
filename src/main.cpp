@@ -29,10 +29,16 @@
 static int creatProcByPid(pid_t oldPid, aiotcParams *pAiotcParams) {
     pid_t pid;
     PidOps *pOps;
+    struct timeval tv;
 
+    gettimeofday(&tv, NULL);
     pOps = getOpsByPid(oldPid);
     if(pOps == NULL) {
         app_warring("get ops by pid %d failed", oldPid);
+        return -1;
+    }
+    if((int)tv.tv_sec - pOps->lastReboot < 300) {
+        app_warring("proc %s, pid %d, restart too high frequency, don't run it", pOps->name, pid);
         return -1;
     }
 
@@ -46,8 +52,9 @@ static int creatProcByPid(pid_t oldPid, aiotcParams *pAiotcParams) {
         exit(0);
     }
     else {
-        app_debug("restart %s pid : %d", pOps->name, pid);
         pOps->pid = pid;
+        pOps->lastReboot = (int)tv.tv_sec;
+        app_debug("restart %s pid : %d", pOps->name, pid);
     }
 
     return 0;

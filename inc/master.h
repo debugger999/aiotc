@@ -23,6 +23,7 @@
 #include "share.h"
 
 #define MASTER_OBJ_MAX  10000
+#define SLAVE_LOAD_MAX  90
 
 typedef struct {
     char ip[32];
@@ -36,6 +37,7 @@ typedef struct {
 } slaveParams;
 
 typedef struct {
+    int slaveLoadOk;
     sem_t mutex_slave;
     queue_common slaveQueue;
     sem_t mutex_mobj;

@@ -376,7 +376,7 @@ static void request_task_stop(struct evhttp_request *req, void *arg) {
 
 /*
 static void request_gencb(struct evhttp_request *req, void *arg) {
-    app_warring("##test");
+    app_warring("");
     request_cb(req, NULL, NULL);
 }
 */

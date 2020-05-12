@@ -97,7 +97,46 @@ static int delSlave(char *buf, aiotcParams *pAiotcParams) {
     return 0;
 }
 
-static int addObj(char *buf, aiotcParams *pAiotcParams) {
+static int initObjTaskFromDB(char *buf, objParam *pObjParam) {
+    int livestream, capture, record;
+    char *slaveIp = NULL, *preview = NULL;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+    aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
+    masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
+
+    livestream = getIntValFromJson(buf, "task", "stream", NULL);
+    capture = getIntValFromJson(buf, "task", "capture", NULL);
+    record = getIntValFromJson(buf, "task", "record", NULL);
+    slaveIp = getStrValFromJson(buf, "slave", "ip", NULL);
+    preview = getStrValFromJson(buf, "task", "preview", NULL);
+    if(livestream >= 0) {
+        pTaskParams->livestream = livestream;
+    }
+    if(capture >= 0) {
+        pTaskParams->capture = capture;
+    }
+    if(record >= 0) {
+        pTaskParams->record = record;
+    }
+    if(preview != NULL && strlen(preview) > 0) {
+        strncpy(pTaskParams->preview, preview, sizeof(pTaskParams->preview));
+        free(preview);
+    }
+    if(slaveIp != NULL) {
+        node_common *p = NULL;
+        semWait(&pMasterParams->mutex_slave);
+        searchFromQueue(&pMasterParams->slaveQueue, slaveIp, &p, conditionBySlaveIp);
+        semPost(&pMasterParams->mutex_slave);
+        if(p != NULL) {
+            pObjParam->slave = p->name;
+        }
+        free(slaveIp);
+    }
+
+    return 0;
+}
+
+static int addObj(char *buf, char *dbBuf, aiotcParams *pAiotcParams) {
     node_common node;
     taskParams *pTaskParams;
     objParam *pObjParam = (objParam *)node.name;
@@ -131,6 +170,10 @@ static int addObj(char *buf, aiotcParams *pAiotcParams) {
       goto end;
     }
     pObjParam->arg = pAiotcParams;
+    if(dbBuf != NULL) {
+        initObjTaskFromDB(dbBuf, pObjParam);
+    }
+
     semWait(&pMasterParams->mutex_mobj);
     putToShmQueue(pShmParams->headsp, &pMasterParams->mobjQueue, &node, MASTER_OBJ_MAX);
     semPost(&pMasterParams->mutex_mobj);
@@ -297,7 +340,7 @@ static int objInitCB(char *buf, void *arg) {
     if(original == NULL) {
         goto end;
     }
-    addObj(original, pAiotcParams);
+    addObj(original, buf, pAiotcParams);
 
 end:
     if(original != NULL) {
@@ -397,7 +440,7 @@ static void master_request_obj_add(struct evhttp_request *req, void *arg) {
     if(id < 0) {
         return ;
     }
-    addObj(buf, pAiotcParams);
+    addObj(buf, NULL, pAiotcParams);
     dbWrite(pAiotcParams->dbArgs, "obj", "original", buf, "original.id", &id, NULL);
 }
 
@@ -460,6 +503,7 @@ static void master_request_stream_stop(struct evhttp_request *req, void *arg) {
 
 static void master_request_preview_start(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    char *type = NULL;
     node_common *p = NULL;
     CommonParams *pParams = (CommonParams *)arg;
     char *buf = (char *)pParams->arga;
@@ -467,19 +511,28 @@ static void master_request_preview_start(struct evhttp_request *req, void *arg) 
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
 
     int id = getIntValFromJson(buf, "id", NULL, NULL);
+    type = getStrValFromJson(buf, "type", NULL, NULL);
+    if(id < 0 || type == NULL) {
+        goto end;
+    }
     semWait(&pMasterParams->mutex_mobj);
     searchFromQueue(&pMasterParams->mobjQueue, &id, &p, conditionByObjId);
     if(p != NULL) {
         objParam *pObjParam = (objParam *)p->name;
         taskParams *pTaskParams = (taskParams *)pObjParam->task;
-        pTaskParams->preview = 1;
+        strncpy(pTaskParams->preview, type, sizeof(pTaskParams->preview));
     }
     else {
         printf("objId %d not exsit\n", id);
     }
     semPost(&pMasterParams->mutex_mobj);
 
-    dbUpdateIntById(buf, pAiotcParams->dbArgs, "task.preview", 1);
+    dbUpdate(pAiotcParams->dbArgs, "obj", 0, "$set", "original.id", &id, NULL, "task.preview", NULL, type);
+
+end:
+    if(type != NULL) {
+        free(type);
+    }
 }
 
 static void master_request_preview_stop(struct evhttp_request *req, void *arg) {
@@ -496,14 +549,14 @@ static void master_request_preview_stop(struct evhttp_request *req, void *arg) {
     if(p != NULL) {
         objParam *pObjParam = (objParam *)p->name;
         taskParams *pTaskParams = (taskParams *)pObjParam->task;
-        pTaskParams->preview = 0;
+        memset(pTaskParams->preview, 0, sizeof(pTaskParams->preview));
     }
     else {
         printf("objId %d not exsit\n", id);
     }
     semPost(&pMasterParams->mutex_mobj);
 
-    dbUpdateIntById(buf, pAiotcParams->dbArgs, "task.preview", 0);
+    dbUpdate(pAiotcParams->dbArgs, "obj", 0, "$set", "original.id", &id, NULL, "task.preview", NULL, "");
 }
 
 static void master_request_record_start(struct evhttp_request *req, void *arg) {
@@ -717,6 +770,10 @@ static int slaveLoad(node_common *p, void *arg) {
             gettimeofday(&tv, NULL);
             pSlaveParams->online = (int)tv.tv_sec;
             app_debug("detected online, %s:%d", pSlaveParams->ip, pSlaveParams->restPort);
+            if(!pSlaveParams->systemInit) {
+                // TODO : http post
+                pSlaveParams->systemInit = 1;
+            }
         }
         if(pSlaveParams->offline) {
             pSlaveParams->offline = 0;
@@ -747,7 +804,10 @@ static void *slave_load_thread(void *arg) {
         semWait(&pMasterParams->mutex_slave);
         traverseQueue(&pMasterParams->slaveQueue, pAiotcParams, slaveLoad);
         semPost(&pMasterParams->mutex_slave);
-        sleep(1);
+        if(!pMasterParams->slaveLoadOk) {
+            pMasterParams->slaveLoadOk = 1;
+        }
+        sleep(5);
     }
 
     app_debug("run over");
@@ -761,19 +821,15 @@ static int _getlowestLoadSlave(node_common *p, void *arg) {
     slaveParams *pSlaveParams = (slaveParams *)p->name;
 
     if(*ppLowestSlave == NULL) {
-        if(pSlaveParams->online && pSlaveParams->systemInit && pSlaveParams->load < 100) {
+        if(pSlaveParams->online && pSlaveParams->systemInit && pSlaveParams->load < SLAVE_LOAD_MAX) {
             *ppLowestSlave = pSlaveParams;
         }
     }
     else {
-        /*
-        slaveParams *pSlaveParamsLast = (slaveParams *)pCamera->arg2;
-        loadParams *pLoadParamsLast = &(pSlaveParamsLast->loadParam);
-        if(pLoadParams->objNum < pLoadParamsLast->objNum && pLoadParams->videoLoad < 100 && 
-                pLoadParams->captureLoad < 100 && pSlaveParams->status && pSlaveParams->systemInit) {
-            pCamera->arg2 = pSlaveParams;
+        slaveParams *pSlaveLast = *ppLowestSlave;
+        if(pSlaveParams->load < pSlaveLast->load && pSlaveParams->online && pSlaveParams->systemInit) {
+            *ppLowestSlave = pSlaveParams;
         }
-        */
     }
 
     return 0;
@@ -791,18 +847,58 @@ slaveParams *getLowestLoadSlave(objParam *pObjParam) {
     return pLowestSlave;
 }
 
+static int slaveIsNormal(int id, slaveParams *pSlaveParams) {
+    int normal = 1;
+    struct timeval tv;
+
+    if(pSlaveParams->offline || pSlaveParams->systemInit == 0 || pSlaveParams->load >= SLAVE_LOAD_MAX) {
+        normal = -1;
+        if(pSlaveParams->offline) {
+            gettimeofday(&tv, NULL);
+            int sec = (int)tv.tv_sec - pSlaveParams->offline;
+            if(sec < 120) {
+                printf("objId:%d, old slave %s is offline, wait %d seconds ...\n", 
+                        id, pSlaveParams->ip, 120 - sec);
+                normal = 0;
+            }
+        }
+    }
+
+    return normal;
+}
+
 // slave离线的等待一定时间,如果还未上线,重新分配相关obj slave
 // old slave负载有空闲优先
 // 其次分配到最空闲slave
 static int objManager(node_common *p, void *arg) {
     objParam *pObjParam = (objParam *)p->name;
+    aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
 
-    if(pObjParam->slave != NULL && pObjParam->attachSlave == 0) { // TODO
+    if(pObjParam->slave != NULL && pObjParam->attachSlave == 0) {
+        int normal;
+        slaveParams *pSlave = (slaveParams *)pObjParam->slave;
+        normal = slaveIsNormal(pObjParam->id, pSlave);
+        if(normal == 1) {
+            pObjParam->attachSlave = 1;
+            app_debug("redirect obj %d to old slave : %s", pObjParam->id, pSlave->ip);
+        }
+        else if(normal == -1) {
+            pObjParam->slave = NULL;
+        }
     }
     else if(pObjParam->slave == NULL) {
-        pObjParam->slave = getLowestLoadSlave(pObjParam);
+        slaveParams *pSlave = getLowestLoadSlave(pObjParam);
+        if(pSlave != NULL) {
+            pObjParam->slave = pSlave;
+            pObjParam->attachSlave = 1;
+            dbUpdate(pAiotcParams->dbArgs, "obj", 0, "$set", 
+                    "original.id", &pObjParam->id, NULL, "slave.ip", NULL, pSlave->ip);
+            app_debug("redirect obj %d to new slave : %s", pObjParam->id, pSlave->ip);
+        }
+        else {
+            printf("obj manager, id:%d, get lowest slave failed\n", pObjParam->id);
+        }
     }
-    //printf("obj, type:%s, subtype:%s, id:%d\n", pObjParam->type, pObjParam->subtype, pObjParam->id);
 
     return 0;
 }
@@ -811,11 +907,16 @@ static void *master_objmanager_thread(void *arg) {
     aiotcParams *pAiotcParams = (aiotcParams *)arg;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
 
+    while(!pMasterParams->slaveLoadOk) {
+        sleep(1);
+    }
+    printf("slave load ok\n");
+
     while(pAiotcParams->running) {
         semWait(&pMasterParams->mutex_mobj);
         traverseQueue(&pMasterParams->mobjQueue, pAiotcParams, objManager);
         semPost(&pMasterParams->mutex_mobj);
-        sleep(1);
+        sleep(5);
     }
 
     app_debug("run over");
