@@ -3,12 +3,14 @@
         "enable" : 2,
         "restPort" : 11706,
         "streaminPort" : 11707,
-        "streaminProcNum" : 3
+        "streaminProcNum" : 3,
+        "objMax" : 10000
     },
     "slave": {
         "restPort" : 15515,
         "streaminPort" : 15516,
         "streaminProcNum" : 3,
+        "objMax" : 1000,
         "workdir" : "/home/ubuntu/webdir"
     },
     "video": {

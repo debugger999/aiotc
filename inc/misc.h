@@ -23,7 +23,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "platform.h"
 #include "share.h"
+#include "obj.h"
 
 typedef int (*CommonObjFunc)(void *buf, void *arg);
 typedef int (*COMMONCALLBACK)(void *argA, void *argB, void *argC);
@@ -39,5 +41,13 @@ typedef struct {
 
 int dirCheck(const char *dir);
 int conditionByObjId(node_common *p, void *arg);
+int conditionBySlaveIp(node_common *p, void *arg);
+int conditionByAlgName(node_common *p, void *arg);
+int systemInit(char *buf, aiotcParams *pAiotcParams);
+int addObj(char *buf, aiotcParams *pAiotcParams, int max, void *arg);
+int delObj(char *buf, aiotcParams *pAiotcParams, void *arg);
+int addAlg(char *buf, int id, char *algName, aiotcParams *pAiotcParams, void *arg);
+int delAlg(char *buf, int id, char *algName, aiotcParams *pAiotcParams, void *arg);
+int httpPostSlave(const char *url, char *buf, objParam *pObjParam);
 
 #endif

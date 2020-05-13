@@ -77,6 +77,7 @@ int getIntValFromFile(const char *fileName, const char *nameSub1, const char *na
 char *getStrValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 double getDoubleValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 char *getArrayBufFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3, int &size);
+char *delObjJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 long long int getSysFreeMem(void);
 
 inline void semWait(sem_t *mutex) {

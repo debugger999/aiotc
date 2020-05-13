@@ -32,10 +32,12 @@ typedef struct {
     int masterRestPort;
     int masterStreaminPort;
     int masterStreaminProcNum;
+    int masterObjMax;
 
     int slaveRestPort;
     int slaveStreaminPort;
     int slaveStreaminProcNum;
+    int slaveObjMax;
 
     int shmKey;
     int shmHeadSize;

@@ -28,9 +28,11 @@ int configInit(configParams *pConfigParams) {
     pConfigParams->masterRestPort = getIntValFromFile(config, "master", "restPort", NULL);
     pConfigParams->masterStreaminPort = getIntValFromFile(config, "master", "streaminPort", NULL);
     pConfigParams->masterStreaminProcNum = getIntValFromFile(config, "master", "streaminProcNum", NULL);
+    pConfigParams->masterObjMax = getIntValFromFile(config, "master", "objMax", NULL);
     pConfigParams->slaveRestPort = getIntValFromFile(config, "slave", "restPort", NULL);
     pConfigParams->slaveStreaminPort = getIntValFromFile(config, "slave", "streaminPort", NULL);
     pConfigParams->slaveStreaminProcNum = getIntValFromFile(config, "slave", "streaminProcNum", NULL);
+    pConfigParams->slaveObjMax = getIntValFromFile(config, "slave", "objMax", NULL);
     pConfigParams->shmKey = getIntValFromFile(config, "shm", "key", NULL);
     pConfigParams->shmHeadSize = getIntValFromFile(config, "shm", "headSize", NULL);
     pConfigParams->videoMax = getIntValFromFile(config, "video", "max", NULL);

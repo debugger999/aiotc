@@ -92,7 +92,7 @@ int getIntValFromJson(char *buf, const char *nameSub1, const char *nameSub2, con
     strncpy(name, nameSub1, 256);
     pSub1 = cJSON_GetObjectItem(root, name);
     if(pSub1 == NULL) {
-        printf("get json null, %s\n", name);
+        //printf("get json null, %s\n", name);
         goto err;
     }
     if(nameSub2 == NULL) {
@@ -103,7 +103,7 @@ int getIntValFromJson(char *buf, const char *nameSub1, const char *nameSub2, con
     strncpy(name, nameSub2, 256);
     pSub2 = cJSON_GetObjectItem(pSub1, name);
     if(pSub2 == NULL) {
-        printf("get json null, %s\n", name);
+        //printf("get json null, %s\n", name);
         goto err;
     }
     if(nameSub3 == NULL) {
@@ -114,7 +114,7 @@ int getIntValFromJson(char *buf, const char *nameSub1, const char *nameSub2, con
     strncpy(name, nameSub3, 256);
     pSub3 = cJSON_GetObjectItem(pSub2, name);
     if(pSub3 == NULL) {
-        printf("get json null, %s\n", name);
+        //printf("get json null, %s\n", name);
         goto err;
     }
     val = pSub3->valueint;
@@ -394,14 +394,14 @@ char *getStrValFromJson(char *buf, const char *nameSub1, const char *nameSub2, c
     }
 
     if(nameSub1 == NULL) {
-        printf("get json null, %s\n", name);
+        //printf("get json null, %s\n", name);
         goto err;
     }
 
     strncpy(name, nameSub1, 256);
     pSub1 = cJSON_GetObjectItem(root, name);
     if(pSub1 == NULL) {
-        printf("get json null, %s\n", name);
+        //printf("get json null, %s\n", name);
         goto err;
     }
     if(nameSub2 == NULL) {
@@ -412,7 +412,7 @@ char *getStrValFromJson(char *buf, const char *nameSub1, const char *nameSub2, c
     strncpy(name, nameSub2, 256);
     pSub2 = cJSON_GetObjectItem(pSub1, name);
     if(pSub2 == NULL) {
-        printf("get json null, %s\n", name);
+        //printf("get json null, %s\n", name);
         goto err;
     }
     if(nameSub3 == NULL) {
@@ -423,7 +423,7 @@ char *getStrValFromJson(char *buf, const char *nameSub1, const char *nameSub2, c
     strncpy(name, nameSub3, 256);
     pSub3 = cJSON_GetObjectItem(pSub2, name);
     if(pSub3 == NULL) {
-        printf("get json null, %s\n", name);
+        //printf("get json null, %s\n", name);
         goto err;
     }
     valTmp = pSub3->valuestring;
@@ -547,6 +547,70 @@ cJSON *getObjFromJson(char *buf, char *nameSub1, char *nameSub2, char *nameSub3)
     val = pSub3;
 
 err:
+    if(root != NULL) {
+        cJSON_Delete(root);
+    }
+
+    return val;
+}
+
+char *delObjJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3) {
+    const char *pName;
+    char name[256];
+    char *val = NULL;
+    cJSON *pSub = NULL;
+    cJSON *root, *pSub1, *pSub2, *pSub3;
+    
+    root = cJSON_Parse(buf);
+    if(root == NULL) {
+        app_err("cJSON_Parse err, buf:%s", buf);
+        goto err;
+    }
+    
+    if(nameSub1 == NULL) {
+        app_err("nameSub1 is null");
+        goto err;
+    }
+    strncpy(name, nameSub1, 256);
+    pSub1 = cJSON_GetObjectItem(root, name);
+    if(pSub1 == NULL) {
+        printf("get json null, %s\n", name);
+        goto err;
+    }
+    if(nameSub2 == NULL) {
+        pSub = root;
+        pName = nameSub1;
+        goto err;
+    }
+
+    strncpy(name, nameSub2, 256);
+    pSub2 = cJSON_GetObjectItem(pSub1, name);
+    if(pSub2 == NULL) {
+        printf("get json null, %s\n", name);
+        goto err;
+    }
+    if(nameSub3 == NULL) {
+        pSub = pSub1;
+        pName = nameSub2;
+        goto err;
+    }
+
+    strncpy(name, nameSub3, 256);
+    pSub3 = cJSON_GetObjectItem(pSub2, name);
+    if(pSub3 == NULL) {
+        printf("get json null, %s\n", name);
+        goto err;
+    }
+    pSub = pSub2;
+    pName = nameSub3;
+
+err:
+    if(pSub != NULL) {
+       cJSON_DeleteItemFromObject(pSub, pName);
+    }
+    
+    val = cJSON_Print(root);
+    
     if(root != NULL) {
         cJSON_Delete(root);
     }
@@ -920,8 +984,7 @@ int searchFromQueue(queue_common *queue, void *arg, node_common **new_p, int (*c
 int traverseQueue(queue_common *queue, void *arg, int (*callBack)(node_common *p, void *arg)) {
     node_common *p = queue->head;
     while(p != NULL) {
-        //app_debug("##traverseQueue, queLen:%d", queue->queLen);
-        if(callBack(p, arg) == 3) {
+        if(callBack(p, arg) != 0) {
             break;
         }
         p = p->next;

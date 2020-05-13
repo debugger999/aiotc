@@ -21,6 +21,8 @@
 #include "misc.h"
 #include "system.h"
 #include "typedef.h"
+#include "obj.h"
+#include "task.h"
 
 static void closeCallback(struct evhttp_connection* connection, void* arg) {
     if(arg != NULL) {
@@ -200,6 +202,14 @@ err:
 }
 
 int httpPost(char *url, char *data, httpAckParams *pAckParams, int timeoutSec) {
+    char ack[256] = {0};
+    httpAckParams ackParam;
+
+    ackParam.buf = ack;
+    ackParam.max = sizeof(ack);
+    if(pAckParams == NULL) {
+        pAckParams = &ackParam;
+    }
     httpClient(EVHTTP_REQ_POST, url, data, pAckParams, timeoutSec);
 
     return 0;
@@ -208,6 +218,7 @@ int httpPost(char *url, char *data, httpAckParams *pAckParams, int timeoutSec) {
 int httpGet(char *url, httpAckParams *pAckParams, int timeoutSec) {
     return httpClient(EVHTTP_REQ_GET, url, NULL, pAckParams, timeoutSec);
 }
+
 static int sendHttpReply(struct evhttp_request *req, int code, char *buf) {
     struct evbuffer *evb;
 
@@ -299,6 +310,14 @@ static void request_logout(struct evhttp_request *req, void *arg) {
 
 static void request_system_init(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+
+    if(pConfigParams->masterEnable != 2) {
+        systemInit(buf, pAiotcParams);
+    }
 }
 
 static void request_system_load(struct evhttp_request *req, void *arg) {
@@ -310,44 +329,173 @@ static void request_system_load(struct evhttp_request *req, void *arg) {
      strcpy(*ppbody, "{\"code\":0,\"msg\":\"success\",\"data\":{\"load\":50}}"); // TODO
 }
 
-static void request_slave_add(struct evhttp_request *req, void *arg) {
-    request_first_stage;
-}
-
-static void request_slave_del(struct evhttp_request *req, void *arg) {
-    request_first_stage;
-}
-
 static void request_obj_add(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    CommonParams params;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+
+    params.arga = &pObjParams->mutex_obj;
+    params.argb = &pObjParams->objQueue;
+    addObj(buf, pAiotcParams, pConfigParams->slaveObjMax, &params);
 }
 
 static void request_obj_del(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    CommonParams params;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+
+    params.arga = &pObjParams->mutex_obj;
+    params.argb = &pObjParams->objQueue;
+    delObj(buf, pAiotcParams, &params);
 }
 
 static void request_stream_start(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    node_common *p = NULL;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+
+    semWait(&pObjParams->mutex_obj);
+    searchFromQueue(&pObjParams->objQueue, &id, &p, conditionByObjId);
+    if(p != NULL) {
+        objParam *pObjParam = (objParam *)p->name;
+        taskParams *pTaskParams = (taskParams *)pObjParam->task;
+        pTaskParams->livestream = 1;
+    }
+    else {
+        printf("objId %d not exsit\n", id);
+    }
+    semPost(&pObjParams->mutex_obj);
 }
 
 static void request_stream_stop(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    node_common *p = NULL;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+
+    semWait(&pObjParams->mutex_obj);
+    searchFromQueue(&pObjParams->objQueue, &id, &p, conditionByObjId);
+    if(p != NULL) {
+        objParam *pObjParam = (objParam *)p->name;
+        taskParams *pTaskParams = (taskParams *)pObjParam->task;
+        pTaskParams->livestream = 0;
+    }
+    else {
+        printf("objId %d not exsit\n", id);
+    }
+    semPost(&pObjParams->mutex_obj);
 }
 
 static void request_preview_start(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    char *type = NULL;
+    node_common *p = NULL;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+
+    type = getStrValFromJson(buf, "type", NULL, NULL);
+    if(id < 0 || type == NULL) {
+        goto end;
+    }
+    semWait(&pObjParams->mutex_obj);
+    searchFromQueue(&pObjParams->objQueue, &id, &p, conditionByObjId);
+    if(p != NULL) {
+        objParam *pObjParam = (objParam *)p->name;
+        taskParams *pTaskParams = (taskParams *)pObjParam->task;
+        strncpy(pTaskParams->preview, type, sizeof(pTaskParams->preview));
+    }
+    else {
+        printf("objId %d not exsit\n", id);
+    }
+    semPost(&pObjParams->mutex_obj);
+
+end:
+    if(type != NULL) {
+        free(type);
+    }
 }
 
 static void request_preview_stop(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    node_common *p = NULL;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+
+    semWait(&pObjParams->mutex_obj);
+    searchFromQueue(&pObjParams->objQueue, &id, &p, conditionByObjId);
+    if(p != NULL) {
+        objParam *pObjParam = (objParam *)p->name;
+        taskParams *pTaskParams = (taskParams *)pObjParam->task;
+        memset(pTaskParams->preview, 0, sizeof(pTaskParams->preview));
+    }
+    else {
+        printf("objId %d not exsit\n", id);
+    }
+    semPost(&pObjParams->mutex_obj);
 }
 
 static void request_record_start(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    node_common *p = NULL;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+
+    semWait(&pObjParams->mutex_obj);
+    searchFromQueue(&pObjParams->objQueue, &id, &p, conditionByObjId);
+    if(p != NULL) {
+        objParam *pObjParam = (objParam *)p->name;
+        taskParams *pTaskParams = (taskParams *)pObjParam->task;
+        pTaskParams->record = 1;
+    }
+    else {
+        printf("objId %d not exsit\n", id);
+    }
+    semPost(&pObjParams->mutex_obj);
 }
 
 static void request_record_stop(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    node_common *p = NULL;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+
+    semWait(&pObjParams->mutex_obj);
+    searchFromQueue(&pObjParams->objQueue, &id, &p, conditionByObjId);
+    if(p != NULL) {
+        objParam *pObjParam = (objParam *)p->name;
+        taskParams *pTaskParams = (taskParams *)pObjParam->task;
+        pTaskParams->record = 0;
+    }
+    else {
+        printf("objId %d not exsit\n", id);
+    }
+    semPost(&pObjParams->mutex_obj);
 }
 
 static void request_record_play(struct evhttp_request *req, void *arg) {
@@ -356,10 +504,46 @@ static void request_record_play(struct evhttp_request *req, void *arg) {
 
 static void request_capture_start(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    node_common *p = NULL;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+
+    semWait(&pObjParams->mutex_obj);
+    searchFromQueue(&pObjParams->objQueue, &id, &p, conditionByObjId);
+    if(p != NULL) {
+        objParam *pObjParam = (objParam *)p->name;
+        taskParams *pTaskParams = (taskParams *)pObjParam->task;
+        pTaskParams->capture = 1;
+    }
+    else {
+        printf("objId %d not exsit\n", id);
+    }
+    semPost(&pObjParams->mutex_obj);
 }
 
 static void request_capture_stop(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    node_common *p = NULL;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+
+    semWait(&pObjParams->mutex_obj);
+    searchFromQueue(&pObjParams->objQueue, &id, &p, conditionByObjId);
+    if(p != NULL) {
+        objParam *pObjParam = (objParam *)p->name;
+        taskParams *pTaskParams = (taskParams *)pObjParam->task;
+        pTaskParams->capture = 0;
+    }
+    else {
+        printf("objId %d not exsit\n", id);
+    }
+    semPost(&pObjParams->mutex_obj);
 }
 
 static void request_alg_support(struct evhttp_request *req, void *arg) {
@@ -368,10 +552,54 @@ static void request_alg_support(struct evhttp_request *req, void *arg) {
 
 static void request_task_start(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    char *algName = NULL;
+    CommonParams params;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+    algName = getStrValFromJson(buf, "alg", NULL, NULL);
+    if(id < 0 || algName == NULL) {
+        goto end;
+    }
+
+    memset(&params, 0, sizeof(params));
+    params.arga = &pObjParams->mutex_obj;
+    params.argb = &pObjParams->objQueue;
+    addAlg(buf, id, algName, pAiotcParams, &params);
+
+end:
+    if(algName != NULL) {
+        free(algName);
+    }
 }
 
 static void request_task_stop(struct evhttp_request *req, void *arg) {
     request_first_stage;
+    char *algName = NULL;
+    CommonParams params;
+    CommonParams *pParams = (CommonParams *)arg;
+    char *buf = (char *)pParams->arga;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+
+    int id = getIntValFromJson(buf, "id", NULL, NULL);
+    algName = getStrValFromJson(buf, "alg", NULL, NULL);
+    if(id < 0 || algName == NULL) {
+        goto end;
+    }
+
+    memset(&params, 0, sizeof(params));
+    params.arga = &pObjParams->mutex_obj;
+    params.argb = &pObjParams->objQueue;
+    delAlg(buf, id, algName, pAiotcParams, &params);
+
+end:
+    if(algName != NULL) {
+        free(algName);
+    }
 }
 
 /*
@@ -385,8 +613,6 @@ static urlMap rest_url_map[] = {
     {"/system/login",       request_login},
     {"/system/logout",      request_logout},
     {"/system/init",        request_system_init},
-    {"/system/slave/add",   request_slave_add},
-    {"/system/slave/del",   request_slave_del},
     {"/system/slave/load",  request_system_load},
     {"/obj/add/tcp",        request_obj_add},
     {"/obj/add/ehome",      request_obj_add},
@@ -394,6 +620,7 @@ static urlMap rest_url_map[] = {
     {"/obj/add/rtsp",       request_obj_add},
     {"/obj/add/gb28181",    request_obj_add},
     {"/obj/add/sdk",        request_obj_add},
+    {"/obj/add",            request_obj_add},
     {"/obj/del",            request_obj_del},
     {"/obj/stream/start",   request_stream_start},
     {"/obj/stream/stop",    request_stream_stop},

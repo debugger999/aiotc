@@ -22,12 +22,11 @@
 #include "platform.h"
 #include "share.h"
 
-#define MASTER_OBJ_MAX  10000
 #define SLAVE_LOAD_MAX  90
 
 typedef struct {
-    char ip[32];
-    char internetIp[32];
+    char ip[48];
+    char internetIp[48];
     int restPort;
     int streamPort;
     int systemInit;
