@@ -25,6 +25,7 @@
 
 typedef struct {
     char name[32];
+    int algHeart;
     int running;
 } algParams;
 

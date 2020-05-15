@@ -43,7 +43,7 @@ int dirCheck(const char *dir);
 int conditionByObjId(node_common *p, void *arg);
 int conditionBySlaveIp(node_common *p, void *arg);
 int conditionByAlgName(node_common *p, void *arg);
-int systemInit(char *buf, aiotcParams *pAiotcParams);
+int systemInits(char *buf, aiotcParams *pAiotcParams);
 int addObj(char *buf, aiotcParams *pAiotcParams, int max, void *arg);
 int delObj(char *buf, aiotcParams *pAiotcParams, void *arg);
 int addAlg(char *buf, int id, char *algName, aiotcParams *pAiotcParams, void *arg);

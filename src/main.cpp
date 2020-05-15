@@ -25,6 +25,8 @@
 #include "obj.h"
 #include "pids.h"
 #include "system.h"
+#include "slave.h"
+#include "task.h"
 
 static int creatProcByPid(pid_t oldPid, aiotcParams *pAiotcParams) {
     pid_t pid;
@@ -32,7 +34,7 @@ static int creatProcByPid(pid_t oldPid, aiotcParams *pAiotcParams) {
     struct timeval tv;
 
     gettimeofday(&tv, NULL);
-    pOps = getOpsByPid(oldPid);
+    pOps = getOpsByPid(oldPid, pAiotcParams);
     if(pOps == NULL) {
         app_warring("get ops by pid %d failed", oldPid);
         return -1;
@@ -81,6 +83,7 @@ static int main_child_quit_signal(const int signal, void *ptr) {
 
 static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
     pAiotcParams->masterArgs = shmMalloc(pShmParams->headsp, sizeof(masterParams));
+    pAiotcParams->slaveArgs = shmMalloc(pShmParams->headsp, sizeof(slaveParams));
     pAiotcParams->restArgs = shmMalloc(pShmParams->headsp, sizeof(restParams));
     pAiotcParams->shmArgs = shmMalloc(pShmParams->headsp, sizeof(shmParams));
     pAiotcParams->configArgs = shmMalloc(pShmParams->headsp, sizeof(configParams));
@@ -89,6 +92,7 @@ static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
     pAiotcParams->systemArgs = shmMalloc(pShmParams->headsp, sizeof(systemParams));
     pAiotcParams->objArgs = shmMalloc(pShmParams->headsp, sizeof(objParams));
     memset(pAiotcParams->masterArgs, 0, sizeof(masterParams));
+    memset(pAiotcParams->slaveArgs, 0, sizeof(slaveParams));
     memset(pAiotcParams->restArgs, 0, sizeof(restParams));
     memset(pAiotcParams->shmArgs, 0, sizeof(shmParams));
     memset(pAiotcParams->configArgs, 0, sizeof(configParams));
@@ -97,6 +101,7 @@ static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
     memset(pAiotcParams->systemArgs, 0, sizeof(systemParams));
     memset(pAiotcParams->objArgs, 0, sizeof(objParams));
     ((masterParams *)pAiotcParams->masterArgs)->arg = pAiotcParams;
+    ((slaveParams *)pAiotcParams->slaveArgs)->arg = pAiotcParams;
     ((restParams *)pAiotcParams->restArgs)->arg = pAiotcParams;
     ((shmParams *)pAiotcParams->shmArgs)->arg = pAiotcParams;
     ((configParams *)pAiotcParams->configArgs)->arg = pAiotcParams;
@@ -106,6 +111,7 @@ static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
     ((systemParams *)pAiotcParams->objArgs)->arg = pAiotcParams;
 
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
+    pidsParams *pPidsParams = (pidsParams *)pAiotcParams->pidsArgs;
     objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
     if(sem_init(&pMasterParams->mutex_slave, 1, 1) < 0) {
       app_err("sem init failed");
@@ -116,6 +122,10 @@ static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
       return -1;
     }
     if(sem_init(&pObjParams->mutex_obj, 1, 1) < 0) {
+      app_err("sem init failed");
+      return -1;
+    }
+    if(sem_init(&pPidsParams->mutex_pid, 1, 1) < 0) {
       app_err("sem init failed");
       return -1;
     }
@@ -154,12 +164,15 @@ static int destroy(aiotcParams *pAiotcParams) {
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
     ncx_slab_pool_t *headsp = pShmParams->headsp;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
+    pidsParams *pPidsParams = (pidsParams *)pAiotcParams->pidsArgs;
     objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
 
     sem_destroy(&pMasterParams->mutex_slave);
     sem_destroy(&pMasterParams->mutex_mobj);
     sem_destroy(&pObjParams->mutex_obj);
+    sem_destroy(&pPidsParams->mutex_pid);
     shmFree(headsp, pAiotcParams->masterArgs);
+    shmFree(headsp, pAiotcParams->slaveArgs);
     shmFree(headsp, pAiotcParams->restArgs);
     shmFree(headsp, pAiotcParams->configArgs);
     shmFree(headsp, pAiotcParams->pidsArgs);
@@ -192,14 +205,51 @@ static int creatProcess(const char *name, aiotcParams *pAiotcParams) {
         exit(0);
     }
     else {
-        app_debug("%s pid : %d", name, pid);
         pOps->pid = pid;
+        put2PidQueue(pOps, pAiotcParams);
+        app_debug("%s pid : %d", name, pid);
     }
 
     return 0;
 }
 
+static int objManager(node_common *p, void *arg) {
+    int nowSec = (int)(*(__time_t *)arg);
+    objParam *pObjParam = (objParam *)p->name;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+    //aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
+
+    printf("objManager, id:%d, type:%s, subtype:%s, livestream:%d, capture:%d, record:%d, preview:%s, "
+            "liveCaptureHeart:%d, recordHeart:%d, nowSec:%d\n", 
+            pObjParam->id, pObjParam->type, pObjParam->subtype, 
+            pTaskParams->livestream, pTaskParams->capture, pTaskParams->record, 
+            pTaskParams->preview, pTaskParams->liveCaptureHeart, pTaskParams->recordHeart, nowSec);
+    if(pTaskParams->livestream && (nowSec - pTaskParams->liveCaptureHeart) > PROC_HEART_TIMEOUT) {
+    }
+
+    return 0;
+}
+
+static void *slave_objmanager_thread(void *arg) {
+    struct timeval tv;
+    aiotcParams *pAiotcParams = (aiotcParams *)arg;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+
+    while(pAiotcParams->running) {
+        gettimeofday(&tv, NULL);
+        semWait(&pObjParams->mutex_obj);
+        traverseQueue(&pObjParams->objQueue, &tv.tv_sec, objManager);
+        semPost(&pObjParams->mutex_obj);
+        sleep(1);
+    }
+
+    app_debug("run over");
+
+    return NULL;
+}
+
 static int createTasks(aiotcParams *pAiotcParams) {
+    pthread_t pid;
     configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
 
     if(pConfigParams->masterEnable) {
@@ -207,6 +257,12 @@ static int createTasks(aiotcParams *pAiotcParams) {
     }
     if(pConfigParams->masterEnable == 0 || pConfigParams->masterEnable == 2) {
         creatProcess("rest", pAiotcParams);
+        if(pthread_create(&pid, NULL, slave_objmanager_thread, pAiotcParams) != 0) {
+            app_err("pthread_create slave obj manager thread err");
+        }
+        else {
+            pthread_detach(pid);
+        }
     }
 
     return 0;

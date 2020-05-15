@@ -23,4 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 
+int decodeProcess(void *arg);
+
 #endif

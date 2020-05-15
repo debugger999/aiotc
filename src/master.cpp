@@ -30,7 +30,7 @@
 static int addSlave(char *buf, aiotcParams *pAiotcParams) {
     node_common node;
     char *slaveIp = NULL, *internetIp = NULL;
-    slaveParams *pSlaveParams = (slaveParams *)node.name;
+    slaveParam *pSlaveParam = (slaveParam *)node.name;
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
 
@@ -42,10 +42,10 @@ static int addSlave(char *buf, aiotcParams *pAiotcParams) {
     if(slaveIp == NULL || internetIp == NULL || restPort < 0 || streamPort < 0) {
         goto end;
     }
-    pSlaveParams->restPort = restPort;
-    pSlaveParams->streamPort = streamPort;
-    strncpy(pSlaveParams->ip, slaveIp, sizeof(pSlaveParams->ip));
-    strncpy(pSlaveParams->internetIp, internetIp, sizeof(pSlaveParams->internetIp));
+    pSlaveParam->restPort = restPort;
+    pSlaveParam->streamPort = streamPort;
+    strncpy(pSlaveParam->ip, slaveIp, sizeof(pSlaveParam->ip));
+    strncpy(pSlaveParam->internetIp, internetIp, sizeof(pSlaveParam->internetIp));
 
     node.arg = shmMalloc(pShmParams->headsp, strlen(buf) + 1);
     if(node.arg == NULL) {
@@ -99,7 +99,7 @@ static int systemInitCB(char *buf, void *arg) {
     if(original == NULL) {
         goto end;
     }
-    systemInit(original, pAiotcParams);
+    systemInits(original, pAiotcParams);
 
 end:
     if(original != NULL) {
@@ -192,7 +192,7 @@ static void master_request_system_init(struct evhttp_request *req, void *arg) {
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
 
-    systemInit(buf, pAiotcParams);
+    systemInits(buf, pAiotcParams);
     dbWrite(pAiotcParams->dbArgs, "systemInit", "original", buf, 
                         "original.msgOutParams.type", NULL, "mq");
 }
@@ -585,8 +585,8 @@ static int detachObjSlave(node_common *p, void *arg) {
     objParam *pObjParam = (objParam *)p->name;
 
     if(pObjParam->slave != NULL && pObjParam->attachSlave) {
-        slaveParams *pSlaveParams = (slaveParams *)pObjParam->slave;
-        if(!strncmp(slaveIp, pSlaveParams->ip, sizeof(pSlaveParams->ip))) {
+        slaveParam *pSlaveParam = (slaveParam *)pObjParam->slave;
+        if(!strncmp(slaveIp, pSlaveParam->ip, sizeof(pSlaveParam->ip))) {
             pObjParam->attachSlave = 0;
         }
     }
@@ -594,11 +594,11 @@ static int detachObjSlave(node_common *p, void *arg) {
     return 0;
 }
 
-static int detachSlave(aiotcParams *pAiotcParams, slaveParams *pSlaveParams) {
+static int detachSlave(aiotcParams *pAiotcParams, slaveParam *pSlaveParam) {
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
 
     semWait(&pMasterParams->mutex_mobj);
-    traverseQueue(&pMasterParams->mobjQueue, pSlaveParams->ip, detachObjSlave);
+    traverseQueue(&pMasterParams->mobjQueue, pSlaveParam->ip, detachObjSlave);
     semPost(&pMasterParams->mutex_mobj);
 
     return 0;
@@ -610,45 +610,50 @@ static int slaveLoad(node_common *p, void *arg) {
     struct timeval tv;
     httpAckParams ackParam;
     aiotcParams *pAiotcParams = (aiotcParams *)arg;
-    slaveParams *pSlaveParams = (slaveParams *)p->name;
+    slaveParam *pSlaveParam = (slaveParam *)p->name;
     systemParams *pSystemParams = (systemParams *)pAiotcParams->systemArgs;
 
     ackParam.buf = ack;
     ackParam.max = sizeof(ack);
-    snprintf(url, sizeof(url), "http://%s:%d/system/slave/load", pSlaveParams->ip, pSlaveParams->restPort);
+    snprintf(url, sizeof(url), "http://%s:%d/system/slave", pSlaveParam->ip, pSlaveParam->restPort);
     httpGet(url, &ackParam, 3);
 
-    int status = strstr(ack,"load") != NULL ? 1 : 0;
-    if(status) {
-        pSlaveParams->load = getIntValFromJson(ack, "data", "load", NULL);
-        if(!pSlaveParams->online) {
-            app_debug("detected online, %s:%d", pSlaveParams->ip, pSlaveParams->restPort);
-            if(!pSlaveParams->systemInit) {
-                snprintf(url, sizeof(url), "http://%s:%d/system/init", pSlaveParams->ip, pSlaveParams->restPort);
-                httpPost(url, pSystemParams->sysOrgData, NULL, 3);
-                pSlaveParams->systemInit = 1;
-            }
+    int status = strstr(ack,"systemInit") != NULL ? 1 : 0;
+    if(!status) {
+        if(!pSlaveParam->offline) {
             gettimeofday(&tv, NULL);
-            pSlaveParams->online = (int)tv.tv_sec;
+            pSlaveParam->offline = (int)tv.tv_sec;
+            pSlaveParam->systemInit = 0;
+            detachSlave(pAiotcParams, pSlaveParam);
+            app_warring("detected offline, %s:%d", pSlaveParam->ip, pSlaveParam->restPort);
         }
-        if(pSlaveParams->offline) {
-            pSlaveParams->offline = 0;
+        if(pSlaveParam->online) {
+            pSlaveParam->online = 0;
         }
     }
     else {
-        if(!pSlaveParams->offline) {
-            struct timeval tv;
-            gettimeofday(&tv, NULL);
-            pSlaveParams->offline = (int)tv.tv_sec;
-            detachSlave(pAiotcParams, pSlaveParams);
-            app_warring("detected offline, %s:%d", pSlaveParams->ip, pSlaveParams->restPort);
+        int systemInit = getIntValFromJson(ack, "data", "systemInit", NULL);
+        if(systemInit == 0) {
+            if(!pSlaveParam->online) {
+                app_debug("detected online, %s:%d", pSlaveParam->ip, pSlaveParam->restPort);
+                gettimeofday(&tv, NULL);
+                pSlaveParam->online = (int)tv.tv_sec;
+            }
+            if(pSlaveParam->offline) {
+                pSlaveParam->offline = 0;
+            }
+            if(pSystemParams->sysOrgData != NULL) {
+                snprintf(url, sizeof(url), "http://%s:%d/system/init", pSlaveParam->ip, pSlaveParam->restPort);
+                httpPost(url, pSystemParams->sysOrgData, NULL, 3);
+                if(!pSlaveParam->systemInit) {
+                    pSlaveParam->systemInit = 1;
+                }
+            }
         }
-        if(pSlaveParams->online) {
-            pSlaveParams->online = 0;
-        }
+        pSlaveParam->load = getIntValFromJson(ack, "data", "load", NULL);
     }
     //printf("slave, ip:%s, online:%d, offline:%d, load:%d, ack:%s\n", 
-    //        pSlaveParams->ip, pSlaveParams->online, pSlaveParams->offline, pSlaveParams->load, ack);
+    //        pSlaveParam->ip, pSlaveParam->online, pSlaveParam->offline, pSlaveParam->load, ack);
 
     return 0;
 }
@@ -674,26 +679,26 @@ static void *slave_load_thread(void *arg) {
 
 // TODO : load应该与obj类型关联
 static int _getlowestLoadSlave(node_common *p, void *arg) {
-    slaveParams **ppLowestSlave = (slaveParams **)arg;
-    slaveParams *pSlaveParams = (slaveParams *)p->name;
+    slaveParam **ppLowestSlave = (slaveParam **)arg;
+    slaveParam *pSlaveParam = (slaveParam *)p->name;
 
     if(*ppLowestSlave == NULL) {
-        if(pSlaveParams->online && pSlaveParams->systemInit && pSlaveParams->load < SLAVE_LOAD_MAX) {
-            *ppLowestSlave = pSlaveParams;
+        if(pSlaveParam->online && pSlaveParam->systemInit && pSlaveParam->load < SLAVE_LOAD_MAX) {
+            *ppLowestSlave = pSlaveParam;
         }
     }
     else {
-        slaveParams *pSlaveLast = *ppLowestSlave;
-        if(pSlaveParams->load < pSlaveLast->load && pSlaveParams->online && pSlaveParams->systemInit) {
-            *ppLowestSlave = pSlaveParams;
+        slaveParam *pSlaveLast = *ppLowestSlave;
+        if(pSlaveParam->load < pSlaveLast->load && pSlaveParam->online && pSlaveParam->systemInit) {
+            *ppLowestSlave = pSlaveParam;
         }
     }
 
     return 0;
 }
 
-slaveParams *getLowestLoadSlave(objParam *pObjParam) {
-    slaveParams *pLowestSlave = NULL;
+slaveParam *getLowestLoadSlave(objParam *pObjParam) {
+    slaveParam *pLowestSlave = NULL;
     aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
 
@@ -704,18 +709,18 @@ slaveParams *getLowestLoadSlave(objParam *pObjParam) {
     return pLowestSlave;
 }
 
-static int slaveIsNormal(int id, slaveParams *pSlaveParams) {
+static int slaveIsNormal(int id, slaveParam *pSlaveParam) {
     int normal = 1;
     struct timeval tv;
 
-    if(pSlaveParams->offline || pSlaveParams->systemInit == 0 || pSlaveParams->load >= SLAVE_LOAD_MAX) {
+    if(pSlaveParam->offline || pSlaveParam->systemInit == 0 || pSlaveParam->load >= SLAVE_LOAD_MAX) {
         normal = -1;
-        if(pSlaveParams->offline) {
+        if(pSlaveParam->offline) {
             gettimeofday(&tv, NULL);
-            int sec = (int)tv.tv_sec - pSlaveParams->offline;
+            int sec = (int)tv.tv_sec - pSlaveParam->offline;
             if(sec < 120) {
                 printf("objId:%d, old slave %s is offline, wait %d seconds ...\n", 
-                        id, pSlaveParams->ip, 120 - sec);
+                        id, pSlaveParam->ip, 120 - sec);
                 normal = 0;
             }
         }
@@ -727,14 +732,14 @@ static int slaveIsNormal(int id, slaveParams *pSlaveParams) {
 // slave离线的等待一定时间,如果还未上线,重新分配相关obj slave
 // old slave负载有空闲优先
 // 其次分配到最空闲slave
-static int objManager(node_common *p, void *arg) {
+static int mobjManager(node_common *p, void *arg) {
     int redirect = 0;
     objParam *pObjParam = (objParam *)p->name;
     aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
 
     if(pObjParam->slave != NULL && pObjParam->attachSlave == 0) {
         int normal;
-        slaveParams *pSlave = (slaveParams *)pObjParam->slave;
+        slaveParam *pSlave = (slaveParam *)pObjParam->slave;
         normal = slaveIsNormal(pObjParam->id, pSlave);
         if(normal == 1) {
             redirect = 1;
@@ -746,7 +751,7 @@ static int objManager(node_common *p, void *arg) {
         }
     }
     else if(pObjParam->slave == NULL) {
-        slaveParams *pSlave = getLowestLoadSlave(pObjParam);
+        slaveParam *pSlave = getLowestLoadSlave(pObjParam);
         if(pSlave != NULL) {
             redirect = 1;
             pObjParam->slave = pSlave;
@@ -763,11 +768,11 @@ static int objManager(node_common *p, void *arg) {
     if(redirect) {
         char url[256];
         char *originaldata;
-        slaveParams *pSlaveParams = (slaveParams *)pObjParam->slave;
+        slaveParam *pSlaveParam = (slaveParam *)pObjParam->slave;
 
         originaldata = delObjJson(pObjParam->originaldata, "slave", NULL, NULL);
         if(originaldata != NULL) {
-            snprintf(url, sizeof(url), "http://%s:%d/obj/add", pSlaveParams->ip, pSlaveParams->restPort);
+            snprintf(url, sizeof(url), "http://%s:%d/obj/add", pSlaveParam->ip, pSlaveParam->restPort);
             httpPost(url, originaldata, NULL, 3);
             free(originaldata);
         }
@@ -787,7 +792,7 @@ static void *master_objmanager_thread(void *arg) {
 
     while(pAiotcParams->running) {
         semWait(&pMasterParams->mutex_mobj);
-        traverseQueue(&pMasterParams->mobjQueue, NULL, objManager);
+        traverseQueue(&pMasterParams->mobjQueue, NULL, mobjManager);
         semPost(&pMasterParams->mutex_mobj);
         sleep(5);
     }

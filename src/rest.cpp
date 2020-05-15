@@ -23,6 +23,7 @@
 #include "typedef.h"
 #include "obj.h"
 #include "task.h"
+#include "slave.h"
 
 static void closeCallback(struct evhttp_connection* connection, void* arg) {
     if(arg != NULL) {
@@ -314,19 +315,27 @@ static void request_system_init(struct evhttp_request *req, void *arg) {
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
 
     if(pConfigParams->masterEnable != 2) {
-        systemInit(buf, pAiotcParams);
+        systemInits(buf, pAiotcParams);
+    }
+    if(!pSlaveParams->systemInit) {
+        pSlaveParams->systemInit = 1;
     }
 }
 
-static void request_system_load(struct evhttp_request *req, void *arg) {
+static void request_system_status(struct evhttp_request *req, void *arg) {
     request_first_stage;
     CommonParams *pParams = (CommonParams *)arg;
     char **ppbody = (char **)pParams->argb;
+    aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
 
+    // TODO : load
     *ppbody = (char *)malloc(256);
-     strcpy(*ppbody, "{\"code\":0,\"msg\":\"success\",\"data\":{\"load\":50}}"); // TODO
+     snprintf(*ppbody, 256, "{\"code\":0,\"msg\":\"success\","
+             "\"data\":{\"systemInit\":%d,\"load\":50}}", pSlaveParams->systemInit);
 }
 
 static void request_obj_add(struct evhttp_request *req, void *arg) {
@@ -613,7 +622,7 @@ static urlMap rest_url_map[] = {
     {"/system/login",       request_login},
     {"/system/logout",      request_logout},
     {"/system/init",        request_system_init},
-    {"/system/slave/load",  request_system_load},
+    {"/system/slave",       request_system_status},
     {"/obj/add/tcp",        request_obj_add},
     {"/obj/add/ehome",      request_obj_add},
     {"/obj/add/gat1400",    request_obj_add},
@@ -710,7 +719,9 @@ static int startRestTask(aiotcParams *pAiotcParams) {
 
 int restProcess(void *arg) {
     aiotcParams *pAiotcParams = (aiotcParams *)arg;
+    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
 
+    pSlaveParams->systemInit = 0;
     startRestTask(pAiotcParams);
     while(pAiotcParams->running) {
         sleep(2);

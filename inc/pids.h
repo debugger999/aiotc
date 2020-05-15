@@ -23,22 +23,28 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define PROC_LOAD_MAX       90
+#define PROC_HEART_TIMEOUT  10
+
 typedef int (*ProcFunc)(void *arg);
 
 typedef struct {
-    char name[32];
-    char subName[32];
-    pid_t pid;
-    ProcFunc proc;
-    int load;
-    int  lastReboot;
+    char        name[32];
+    char        subName[32];
+    ProcFunc    proc;
+    pid_t       pid;
+    int         load;
+    int         lastReboot;
+    void        *arg; // aiotcParams
 } PidOps;
 
-PidOps *getOpsByPid(pid_t pid);
+PidOps *getOpsByPid(pid_t pid, void *arg);
 PidOps *getOpsByName(const char *name );
+int put2PidQueue(PidOps *pOps, void *arg);
 
-// store every proc task params
 typedef struct {
+    sem_t mutex_pid;
+    queue_common pidQueue; // PidOps
     void *arg; // aiotcParams
 } pidsParams;
 

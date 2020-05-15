@@ -71,12 +71,11 @@ int conditionByObjId(node_common *p, void *arg) {
 
 int conditionBySlaveIp(node_common *p, void *arg) {
     char *slaveIp = (char *)arg;
-    slaveParams *pSlaveParams = (slaveParams *)p->name;
-    return !strcmp(slaveIp, pSlaveParams->ip);
+    slaveParam *pSlaveParam = (slaveParam *)p->name;
+    return !strcmp(slaveIp, pSlaveParam->ip);
 }
 
-
-int systemInit(char *buf, aiotcParams *pAiotcParams) {
+int systemInits(char *buf, aiotcParams *pAiotcParams) {
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
     systemParams *pSystemParams = (systemParams *)pAiotcParams->systemArgs;
 
@@ -224,10 +223,10 @@ int delObj(char *buf, aiotcParams *pAiotcParams, void *arg) {
 
 int httpPostSlave(const char *url, char *buf, objParam *pObjParam) {
     char urladdr[256];
-    slaveParams *pSlaveParams = (slaveParams *)pObjParam->slave;
+    slaveParam *pSlaveParam = (slaveParam *)pObjParam->slave;
 
     if(pObjParam->slave != NULL && pObjParam->attachSlave) {
-        snprintf(urladdr, sizeof(urladdr), "http://%s:%d%s", pSlaveParams->ip, pSlaveParams->restPort, url);
+        snprintf(urladdr, sizeof(urladdr), "http://%s:%d%s", pSlaveParam->ip, pSlaveParam->restPort, url);
         httpPost(urladdr, buf, NULL, 3);
     }
 

@@ -8,16 +8,20 @@ CFLAGS += -I../work/share/inc
 CFLAGS += -I../work/slab/inc
 CFLAGS += -I../work/libevent/inc
 CFLAGS += -I../work/mongodb/inc
+CFLAGS += -Ialg/face
 CFLAGS += -Istream -Irtsp -Igb28181 -Igat1400 -Iftp -Ihik/ehome -Ihik/sdk
 
 SRC = main.cpp
 SRC += master.cpp
 SRC += platform.cpp
 SRC += work.cpp
+SRC += decode.cpp
 SRC += rest.cpp db.cpp 
 SRC += misc.cpp shm.cpp pids.cpp
 SRC += stream/stream.cpp
 SRC += rtsp/rtsp.cpp
+SRC += hik/ehome/ehome.cpp
+SRC += alg/face/face.cpp
 
 LDFLAGS = -L../work/share/lib
 LDFLAGS += -L../work/cjson/lib

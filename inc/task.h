@@ -27,9 +27,11 @@ typedef struct {
     int livestream;
     int capture;
     int record;
+    int liveCaptureHeart;
+    int recordHeart;
     char preview[32];
     sem_t mutex_alg;
-    queue_common algQueue;
+    queue_common algQueue; // algParams
 } taskParams;
 
 #endif

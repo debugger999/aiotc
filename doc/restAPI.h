@@ -530,7 +530,7 @@
  * @apiParamExample {json} 请求样例：
  *                          {
  *                              "id":999,
- *                              "alg":"FaceCapture"
+ *                              "alg":"faceCapture"
  *                          }
  * @apiSuccess (200) {int}      code    0:成功 1:失败
  * @apiSuccess (200) {String}   msg     信息
@@ -548,7 +548,7 @@
  * @apiParamExample {json} 请求样例：
  *                          {
  *                              "id":999,
- *                              "alg":"FaceCapture"
+ *                              "alg":"faceCapture"
  *                          }
  * @apiSuccess (200) {int}      code    0:成功 1:失败
  * @apiSuccess (200) {String}   msg     信息

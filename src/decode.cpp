@@ -16,35 +16,17 @@
  *
  ******************************************************************************/
 
-#ifndef __AIOTC_MASTER_H__
-#define __AIOTC_MASTER_H__
-
 #include "platform.h"
-#include "share.h"
 
-#define SLAVE_LOAD_MAX  90
+int decodeProcess(void *arg) {
+    aiotcParams *pAiotcParams = (aiotcParams *)arg;
 
-typedef struct {
-    char ip[48];
-    char internetIp[48];
-    int restPort;
-    int streamPort;
-    int systemInit;
-    int load;
-    int online;     // sec
-    int offline;    // sec
-} slaveParam;
+    while(pAiotcParams->running) {
+        sleep(2);
+    }
 
-typedef struct {
-    int slaveLoadOk;
-    sem_t mutex_slave;
-    queue_common slaveQueue;
-    sem_t mutex_mobj;
-    queue_common mobjQueue;
-    int running;
-    void *arg; // aiotcParams
-} masterParams;
+    app_debug("run over");
 
-int masterProcess(void *args);
+    return 0;
+}
 
-#endif

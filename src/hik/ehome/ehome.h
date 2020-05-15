@@ -16,35 +16,13 @@
  *
  ******************************************************************************/
 
-#ifndef __AIOTC_MASTER_H__
-#define __AIOTC_MASTER_H__
+#ifndef __AIOTC_EHOME_H__
+#define __AIOTC_EHOME_H__
 
-#include "platform.h"
-#include "share.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#define SLAVE_LOAD_MAX  90
-
-typedef struct {
-    char ip[48];
-    char internetIp[48];
-    int restPort;
-    int streamPort;
-    int systemInit;
-    int load;
-    int online;     // sec
-    int offline;    // sec
-} slaveParam;
-
-typedef struct {
-    int slaveLoadOk;
-    sem_t mutex_slave;
-    queue_common slaveQueue;
-    sem_t mutex_mobj;
-    queue_common mobjQueue;
-    int running;
-    void *arg; // aiotcParams
-} masterParams;
-
-int masterProcess(void *args);
+int ehomeProcess(void *arg);
 
 #endif
