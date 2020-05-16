@@ -81,45 +81,45 @@ int getIntValFromJson(char *buf, const char *nameSub1, const char *nameSub2, con
     root = cJSON_Parse(buf);
     if(root == NULL) {
         app_err("cJSON_Parse err, buf:%s", buf);
-        goto err;
+        goto end;
     }
 
     if(nameSub1 == NULL) {
         app_err("nameSub1 is null");
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub1, 256);
     pSub1 = cJSON_GetObjectItem(root, name);
     if(pSub1 == NULL) {
         //printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub2 == NULL) {
         val = pSub1->valueint;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub2, 256);
     pSub2 = cJSON_GetObjectItem(pSub1, name);
     if(pSub2 == NULL) {
         //printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub3 == NULL) {
         val = pSub2->valueint;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub3, 256);
     pSub3 = cJSON_GetObjectItem(pSub2, name);
     if(pSub3 == NULL) {
         //printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     val = pSub3->valueint;
 
-err:
+end:
     if(root != NULL) {
         cJSON_Delete(root);
     }
@@ -136,45 +136,45 @@ int getIntValFromArray(char *buf, char *nameSub1, char *nameSub2, char *nameSub3
     root = cJSON_Parse(buf);
     if(root == NULL) {
         app_err("cJSON_Parse err, buf:%s", buf);
-        goto err;
+        goto end;
     }
 
     if(nameSub1 == NULL) {
         app_err("nameSub1 is null");
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub1, 256);
     pSub1 = cJSON_GetObjectItem(root, name);
     if(pSub1 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub2 == NULL) {
         pArray = pSub1;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub2, 256);
     pSub2 = cJSON_GetObjectItem(pSub1, name);
     if(pSub2 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub3 == NULL) {
         pArray = pSub2;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub3, 256);
     pSub3 = cJSON_GetObjectItem(pSub2, name);
     if(pSub3 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     pArray = pSub3;
 
-err:
+end:
     if(pArray != NULL) {
         int i;
         int size = cJSON_GetArraySize(pArray);
@@ -206,46 +206,46 @@ char *getBufFromArray(char *buf, char *nameSub1, char *nameSub2, char *nameSub3,
     root = cJSON_Parse(buf);
     if(root == NULL) {
         app_err("cJSON_Parse err, buf:%s", buf);
-        goto err;
+        goto end;
     }
 
     if(nameSub1 == NULL) {
         pArray = root;
         printf("nameSub1 is null\n");
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub1, 256);
     pSub1 = cJSON_GetObjectItem(root, name);
     if(pSub1 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub2 == NULL) {
         pArray = pSub1;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub2, 256);
     pSub2 = cJSON_GetObjectItem(pSub1, name);
     if(pSub2 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub3 == NULL) {
         pArray = pSub2;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub3, 256);
     pSub3 = cJSON_GetObjectItem(pSub2, name);
     if(pSub3 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     pArray = pSub3;
 
-err:
+end:
     if(pArray != NULL) {
         int size = cJSON_GetArraySize(pArray);
         if(size > 0 && index >= 0 && index < size) {
@@ -275,45 +275,45 @@ char *getArrayBufFromJson(char *buf, const char *nameSub1, const char *nameSub2,
     root = cJSON_Parse(buf);
     if(root == NULL) {
         app_err("cJSON_Parse err, buf:%s", buf);
-        goto err;
+        goto end;
     }
 
     if(nameSub1 == NULL) {
         app_err("nameSub1 is null");
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub1, 256);
     pSub1 = cJSON_GetObjectItem(root, name);
     if(pSub1 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub2 == NULL) {
         pArray = pSub1;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub2, 256);
     pSub2 = cJSON_GetObjectItem(pSub1, name);
     if(pSub2 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub3 == NULL) {
         pArray = pSub2;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub3, 256);
     pSub3 = cJSON_GetObjectItem(pSub2, name);
     if(pSub3 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     pArray = pSub3;
 
-err:
+end:
     if(pArray != NULL) {
         size = cJSON_GetArraySize(pArray);
         val = cJSON_Print(pArray);
@@ -336,45 +336,45 @@ double getDoubleValFromJson(char *buf, const char *nameSub1, const char *nameSub
     root = cJSON_Parse(buf);
     if(root == NULL) {
         app_err("cJSON_Parse err, buf:%s", buf);
-        goto err;
+        goto end;
     }
 
     if(nameSub1 == NULL) {
         app_err("nameSub1 is null");
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub1, 256);
     pSub1 = cJSON_GetObjectItem(root, name);
     if(pSub1 == NULL) {
         app_err("get json failed, %s", name);
-        goto err;
+        goto end;
     }
     if(nameSub2 == NULL) {
         val = pSub1->valuedouble;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub2, 256);
     pSub2 = cJSON_GetObjectItem(pSub1, name);
     if(pSub2 == NULL) {
         app_err("get json failed, %s", name);
-        goto err;
+        goto end;
     }
     if(nameSub3 == NULL) {
         val = pSub2->valuedouble;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub3, 256);
     pSub3 = cJSON_GetObjectItem(pSub2, name);
     if(pSub3 == NULL) {
         app_err("get json failed, %s", name);
-        goto err;
+        goto end;
     }
     val = pSub3->valuedouble;
 
-err:
+end:
     if(root != NULL) {
         cJSON_Delete(root);
     }
@@ -390,45 +390,45 @@ char *getStrValFromJson(char *buf, const char *nameSub1, const char *nameSub2, c
     root = cJSON_Parse(buf);
     if(root == NULL) {
         app_err("cJSON_Parse err, buf:%s", buf);
-        goto err;
+        goto end;
     }
 
     if(nameSub1 == NULL) {
         //printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub1, 256);
     pSub1 = cJSON_GetObjectItem(root, name);
     if(pSub1 == NULL) {
         //printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub2 == NULL) {
         valTmp = pSub1->valuestring;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub2, 256);
     pSub2 = cJSON_GetObjectItem(pSub1, name);
     if(pSub2 == NULL) {
         //printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub3 == NULL) {
         valTmp = pSub2->valuestring;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub3, 256);
     pSub3 = cJSON_GetObjectItem(pSub2, name);
     if(pSub3 == NULL) {
         //printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     valTmp = pSub3->valuestring;
 
-err:
+end:
     if(valTmp != NULL) {
         int len = (strlen(valTmp)+1)/1024*1024 + 1024;
         val = (char *)malloc(len);
@@ -454,45 +454,45 @@ char *getObjBufFromJson(char *buf, const char *nameSub1, const char *nameSub2, c
     root = cJSON_Parse(buf);
     if(root == NULL) {
         app_err("cJSON_Parse err, buf:%s", buf);
-        goto err;
+        goto end;
     }
 
     if(nameSub1 == NULL) {
         app_err("nameSub1 is null");
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub1, 256);
     pSub1 = cJSON_GetObjectItem(root, name);
     if(pSub1 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub2 == NULL) {
         val = cJSON_Print(pSub1);
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub2, 256);
     pSub2 = cJSON_GetObjectItem(pSub1, name);
     if(pSub2 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub3 == NULL) {
         val = cJSON_Print(pSub2);
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub3, 256);
     pSub3 = cJSON_GetObjectItem(pSub2, name);
     if(pSub3 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     val = cJSON_Print(pSub3);
 
-err:
+end:
     if(root != NULL) {
         cJSON_Delete(root);
     }
@@ -508,45 +508,45 @@ cJSON *getObjFromJson(char *buf, char *nameSub1, char *nameSub2, char *nameSub3)
     root = cJSON_Parse(buf);
     if(root == NULL) {
         app_err("cJSON_Parse err, buf:%s", buf);
-        goto err;
+        goto end;
     }
 
     if(nameSub1 == NULL) {
         app_err("nameSub1 is null");
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub1, 256);
     pSub1 = cJSON_GetObjectItem(root, name);
     if(pSub1 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub2 == NULL) {
         val = pSub1;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub2, 256);
     pSub2 = cJSON_GetObjectItem(pSub1, name);
     if(pSub2 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub3 == NULL) {
         val = pSub2;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub3, 256);
     pSub3 = cJSON_GetObjectItem(pSub2, name);
     if(pSub3 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     val = pSub3;
 
-err:
+end:
     if(root != NULL) {
         cJSON_Delete(root);
     }
@@ -564,47 +564,47 @@ char *delObjJson(char *buf, const char *nameSub1, const char *nameSub2, const ch
     root = cJSON_Parse(buf);
     if(root == NULL) {
         app_err("cJSON_Parse err, buf:%s", buf);
-        goto err;
+        goto end;
     }
     
     if(nameSub1 == NULL) {
         app_err("nameSub1 is null");
-        goto err;
+        goto end;
     }
     strncpy(name, nameSub1, 256);
     pSub1 = cJSON_GetObjectItem(root, name);
     if(pSub1 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub2 == NULL) {
         pSub = root;
         pName = nameSub1;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub2, 256);
     pSub2 = cJSON_GetObjectItem(pSub1, name);
     if(pSub2 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     if(nameSub3 == NULL) {
         pSub = pSub1;
         pName = nameSub2;
-        goto err;
+        goto end;
     }
 
     strncpy(name, nameSub3, 256);
     pSub3 = cJSON_GetObjectItem(pSub2, name);
     if(pSub3 == NULL) {
         printf("get json null, %s\n", name);
-        goto err;
+        goto end;
     }
     pSub = pSub2;
     pName = nameSub3;
 
-err:
+end:
     if(pSub != NULL) {
        cJSON_DeleteItemFromObject(pSub, pName);
     }
@@ -625,7 +625,7 @@ static char *readFile2Buf(const char *fileName) {
     FILE *fp = fopen(fileName, "rb");
     if(fp == NULL) {
         app_err("fopen %s failed", fileName);
-        goto err;
+        goto end;
     }
     fseek(fp, 0L, SEEK_END);
     cfgSize = ftell(fp);
@@ -633,13 +633,13 @@ static char *readFile2Buf(const char *fileName) {
     buf = (char *)malloc(cfgSize/1024*1024 + 1024);
     if(buf == NULL) {
         app_err("malloc %d failed", cfgSize);
-        goto err;
+        goto end;
     }
     memset(buf, 0, cfgSize/1024*1024 + 1024);
     if(fread(buf, 1, cfgSize, fp)){
     }
 
-err:
+end:
     if(fp != NULL) {
         fclose(fp);
     }

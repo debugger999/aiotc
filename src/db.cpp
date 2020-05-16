@@ -44,6 +44,9 @@ int configInit(configParams *pConfigParams) {
     pConfigParams->captureFrameSizeMax = getIntValFromFile(config, "capture", "frameSizeMax", NULL);
     pConfigParams->captureQueLen = getIntValFromFile(config, "capture", "queueLen", NULL);
     pConfigParams->captureSaveDays = getIntValFromFile(config, "capture", "picSaveDays", NULL);
+    pConfigParams->mainMsgKey = getIntValFromFile(config, "msgKey", "main", NULL);
+    pConfigParams->workMsgKey = getIntValFromFile(config, "msgKey", "work", NULL);
+    pConfigParams->restMsgKey = getIntValFromFile(config, "msgKey", "rest", NULL);
 
     str = getStrValFromFile(config, "db", "type", NULL);
     if(str != NULL) {
@@ -118,25 +121,25 @@ int dbOpen(void *dbArgs) {
     pDBParams->uri = mongoc_uri_new_with_error(uri_string, &error);
     if(pDBParams->uri == NULL) {
         app_err("parase %s err", uri_string);
-        goto err;
+        goto end;
     }
     pDBParams->client = mongoc_client_new_from_uri(pDBParams->uri);
     if(pDBParams->client == NULL) {
         app_err("new client failed, %s", uri_string);
-        goto err;
+        goto end;
     }
     mongoc_client_set_error_api(pDBParams->client, 2);
     mongoc_client_set_appname(pDBParams->client, "connect-example");
     pDBParams->database = mongoc_client_get_database(pDBParams->client, DB_NAME);
     if(pDBParams->database == NULL) {
         app_err("client get database failed, %s", uri_string);
-        goto err;
+        goto end;
     }
     app_debug("open %s success", uri_string);
 
     return 0;
 
-err:
+end:
     dbClose(dbArgs);
     return -1;
 }

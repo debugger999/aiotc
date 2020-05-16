@@ -22,29 +22,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "share.h"
 
 #define PROC_LOAD_MAX       90
-#define PROC_HEART_TIMEOUT  10
+#define PROC_BEAT_TIMEOUT   20
 
 typedef int (*ProcFunc)(void *arg);
 
 typedef struct {
-    char        name[32];
-    char        subName[32];
-    ProcFunc    proc;
-    pid_t       pid;
-    int         load;
-    int         lastReboot;
-    void        *arg; // aiotcParams
-} PidOps;
+    char            name[24];
+    char            subName[24];
+    char            taskName[24];
+    ProcFunc        proc;
+    pid_t           pid;
+    key_t           msgKey;
+    sem_t           mutex_pobj;
+    queue_common    pobjQueue; // objParam
+    int             load;
+    int             lastReboot;
+    void            *arg; // aiotcParams
+} pidOps;
 
-PidOps *getOpsByPid(pid_t pid, void *arg);
-PidOps *getOpsByName(const char *name );
-int put2PidQueue(PidOps *pOps, void *arg);
+pidOps *getOpsByPid(pid_t pid, void *arg);
+pidOps *getOpsByName(const char *name );
+int put2PidQueue(pidOps *pOps, void *arg);
+pidOps *getEmptyProc(const char *name, const char *subName, const char *taskName, void *arg);
+pidOps *getTaskProc(const char *name, const char *subName, const char *taskName, void *arg);
 
 typedef struct {
     sem_t mutex_pid;
-    queue_common pidQueue; // PidOps
+    queue_common pidQueue; // pidOps
     void *arg; // aiotcParams
 } pidsParams;
 

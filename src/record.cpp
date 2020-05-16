@@ -16,24 +16,17 @@
  *
  ******************************************************************************/
 
-#ifndef __AIOTC_TASK_H__
-#define __AIOTC_TASK_H__
+#include "platform.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+int recordProcess(void *arg) {
+    aiotcParams *pAiotcParams = (aiotcParams *)arg;
 
-typedef struct {
-    int livestream;
-    int liveBeat;
-    int capture;
-    int captureBeat;
-    int record;
-    int recordBeat;
-    char preview[32];
-    int previewBeat;
-    sem_t mutex_alg;
-    queue_common algQueue; // algParams
-} taskParams;
+    while(pAiotcParams->running) {
+        sleep(2);
+    }
 
-#endif
+    app_debug("run over");
+
+    return 0;
+}
+

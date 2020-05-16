@@ -19,10 +19,11 @@
 #include "platform.h"
 #include "db.h"
 #include "shm.h"
+#include "pids.h"
 #include "master.h"
 #include "rest.h"
 #include "work.h"
-#include "pids.h"
+#include "record.h"
 #include "stream.h"
 #include "rtsp.h"
 #include "ehome.h"
@@ -40,38 +41,43 @@
 // 进程任务启动依赖obj任务监控模块，避免rest命令传输启动导致的进程间状态耦合和维护；
 // 为了防止各种算法进程编译库冲突，alg模块独立为自己的编译工程，不适合fork
 // objManager : getEmptyProc(name, subName)->proc.start(cmd)
-static PidOps g_pid_ops[] = {
-    {"master",  "null",         masterProcess},
-    {"rest",    "null",         restProcess},
-    {"work",    "null",         workProcess},
-    {"obj",     "tcp",          streamProcess},
-    {"obj",     "rtsp",         rtspProcess},
-    {"obj",     "ehome",        ehomeProcess},
-    {"decode",  "video",        decodeProcess},
-    {"alg",     "face",         faceProcess},
+static pidOps g_pid_ops[] = {
+    {"master",  "null",     "null",         masterProcess},
+    {"rest",    "null",     "null",         restProcess},
+    {"work",    "null",     "null",         workProcess},
+    {"obj",     "rtsp",     "live",         rtspProcess},
+    {"obj",     "rtsp",     "preview",      rtspProcess},
+    {"obj",     "rtsp",     "record",       recordProcess},
+    {"obj",     "ehome",    "live",         ehomeProcess},
+    {"obj",     "ehome",    "capture",      ehomeProcess},
+    {"obj",     "ehome",    "preview",      ehomeProcess},
+    {"obj",     "ehome",    "record",       recordProcess},
+    {"obj",     "tcp",      "livestream",   streamProcess},
+    {"decode",  "video",    "null",         decodeProcess},
+    {"alg",     "face",     "null",         faceProcess},
     /*
-    {"obj",     "gb28181",      gb28181Process},
-    {"obj",     "gat1400",      gat1400Process},
-    {"obj",     "ftp",          ftpProcess},
-    {"alg",     "veh",          vehProcess},
-    {"alg",     "pose",         poseProcess},
-    {"alg",     "yolo",         yoloProcess},
+    {"obj",     "gb28181",  "null",         gb28181Process},
+    {"obj",     "gat1400",  "null",         gat1400Process},
+    {"obj",     "ftp",      "null",         ftpProcess},
+    {"alg",     "veh",      "null",         vehProcess},
+    {"alg",     "pose",     "null",         poseProcess},
+    {"alg",     "yolo",     "null",         yoloProcess},
     */
-    {"null",    "null",         NULL}
+    {"null",    "null",     "null",         NULL}
 };
 
-PidOps *getOpsByName(const char *name ) {
+pidOps *getOpsByName(const char *name ) {
     int i;
-    PidOps *pOps;
-    PidOps *pOpsRet = NULL;
+    pidOps *pOps;
+    pidOps *pOpsRet = NULL;
 
     for(i = 0; ; i ++) {
         pOps = g_pid_ops + i;
-        if(!strncasecmp(pOps->name, "null", 32)) {
+        if(!strncasecmp(pOps->name, "null", sizeof(pOps->name))) {
             app_warring("get proc by name %s failed", name);
             break;
         }
-        if(!strncasecmp(pOps->name, name, 32)) {
+        if(!strncasecmp(pOps->name, name, sizeof(pOps->name))) {
             pOpsRet = pOps;
             break;
         }
@@ -82,20 +88,20 @@ PidOps *getOpsByName(const char *name ) {
 
 static int conditionByPid(node_common *p, void *arg) {
     pid_t pid = *(pid_t *)arg;
-    PidOps *pOps = (PidOps *)p->name;
+    pidOps *pOps = (pidOps *)p->name;
     return pid == pOps->pid;
 }
 
-PidOps *getOpsByPid(pid_t pid, void *arg) {
+pidOps *getOpsByPid(pid_t pid, void *arg) {
     node_common *p = NULL;
-    PidOps *pOpsRet = NULL;
+    pidOps *pOpsRet = NULL;
     aiotcParams *pAiotcParams = (aiotcParams *)arg;
     pidsParams *pPidsParams = (pidsParams *)pAiotcParams->pidsArgs;
 
     semWait(&pPidsParams->mutex_pid);
     searchFromQueue(&pPidsParams->pidQueue, &pid, &p, conditionByPid);
     if(p != NULL) {
-        pOpsRet = (PidOps *)p->name;
+        pOpsRet = (pidOps *)p->name;
     }
     else {
         printf("pid %d not exsit\n", pid);
@@ -105,21 +111,33 @@ PidOps *getOpsByPid(pid_t pid, void *arg) {
     return pOpsRet;
 }
 
-int put2PidQueue(PidOps *pOps, void *arg) {
+int put2PidQueue(pidOps *pOps, void *arg) {
     node_common node;
-    PidOps *p = (PidOps *)node.name;
+    pidOps *p = (pidOps *)node.name;
     aiotcParams *pAiotcParams = (aiotcParams *)arg;
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
     pidsParams *pPidsParams = (pidsParams *)pAiotcParams->pidsArgs;
     configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
 
     memset(&node, 0, sizeof(node));
-    memcpy(p, pOps, sizeof(PidOps));
+    memcpy(p, pOps, sizeof(pidOps));
+    if(sem_init(&p->mutex_pobj, 1, 1) < 0) {
+      app_err("sem init failed");
+      return -1;
+    }
     p->arg = pAiotcParams;
     semWait(&pPidsParams->mutex_pid);
     putToShmQueue(pShmParams->headsp, &pPidsParams->pidQueue, &node, pConfigParams->slaveObjMax*3);
     semPost(&pPidsParams->mutex_pid);
 
     return 0;
+}
+
+pidOps *getEmptyProc(const char *name, const char *subName, const char *taskName, void *arg) {
+    return NULL;
+}
+
+pidOps *getTaskProc(const char *name, const char *subName, const char *taskName, void *arg) {
+    return NULL;
 }
 

@@ -93,26 +93,26 @@ static int httpClient(enum evhttp_cmd_type httpCmd, char *url, char *data,
     if (NULL == http_uri) {
         ret = URL_ERR;
         printf("parse url failed, url:%s\n", url);
-        goto err;
+        goto end;
     }
     host = evhttp_uri_get_host(http_uri);
     if (NULL == host) {
         ret = URL_ERR;
         printf("parse host failed, url:%s\n", url);
-        goto err;
+        goto end;
     }
     port = evhttp_uri_get_port(http_uri);
     if (port == -1) {
         ret = URL_ERR;
         printf("parse port failed, url:%s\n", url);
-        goto err;
+        goto end;
     }
 
     path = evhttp_uri_get_path(http_uri);
     if(path == NULL) {
         ret = URL_ERR;
         printf("get path failed, url:%s\n", url);
-        goto err;
+        goto end;
     }
     if(strlen(path) == 0) {
         path = "/";
@@ -130,17 +130,17 @@ static int httpClient(enum evhttp_cmd_type httpCmd, char *url, char *data,
     base = event_base_new();
     if (NULL == base) {
         printf("create event base failed, url:%s\n", url);
-        goto err;
+        goto end;
     }
     dnsbase = evdns_base_new(base, EVDNS_BASE_INITIALIZE_NAMESERVERS);
     if (NULL == dnsbase) {
         printf("create dns base failed!\n");
-        goto err;
+        goto end;
     }
     evcon = evhttp_connection_base_new(base, dnsbase, host, port);
     if (NULL == evcon) {
         printf("base new failed, url:%s\n", url);
-        goto err;
+        goto end;
     }
     evhttp_connection_set_retries(evcon, 3);
     evhttp_connection_set_timeout(evcon, timeoutSec);
@@ -149,7 +149,7 @@ static int httpClient(enum evhttp_cmd_type httpCmd, char *url, char *data,
     request = evhttp_request_new(readCallback, pAckParams);
     if(request == NULL) {
         printf("request new failed, url:%s\n", url);
-        goto err;
+        goto end;
     }
     evhttp_request_set_error_cb(request, errCallback);
 
@@ -170,7 +170,7 @@ static int httpClient(enum evhttp_cmd_type httpCmd, char *url, char *data,
     ret = evhttp_make_request(evcon, request, httpCmd, requesturl);
     if (ret != 0) {
         printf("make request failed\n");
-        goto err;
+        goto end;
     }
     timeOut.tv_sec = timeoutSec;
     timeOut.tv_usec = 0;
@@ -178,11 +178,11 @@ static int httpClient(enum evhttp_cmd_type httpCmd, char *url, char *data,
     ret = event_base_dispatch(base);
     if(ret != 0) {
         printf("dispatch failed\n");
-        goto err;
+        goto end;
     }
     ret = 0;
 
-err:
+end:
     if(evcon != NULL) {
         evhttp_connection_free(evcon);
     }

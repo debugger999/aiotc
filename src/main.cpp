@@ -27,10 +27,11 @@
 #include "system.h"
 #include "slave.h"
 #include "task.h"
+#include "msg.h"
 
 static int creatProcByPid(pid_t oldPid, aiotcParams *pAiotcParams) {
     pid_t pid;
-    PidOps *pOps;
+    pidOps *pOps;
     struct timeval tv;
 
     gettimeofday(&tv, NULL);
@@ -187,7 +188,7 @@ static int destroy(aiotcParams *pAiotcParams) {
 
 static int creatProcess(const char *name, aiotcParams *pAiotcParams) {
     pid_t pid;
-    PidOps *pOps;
+    pidOps *pOps;
 
     pOps = getOpsByName(name);
     if(pOps == NULL) {
@@ -213,18 +214,86 @@ static int creatProcess(const char *name, aiotcParams *pAiotcParams) {
     return 0;
 }
 
+static int startTask(const char *name, const char *taskName, objParam *pObjParam) {
+    pidOps *pOps;
+    char cmd[128];
+    aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+
+    pOps = getEmptyProc(name, pObjParam->subtype, taskName, pObjParam);
+    if(pOps != NULL) {
+        snprintf(cmd, sizeof(cmd), "{\"cmd\":\"startTask\",\"data\":{\"id\":%d,\"val\":%s}}",
+                pObjParam->id, taskName);
+        msgSend(cmd, pOps->msgKey, pConfigParams->mainMsgKey);
+    }
+    else {
+        app_warring("get empty proc failed, id:%d,%s,%s,%s", 
+                pObjParam->id, name, pObjParam->subtype, taskName);
+    }
+
+    return 0;
+}
+
+static int stopTask(const char *name, const char *taskName, objParam *pObjParam) {
+    pidOps *pOps;
+    char cmd[128];
+
+    pOps = getTaskProc(name, pObjParam->subtype, taskName, pObjParam);
+    if(pOps != NULL) {
+        snprintf(cmd, sizeof(cmd), "{\"cmd\":\"stopTask\",\"data\":{\"id\":%d,\"val\":%s}}",
+                pObjParam->id, taskName);
+        msgSend(cmd, pOps->msgKey, 0);
+    }
+    else {
+        app_warring("get task proc failed, id:%d,%s,%s,%s", 
+                pObjParam->id, name, pObjParam->subtype, taskName);
+    }
+
+    return 0;
+}
+
 static int objManager(node_common *p, void *arg) {
+    pidOps *pOps;
     int nowSec = (int)(*(__time_t *)arg);
     objParam *pObjParam = (objParam *)p->name;
     taskParams *pTaskParams = (taskParams *)pObjParam->task;
-    //aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
 
     printf("objManager, id:%d, type:%s, subtype:%s, livestream:%d, capture:%d, record:%d, preview:%s, "
-            "liveCaptureHeart:%d, recordHeart:%d, nowSec:%d\n", 
-            pObjParam->id, pObjParam->type, pObjParam->subtype, 
-            pTaskParams->livestream, pTaskParams->capture, pTaskParams->record, 
-            pTaskParams->preview, pTaskParams->liveCaptureHeart, pTaskParams->recordHeart, nowSec);
-    if(pTaskParams->livestream && (nowSec - pTaskParams->liveCaptureHeart) > PROC_HEART_TIMEOUT) {
+            "liveBeat:%d, captureBeat:%d, recordBeat:%d, nowSec:%d\n", 
+            pObjParam->id, pObjParam->type, pObjParam->subtype, pTaskParams->livestream, 
+            pTaskParams->capture, pTaskParams->record, pTaskParams->preview, 
+            pTaskParams->liveBeat, pTaskParams->captureBeat, pTaskParams->recordBeat, nowSec);
+    // check start
+    if(pTaskParams->livestream && (nowSec - pTaskParams->liveBeat) > PROC_BEAT_TIMEOUT) {
+        startTask("obj", "livestream", pObjParam);
+    }
+    if(pTaskParams->capture && (nowSec - pTaskParams->captureBeat) > PROC_BEAT_TIMEOUT) {
+        startTask("obj", "capture", pObjParam);
+    }
+    if(pTaskParams->record && (nowSec - pTaskParams->recordBeat) > PROC_BEAT_TIMEOUT) {
+        startTask("obj", "record", pObjParam);
+    }
+    if(strlen(pTaskParams->preview) > 0 && (nowSec - pTaskParams->previewBeat) > PROC_BEAT_TIMEOUT) {
+        startTask("obj", "preview", pObjParam);
+    }
+    if(0) {
+        pOps = getEmptyProc("alg", "face", "null", pObjParam);
+        if(pOps != NULL) {
+        }
+    }
+
+    // check stop
+    if(pTaskParams->livestream == 0 && pTaskParams->liveBeat > 0) {
+        stopTask("obj", "livestream", pObjParam);
+    }
+    if(pTaskParams->capture == 0 && pTaskParams->captureBeat > 0) {
+        stopTask("obj", "capture", pObjParam);
+    }
+    if(pTaskParams->record == 0 && pTaskParams->recordBeat > 0) {
+        stopTask("obj", "record", pObjParam);
+    }
+    if(strlen(pTaskParams->preview) == 0 && pTaskParams->previewBeat > 0) {
+        stopTask("obj", "preview", pObjParam);
     }
 
     return 0;

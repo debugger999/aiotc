@@ -16,24 +16,13 @@
  *
  ******************************************************************************/
 
-#ifndef __AIOTC_TASK_H__
-#define __AIOTC_TASK_H__
+#ifndef __AIOTC_RECORD_H__
+#define __AIOTC_RECORD_H__
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct {
-    int livestream;
-    int liveBeat;
-    int capture;
-    int captureBeat;
-    int record;
-    int recordBeat;
-    char preview[32];
-    int previewBeat;
-    sem_t mutex_alg;
-    queue_common algQueue; // algParams
-} taskParams;
+int recordProcess(void *arg);
 
 #endif

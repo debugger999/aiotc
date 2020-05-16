@@ -53,6 +53,10 @@ typedef struct {
     int captureQueLen;
     int captureSaveDays;
 
+    int mainMsgKey;
+    int workMsgKey;
+    int restMsgKey;
+
     char dbType[32];
     char dbHost[64];
     int dbPort;
