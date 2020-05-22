@@ -17,9 +17,11 @@
  ******************************************************************************/
 
 #include "platform.h"
+#include "pids.h"
 
 int ehomeProcess(void *arg) {
-    aiotcParams *pAiotcParams = (aiotcParams *)arg;
+    pidOps *pOps = (pidOps *)arg;
+    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
 
     while(pAiotcParams->running) {
         sleep(2);

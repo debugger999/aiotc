@@ -136,7 +136,7 @@ int addObj(char *buf, aiotcParams *pAiotcParams, int max, void *arg) {
     taskParams *pTaskParams;
     char *name = NULL, *type = NULL, *subtype = NULL;
     objParam *pObjParam = (objParam *)node.name;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     sem_t *mutex = (sem_t *)pParams->arga;
     queue_common *queue = (queue_common *)pParams->argb;
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
@@ -189,7 +189,7 @@ end:
 int delObj(char *buf, aiotcParams *pAiotcParams, void *arg) {
     int id;
     node_common *p = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     sem_t *mutex = (sem_t *)pParams->arga;
     queue_common *queue = (queue_common *)pParams->argb;
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
@@ -236,7 +236,7 @@ int httpPostSlave(const char *url, char *buf, objParam *pObjParam) {
 int addAlg(char *buf, int id, char *algName, aiotcParams *pAiotcParams, void *arg) {
     node_common node;
     node_common *p = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     sem_t *mutex = (sem_t *)pParams->arga;
     queue_common *queue = (queue_common *)pParams->argb;
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
@@ -272,7 +272,7 @@ int conditionByAlgName(node_common *p, void *arg) {
 
 int delAlg(char *buf, int id, char *algName, aiotcParams *pAiotcParams, void *arg) {
     node_common *p = NULL, *palg = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     sem_t *mutex = (sem_t *)pParams->arga;
     queue_common *queue = (queue_common *)pParams->argb;
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
@@ -300,6 +300,104 @@ int delAlg(char *buf, int id, char *algName, aiotcParams *pAiotcParams, void *ar
     }
     semPost(mutex);
     
+    return 0;
+}
+
+static int checkMsgKey(char *key_str, void *arg) {
+    aiotcParams *pAiotcParams = (aiotcParams *)arg;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+
+    long key = strtol(key_str, NULL, 10);
+    long tmp = key - pConfigParams->msgKeyStart;
+    if(tmp>=0 && tmp<=pConfigParams->msgKeyMax)
+        return 0;
+
+    return -1;
+}
+
+static void clearMsg(char *id_str) {
+    int id = atoi(id_str);
+    msgctl(id, IPC_RMID, NULL);
+}
+
+//1:yes 0:no
+static int check_is_num_str(char *str) {
+    char s = 0;
+    int len = strlen(str);
+
+    if(len == 0)
+        return 0;
+
+    while((s = (* (str++)) )
+            !='\0' )
+    {
+        if(!isdigit(s))
+        {
+            return 0; 
+        }
+    }
+    return 1;
+}
+
+static void dealBuffer(char *buffer, int (*check)(char *, void *), void(*clear)(char *), void *arg) {
+    char *p = buffer;
+    char preflag = 0; //1:number or letters
+    char *key_str = NULL;
+    char *id_str = NULL;
+    while(*p!='\0' && *p!='\n')
+    {
+        if(!isalnum(*p))
+        {
+            if(preflag==1)
+            {
+                *p = '\0';
+                if(key_str!=NULL)
+                {
+                    if(!check_is_num_str(key_str))
+                    {
+                        key_str = NULL;
+                        break;
+                    }
+                }    
+                else if(id_str!=NULL)
+                {
+                    if(!check_is_num_str(id_str))
+                        id_str = NULL;
+                    break;
+                }
+            }
+            preflag=0;
+        }else{
+            if(preflag==0)
+            {
+                if(key_str == NULL)
+                    key_str = p;
+                else if(id_str == NULL)
+                    id_str = p;
+            }
+            preflag = 1;
+        }
+        p++;
+    }
+    if(key_str!=NULL && id_str!=NULL)
+    {
+        if(!check(key_str, arg))
+        {
+            //printf("clean key:%s , id:%s\n",key_str,id_str);
+            clear(id_str);
+        } 
+    }
+}
+
+int clearSystemIpc(aiotcParams *pAiotcParams) {
+    char buf[1024] = {0};
+    FILE *fp = fopen("/proc/sysvipc/msg","r");
+    if(fp != NULL) {
+        while(fgets(buf, sizeof(buf)-1, fp)!=NULL) {
+            dealBuffer(buf, checkMsgKey, clearMsg, pAiotcParams);
+        }
+        fclose(fp);
+    } 
     return 0;
 }
 

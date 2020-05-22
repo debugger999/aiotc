@@ -23,9 +23,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/shm.h>
+#include <semaphore.h>
+#include <errno.h>
+#include "log.h"
 
 #define COMMON_QUEUE_MAX        10000
-#define MSG_BUF_LEN             256
 
 typedef struct nodecommon {
     char name[256];
@@ -40,20 +45,6 @@ typedef struct {
     int useMax;
     int queLen;
 } queue_common;
-
-typedef struct {
-    key_t key;
-    int running;
-    int (*msgTaskFunc)(char *buf, void *arg);
-    void *arg;
-} msgParams;
-
-typedef struct {
-    long type;
-    long long int ptr; // for msg ack
-    char buf[MSG_BUF_LEN];
-} msgBufParams;
-#define MSG_LEN (sizeof(msgBufParams) - sizeof(long))
 
 int getLocalIp(char hostIp[128]);
 int connectServer(char *ip, int port);

@@ -37,7 +37,7 @@ typedef struct {
     void *argd;
     void *arge;
     COMMONCALLBACK func;
-} CommonParams;
+} commonParams;
 
 int dirCheck(const char *dir);
 int conditionByObjId(node_common *p, void *arg);
@@ -49,5 +49,6 @@ int delObj(char *buf, aiotcParams *pAiotcParams, void *arg);
 int addAlg(char *buf, int id, char *algName, aiotcParams *pAiotcParams, void *arg);
 int delAlg(char *buf, int id, char *algName, aiotcParams *pAiotcParams, void *arg);
 int httpPostSlave(const char *url, char *buf, objParam *pObjParam);
+int clearSystemIpc(aiotcParams *pAiotcParams);
 
 #endif

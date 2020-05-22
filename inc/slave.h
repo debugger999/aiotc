@@ -26,6 +26,11 @@
 
 typedef struct {
     int systemInit;
+    int mainMsgKey;
+    int workMsgKey;
+    int restMsgKey;
+    int *keyCache;
+    int load;
     void *arg; // aiotcParams
 } slaveParams;
 

@@ -23,6 +23,30 @@
 #include <stdlib.h>
 #include <string.h>
 
-int msgSend(char *buf, int sendkey, int recvKey);
+#define MSG_BUF_LEN             256
+
+typedef struct {
+    char cmd[64];
+    int (*cmdTaskFunc)(char *buf, void *arg);
+} cmdTaskParams;
+
+typedef struct {
+    key_t key;
+    cmdTaskParams *pUserCmdParams;
+    int (*msgTaskFunc)(char *buf, void *arg);
+    int running;
+    void *arg;
+} msgParams;
+
+typedef struct {
+    long type;
+    int key;
+    long long int ptr; // for msg ack
+    char buf[MSG_BUF_LEN];
+} msgBufParams;
+#define MSG_LEN (sizeof(msgBufParams) - sizeof(long))
+
+int msgSend(char *buf, int sendkey, int recvKey, int recvTimeout);
+int createMsgThread(msgParams *pMsgParams);
 
 #endif

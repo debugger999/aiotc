@@ -17,6 +17,7 @@ SRC += platform.cpp
 SRC += work.cpp
 SRC += decode.cpp
 SRC += record.cpp
+SRC += preview.cpp
 SRC += msg.cpp
 SRC += rest.cpp db.cpp 
 SRC += misc.cpp shm.cpp pids.cpp

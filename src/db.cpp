@@ -44,9 +44,8 @@ int configInit(configParams *pConfigParams) {
     pConfigParams->captureFrameSizeMax = getIntValFromFile(config, "capture", "frameSizeMax", NULL);
     pConfigParams->captureQueLen = getIntValFromFile(config, "capture", "queueLen", NULL);
     pConfigParams->captureSaveDays = getIntValFromFile(config, "capture", "picSaveDays", NULL);
-    pConfigParams->mainMsgKey = getIntValFromFile(config, "msgKey", "main", NULL);
-    pConfigParams->workMsgKey = getIntValFromFile(config, "msgKey", "work", NULL);
-    pConfigParams->restMsgKey = getIntValFromFile(config, "msgKey", "rest", NULL);
+    pConfigParams->msgKeyStart = getIntValFromFile(config, "msgKey", "start", NULL);
+    pConfigParams->msgKeyMax = getIntValFromFile(config, "msgKey", "max", NULL);
 
     str = getStrValFromFile(config, "db", "type", NULL);
     if(str != NULL) {

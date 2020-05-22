@@ -26,6 +26,7 @@
 #include "obj.h"
 #include "task.h"
 #include "alg.h"
+#include "pids.h"
 
 static int addSlave(char *buf, aiotcParams *pAiotcParams) {
     node_common node;
@@ -127,7 +128,7 @@ end:
 
 static int objInitCB(char *buf, void *arg) {
     char *original = NULL;
-    CommonParams params;
+    commonParams params;
     aiotcParams *pAiotcParams = (aiotcParams *)arg;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
     configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
@@ -158,7 +159,7 @@ static int initMasterFromDB(aiotcParams *pAiotcParams) {
 static void master_request_login(struct evhttp_request *req, void *arg) {
     request_first_stage;
     char *userName = NULL, *passWord = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     char **ppbody = (char **)pParams->argb;
 
@@ -188,7 +189,7 @@ static void master_request_logout(struct evhttp_request *req, void *arg) {
 
 static void master_request_system_init(struct evhttp_request *req, void *arg) {
     request_first_stage;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
 
@@ -199,7 +200,7 @@ static void master_request_system_init(struct evhttp_request *req, void *arg) {
 
 static void master_request_slave_add(struct evhttp_request *req, void *arg) {
     request_first_stage;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
 
@@ -215,7 +216,7 @@ static void master_request_slave_add(struct evhttp_request *req, void *arg) {
 
 static void master_request_slave_del(struct evhttp_request *req, void *arg) {
     request_first_stage;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
 
@@ -230,8 +231,8 @@ static void master_request_slave_del(struct evhttp_request *req, void *arg) {
 
 static void master_request_obj_add(struct evhttp_request *req, void *arg) {
     request_first_stage;
-    CommonParams params;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams params;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -249,8 +250,8 @@ static void master_request_obj_add(struct evhttp_request *req, void *arg) {
 
 static void master_request_obj_del(struct evhttp_request *req, void *arg) {
     request_first_stage;
-    CommonParams params;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams params;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -263,7 +264,7 @@ static void master_request_obj_del(struct evhttp_request *req, void *arg) {
 static void master_request_stream_start(struct evhttp_request *req, void *arg) {
     request_first_stage;
     node_common *p = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -288,7 +289,7 @@ static void master_request_stream_start(struct evhttp_request *req, void *arg) {
 static void master_request_stream_stop(struct evhttp_request *req, void *arg) {
     request_first_stage;
     node_common *p = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -314,7 +315,7 @@ static void master_request_preview_start(struct evhttp_request *req, void *arg) 
     request_first_stage;
     char *type = NULL;
     node_common *p = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -348,7 +349,7 @@ end:
 static void master_request_preview_stop(struct evhttp_request *req, void *arg) {
     request_first_stage;
     node_common *p = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -373,7 +374,7 @@ static void master_request_preview_stop(struct evhttp_request *req, void *arg) {
 static void master_request_record_start(struct evhttp_request *req, void *arg) {
     request_first_stage;
     node_common *p = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -398,7 +399,7 @@ static void master_request_record_start(struct evhttp_request *req, void *arg) {
 static void master_request_record_stop(struct evhttp_request *req, void *arg) {
     request_first_stage;
     node_common *p = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -427,7 +428,7 @@ static void master_request_record_play(struct evhttp_request *req, void *arg) {
 static void master_request_capture_start(struct evhttp_request *req, void *arg) {
     request_first_stage;
     node_common *p = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -452,7 +453,7 @@ static void master_request_capture_start(struct evhttp_request *req, void *arg) 
 static void master_request_capture_stop(struct evhttp_request *req, void *arg) {
     request_first_stage;
     node_common *p = NULL;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -481,8 +482,8 @@ static void master_request_alg_support(struct evhttp_request *req, void *arg) {
 static void master_request_task_start(struct evhttp_request *req, void *arg) {
     request_first_stage;
     char *algName = NULL;
-    CommonParams params;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams params;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -513,8 +514,8 @@ end:
 static void master_request_task_stop(struct evhttp_request *req, void *arg) {
     request_first_stage;
     char *algName = NULL;
-    CommonParams params;
-    CommonParams *pParams = (CommonParams *)arg;
+    commonParams params;
+    commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
@@ -662,6 +663,7 @@ static void *slave_load_thread(void *arg) {
     aiotcParams *pAiotcParams = (aiotcParams *)arg;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
 
+    sleep(5);
     while(pAiotcParams->running) {
         semWait(&pMasterParams->mutex_slave);
         traverseQueue(&pMasterParams->slaveQueue, pAiotcParams, slaveLoad);
@@ -842,7 +844,8 @@ static int masterUninit(aiotcParams *pAiotcParams) {
 }
 
 int masterProcess(void *arg) {
-    aiotcParams *pAiotcParams = (aiotcParams *)arg;
+    pidOps *pOps = (pidOps *)arg;
+    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
 
     masterInit(pAiotcParams);
     mstartTask(pAiotcParams);

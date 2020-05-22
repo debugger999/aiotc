@@ -44,10 +44,11 @@ typedef struct {
 } pidOps;
 
 pidOps *getOpsByPid(pid_t pid, void *arg);
-pidOps *getOpsByName(const char *name );
-int put2PidQueue(pidOps *pOps, void *arg);
+pidOps *getOpsByName(const char *name, const char *subName, const char *taskName);
 pidOps *getEmptyProc(const char *name, const char *subName, const char *taskName, void *arg);
 pidOps *getTaskProc(const char *name, const char *subName, const char *taskName, void *arg);
+pid_t createProcess(const char *name, const char *subName, const char *taskName, void *arg);
+int creatProcByPid(pid_t oldPid, int status, void *arg);
 
 typedef struct {
     sem_t mutex_pid;

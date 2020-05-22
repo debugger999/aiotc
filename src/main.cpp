@@ -29,40 +29,6 @@
 #include "task.h"
 #include "msg.h"
 
-static int creatProcByPid(pid_t oldPid, aiotcParams *pAiotcParams) {
-    pid_t pid;
-    pidOps *pOps;
-    struct timeval tv;
-
-    gettimeofday(&tv, NULL);
-    pOps = getOpsByPid(oldPid, pAiotcParams);
-    if(pOps == NULL) {
-        app_warring("get ops by pid %d failed", oldPid);
-        return -1;
-    }
-    if((int)tv.tv_sec - pOps->lastReboot < 300) {
-        app_warring("proc %s, pid %d, restart too high frequency, don't run it", pOps->name, pid);
-        return -1;
-    }
-
-    pid = fork();
-    if(pid == -1) {
-        app_err("fork failed");
-        exit(-1);
-    }
-    else if(pid == 0) {
-        pOps->proc(pAiotcParams);
-        exit(0);
-    }
-    else {
-        pOps->pid = pid;
-        pOps->lastReboot = (int)tv.tv_sec;
-        app_debug("restart %s pid : %d", pOps->name, pid);
-    }
-
-    return 0;
-}
-
 static int main_child_quit_signal(const int signal, void *ptr) {
     int status;
     int quit_pid = wait(&status);
@@ -75,9 +41,7 @@ static int main_child_quit_signal(const int signal, void *ptr) {
     if(!pAiotcParams->running) {
         return 0;
     }
-
-    app_warring("child process %d quit, exit status %d, restart it ...", quit_pid, status);
-    creatProcByPid(quit_pid, pAiotcParams);
+    creatProcByPid(quit_pid, status, pAiotcParams);
 
     return 0;
 }
@@ -115,21 +79,39 @@ static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
     pidsParams *pPidsParams = (pidsParams *)pAiotcParams->pidsArgs;
     objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
     if(sem_init(&pMasterParams->mutex_slave, 1, 1) < 0) {
-      app_err("sem init failed");
-      return -1;
+        app_err("sem_init failed");
+        return -1;
     }
     if(sem_init(&pMasterParams->mutex_mobj, 1, 1) < 0) {
-      app_err("sem init failed");
-      return -1;
+        app_err("sem_init failed");
+        return -1;
     }
     if(sem_init(&pObjParams->mutex_obj, 1, 1) < 0) {
-      app_err("sem init failed");
-      return -1;
+        app_err("sem_init failed");
+        return -1;
     }
     if(sem_init(&pPidsParams->mutex_pid, 1, 1) < 0) {
-      app_err("sem init failed");
-      return -1;
+        app_err("sem_init failed");
+        return -1;
     }
+
+    return 0;
+}
+
+static int miscInit(aiotcParams *pAiotcParams) {
+    shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
+    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+
+    pSlaveParams->keyCache = (int *)shmMalloc(pShmParams->headsp, pConfigParams->msgKeyMax*sizeof(int));
+    if(pSlaveParams->keyCache == NULL) {
+        app_err("shm malloc %ld failed", pConfigParams->msgKeyMax*sizeof(int));
+        return -1;
+    }
+    memset(pSlaveParams->keyCache, 0, pConfigParams->msgKeyMax*sizeof(int));
+    pSlaveParams->mainMsgKey = pConfigParams->msgKeyStart;
+
+    clearSystemIpc(pAiotcParams);
 
     return 0;
 }
@@ -154,6 +136,7 @@ static int init(aiotcParams **ppAiotcParams) {
     memcpy(pAiotcParams->configArgs, &configParam, sizeof(configParams));
     memcpy(pAiotcParams->shmArgs, &shmParam, sizeof(shmParams));
     dbInit(pAiotcParams);
+    miscInit(pAiotcParams);
 
     pAiotcParams->running = 1;
     *ppAiotcParams = pAiotcParams;
@@ -161,17 +144,19 @@ static int init(aiotcParams **ppAiotcParams) {
     return 0;
 }
 
-static int destroy(aiotcParams *pAiotcParams) {
+int destroy(aiotcParams *pAiotcParams) {
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
     ncx_slab_pool_t *headsp = pShmParams->headsp;
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
     pidsParams *pPidsParams = (pidsParams *)pAiotcParams->pidsArgs;
     objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
 
     sem_destroy(&pMasterParams->mutex_slave);
     sem_destroy(&pMasterParams->mutex_mobj);
     sem_destroy(&pObjParams->mutex_obj);
     sem_destroy(&pPidsParams->mutex_pid);
+    shmFree(headsp, pSlaveParams->keyCache);
     shmFree(headsp, pAiotcParams->masterArgs);
     shmFree(headsp, pAiotcParams->slaveArgs);
     shmFree(headsp, pAiotcParams->restArgs);
@@ -186,63 +171,36 @@ static int destroy(aiotcParams *pAiotcParams) {
     return 0;
 }
 
-static int creatProcess(const char *name, aiotcParams *pAiotcParams) {
-    pid_t pid;
+static int startObjTask(const char *name, const char *taskName, objParam *pObjParam) {
     pidOps *pOps;
-
-    pOps = getOpsByName(name);
-    if(pOps == NULL) {
-        app_warring("get ops by name %s failed", name);
-        return -1;
-    }
-
-    pid = fork();
-    if(pid == -1) {
-        app_err("fork failed");
-        exit(-1);
-    }
-    else if(pid == 0) {
-        pOps->proc(pAiotcParams);
-        exit(0);
-    }
-    else {
-        pOps->pid = pid;
-        put2PidQueue(pOps, pAiotcParams);
-        app_debug("%s pid : %d", name, pid);
-    }
-
-    return 0;
-}
-
-static int startTask(const char *name, const char *taskName, objParam *pObjParam) {
-    pidOps *pOps;
-    char cmd[128];
-    aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
-    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+    //aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
+    //slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
 
     pOps = getEmptyProc(name, pObjParam->subtype, taskName, pObjParam);
     if(pOps != NULL) {
-        snprintf(cmd, sizeof(cmd), "{\"cmd\":\"startTask\",\"data\":{\"id\":%d,\"val\":%s}}",
-                pObjParam->id, taskName);
-        msgSend(cmd, pOps->msgKey, pConfigParams->mainMsgKey);
+        //char cmd[128];
+        //snprintf(cmd, sizeof(cmd), "{\"cmd\":\"startTask\",\"data\":{\"id\":%d,\"val\":\"%s\"}}",
+        //        pObjParam->id, taskName);
+        //msgSend(cmd, pOps->msgKey, pSlaveParams->mainMsgKey, 10);
     }
     else {
-        app_warring("get empty proc failed, id:%d,%s,%s,%s", 
+        printf("get empty proc failed, id:%d,%s,%s,%s\n", 
                 pObjParam->id, name, pObjParam->subtype, taskName);
     }
 
     return 0;
 }
 
+/*
 static int stopTask(const char *name, const char *taskName, objParam *pObjParam) {
-    pidOps *pOps;
     char cmd[128];
+    pidOps *pOps;
 
     pOps = getTaskProc(name, pObjParam->subtype, taskName, pObjParam);
     if(pOps != NULL) {
         snprintf(cmd, sizeof(cmd), "{\"cmd\":\"stopTask\",\"data\":{\"id\":%d,\"val\":%s}}",
                 pObjParam->id, taskName);
-        msgSend(cmd, pOps->msgKey, 0);
+        msgSend(cmd, pOps->msgKey, 0, 0);
     }
     else {
         app_warring("get task proc failed, id:%d,%s,%s,%s", 
@@ -251,6 +209,7 @@ static int stopTask(const char *name, const char *taskName, objParam *pObjParam)
 
     return 0;
 }
+*/
 
 static int objManager(node_common *p, void *arg) {
     pidOps *pOps;
@@ -259,22 +218,26 @@ static int objManager(node_common *p, void *arg) {
     taskParams *pTaskParams = (taskParams *)pObjParam->task;
 
     printf("objManager, id:%d, type:%s, subtype:%s, livestream:%d, capture:%d, record:%d, preview:%s, "
-            "liveBeat:%d, captureBeat:%d, recordBeat:%d, nowSec:%d\n", 
+            "liveBeat:%d, captureBeat:%d, recordBeat:%d, previewBeat:%d, nowSec:%d\n", 
             pObjParam->id, pObjParam->type, pObjParam->subtype, pTaskParams->livestream, 
-            pTaskParams->capture, pTaskParams->record, pTaskParams->preview, 
-            pTaskParams->liveBeat, pTaskParams->captureBeat, pTaskParams->recordBeat, nowSec);
+            pTaskParams->capture, pTaskParams->record, pTaskParams->preview, pTaskParams->liveBeat, 
+            pTaskParams->captureBeat, pTaskParams->recordBeat, pTaskParams->previewBeat, nowSec);
     // check start
     if(pTaskParams->livestream && (nowSec - pTaskParams->liveBeat) > PROC_BEAT_TIMEOUT) {
-        startTask("obj", "livestream", pObjParam);
+        startObjTask("obj", "live", pObjParam);
+        pTaskParams->liveBeat = nowSec;
     }
     if(pTaskParams->capture && (nowSec - pTaskParams->captureBeat) > PROC_BEAT_TIMEOUT) {
-        startTask("obj", "capture", pObjParam);
+        startObjTask("obj", "capture", pObjParam);
+        pTaskParams->captureBeat = nowSec;
     }
     if(pTaskParams->record && (nowSec - pTaskParams->recordBeat) > PROC_BEAT_TIMEOUT) {
-        startTask("obj", "record", pObjParam);
+        startObjTask("obj", "record", pObjParam);
+        pTaskParams->recordBeat = nowSec;
     }
     if(strlen(pTaskParams->preview) > 0 && (nowSec - pTaskParams->previewBeat) > PROC_BEAT_TIMEOUT) {
-        startTask("obj", "preview", pObjParam);
+        startObjTask("obj", "preview", pObjParam);
+        pTaskParams->previewBeat = nowSec;
     }
     if(0) {
         pOps = getEmptyProc("alg", "face", "null", pObjParam);
@@ -283,8 +246,9 @@ static int objManager(node_common *p, void *arg) {
     }
 
     // check stop
+    /*
     if(pTaskParams->livestream == 0 && pTaskParams->liveBeat > 0) {
-        stopTask("obj", "livestream", pObjParam);
+        stopTask("obj", "live", pObjParam);
     }
     if(pTaskParams->capture == 0 && pTaskParams->captureBeat > 0) {
         stopTask("obj", "capture", pObjParam);
@@ -295,6 +259,7 @@ static int objManager(node_common *p, void *arg) {
     if(strlen(pTaskParams->preview) == 0 && pTaskParams->previewBeat > 0) {
         stopTask("obj", "preview", pObjParam);
     }
+    */
 
     return 0;
 }
@@ -304,6 +269,7 @@ static void *slave_objmanager_thread(void *arg) {
     aiotcParams *pAiotcParams = (aiotcParams *)arg;
     objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
 
+    sleep(5);
     while(pAiotcParams->running) {
         gettimeofday(&tv, NULL);
         semWait(&pObjParams->mutex_obj);
@@ -317,15 +283,19 @@ static void *slave_objmanager_thread(void *arg) {
     return NULL;
 }
 
+static cmdTaskParams g_CmdParams[] = {
+    {"null",            NULL}
+};
+
 static int createTasks(aiotcParams *pAiotcParams) {
     pthread_t pid;
     configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
 
     if(pConfigParams->masterEnable) {
-        creatProcess("master", pAiotcParams);
+        createProcess("master", "null", "null", pAiotcParams);
     }
     if(pConfigParams->masterEnable == 0 || pConfigParams->masterEnable == 2) {
-        creatProcess("rest", pAiotcParams);
+        createProcess("rest", "null", "null", pAiotcParams);
         if(pthread_create(&pid, NULL, slave_objmanager_thread, pAiotcParams) != 0) {
             app_err("pthread_create slave obj manager thread err");
         }
@@ -337,7 +307,21 @@ static int createTasks(aiotcParams *pAiotcParams) {
     return 0;
 }
 
+static int startMsgThread(msgParams *pMsgParams, aiotcParams *pAiotcParams) {
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+
+    memset(pMsgParams, 0, sizeof(msgParams));
+    pMsgParams->key = pConfigParams->msgKeyStart;
+    pMsgParams->pUserCmdParams = g_CmdParams;
+    pMsgParams->arg = pAiotcParams;
+    pMsgParams->running = 1;
+    createMsgThread(pMsgParams);
+
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
+    msgParams msgParam;
     aiotcParams *pAiotcParams = NULL;
 
     dirCheck("log");
@@ -351,12 +335,13 @@ int main(int argc, char *argv[]) {
     main_child_quit_signal(-1, pAiotcParams);
     signal(SIGCHLD, (void (*)(int))main_child_quit_signal);
     createTasks(pAiotcParams);
+    startMsgThread(&msgParam, pAiotcParams);
 
     while(pAiotcParams->running) {
         sleep(2);
     }
 
-    destroy(pAiotcParams);
+    //destroy(pAiotcParams);
 
     app_debug("run over");
 

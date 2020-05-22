@@ -16,30 +16,19 @@
  *
  ******************************************************************************/
 
-#ifndef __AIOTC_OBJ_H__
-#define __AIOTC_OBJ_H__
+#include "platform.h"
+#include "pids.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "share.h"
+int previewProcess(void *arg) {
+    pidOps *pOps = (pidOps *)arg;
+    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
 
-typedef struct {
-    int id;
-    char name[32];
-    char type[16];
-    char subtype[16];
-    int  attachSlave;
-    void *slave; // slaveParams
-    void *task; // taskParams
-    char *originaldata;
-    void *arg; // aiotcParams
-} objParam;
+    while(pAiotcParams->running) {
+        sleep(2);
+    }
 
-typedef struct {
-    sem_t mutex_obj;
-    queue_common objQueue; // objParam
-    void *arg; // aiotcParams
-} objParams;
+    app_debug("run over");
 
-#endif
+    return 0;
+}
+
