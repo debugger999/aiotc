@@ -19,13 +19,20 @@
 #include "platform.h"
 
 int vehProcess(void *arg) {
-    aiotcParams *pAiotcParams = (aiotcParams *)arg;
+    pidOps *pOps = (pidOps *)arg;
 
-    while(pAiotcParams->running) {
+    pOps = getRealOps(pOps);
+    if(pOps == NULL) {
+        return -1;
+    }
+    pOps->running = 1;
+
+    while(pOps->running) {
         sleep(2);
     }
+    pOps->running = 0;
 
-    app_debug("run over");
+    app_debug("pid:%d, run over", getpid());
 
     return 0;
 }

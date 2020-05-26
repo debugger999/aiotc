@@ -34,7 +34,6 @@ typedef struct {
 
     ncx_slab_pool_t *headsp;
 
-    int running;
     void *arg; // aiotcParams
 } shmParams;
 

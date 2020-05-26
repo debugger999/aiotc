@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "share.h"
+#include "task.h"
 
 #define PROC_LOAD_MAX       90
 #define PROC_BEAT_TIMEOUT   20
@@ -36,19 +37,25 @@ typedef struct {
     ProcFunc        proc;
     pid_t           pid;
     key_t           msgKey;
+    struct timeval  tv;
     sem_t           mutex_pobj;
-    queue_common    pobjQueue; // objParam
+    queue_common    pobjQueue;      // objParam
+    void            *procTaskOps;   // taskOps
     int             load;
     int             lastReboot;
+    int             running;
     void            *arg; // aiotcParams
 } pidOps;
 
+pidOps *getRealOps(pidOps *pOps);
 pidOps *getOpsByPid(pid_t pid, void *arg);
 pidOps *getOpsByName(const char *name, const char *subName, const char *taskName);
 pidOps *getEmptyProc(const char *name, const char *subName, const char *taskName, void *arg);
 pidOps *getTaskProc(const char *name, const char *subName, const char *taskName, void *arg);
-pid_t createProcess(const char *name, const char *subName, const char *taskName, void *arg);
+int initTaskOps(pidOps *pOps, taskOps *pTaskOps);
+int createBeatTask(pidOps *pOps, int (*obj_task_beat)(node_common *, void *), int sec);
 int creatProcByPid(pid_t oldPid, int status, void *arg);
+pid_t createProcess(const char *name, const char *subName, const char *taskName, void *arg);
 
 typedef struct {
     sem_t mutex_pid;

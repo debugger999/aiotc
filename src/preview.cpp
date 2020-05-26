@@ -18,16 +18,35 @@
 
 #include "platform.h"
 #include "pids.h"
+#include "obj.h"
+#include "task.h"
+
+static int previewTaskBeat(node_common *p, void *arg) {
+    struct timeval *tv = (struct timeval *)arg;
+    objParam *pObjParam = (objParam *)p->name;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+
+    pTaskParams->previewBeat = (int)tv->tv_sec;
+
+    return 0;
+}
 
 int previewProcess(void *arg) {
     pidOps *pOps = (pidOps *)arg;
-    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
 
-    while(pAiotcParams->running) {
+    pOps = getRealOps(pOps);
+    if(pOps == NULL) {
+        return -1;
+    }
+    createBeatTask(pOps, previewTaskBeat, 5);
+
+    pOps->running = 1;
+    while(pOps->running) {
         sleep(2);
     }
+    pOps->running = 0;
 
-    app_debug("run over");
+    app_debug("pid:%d, run over", getpid());
 
     return 0;
 }

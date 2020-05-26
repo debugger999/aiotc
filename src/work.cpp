@@ -21,13 +21,19 @@
 
 int workProcess(void *arg) {
     pidOps *pOps = (pidOps *)arg;
-    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
 
-    while(pAiotcParams->running) {
-        sleep(2);
+    pOps = getRealOps(pOps);
+    if(pOps == NULL) {
+        return -1;
     }
 
-    app_debug("run over");
+    pOps->running = 1;
+    while(pOps->running) {
+        sleep(2);
+    }
+    pOps->running = 0;
+
+    app_debug("pid:%d, run over", getpid());
 
     return 0;
 }

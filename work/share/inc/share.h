@@ -46,6 +46,10 @@ typedef struct {
     int queLen;
 } queue_common;
 
+typedef int (*NodeCallback)(node_common *p, void *arg);
+typedef int (*CommonObjFunc)(const void *buf, void *arg);
+typedef int (*COMMONCALLBACK)(void *argA, void *argB, void *argC);
+
 int getLocalIp(char hostIp[128]);
 int connectServer(char *ip, int port);
 int blockSend(unsigned int connfd, char *src, int size);

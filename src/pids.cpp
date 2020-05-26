@@ -32,6 +32,7 @@
 #include "decode.h"
 #include "face.h"
 #include "misc.h"
+#include "task.h"
 
 // main进程尽量简单，只做进程守护，所有进程都需要通过main创建，
 // 进程是无状态的，进程创建后只能被动接收任务命令，进程挂掉后，main守护启动，不做其他事情
@@ -48,8 +49,7 @@ static pidOps g_pid_ops[] = {
     {"rest",    "null",     "null",         restProcess},
     {"work",    "null",     "null",         workProcess},
     {"obj",     "rtsp",     "live",         rtspProcess},
-    {"obj",     "rtsp",     "preview",      rtspProcess},
-    //{"obj",     "rtsp",     "preview",      previewProcess},
+    {"obj",     "rtsp",     "preview",      previewProcess},
     {"obj",     "rtsp",     "record",       recordProcess},
     {"obj",     "ehome",    "live",         ehomeProcess},
     {"obj",     "ehome",    "capture",      ehomeProcess},
@@ -68,6 +68,151 @@ static pidOps g_pid_ops[] = {
     */
     {"null",    "null",     "null",         NULL}
 };
+
+static int setKey2System(key_t key, const char *name, const char *subName, 
+        const char *taskName, aiotcParams *pAiotcParams) {
+    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
+
+    if(!strcmp(name, "rest")) {
+        pSlaveParams->restMsgKey = key;
+    }
+    else if(!strcmp(name, "work")) {
+        pSlaveParams->workMsgKey = key;
+    }
+
+    return 0;
+}
+
+static key_t getMsgKey(const char *name, const char *subName, const char *taskName, aiotcParams *pAiotcParams) {
+    key_t key = -1;
+    int i, j, max, used, empty;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
+    int *keyCache = pSlaveParams->keyCache;
+
+    empty = -1;
+    max = pConfigParams->msgKeyStart + pConfigParams->msgKeyMax;
+    for(i = pConfigParams->msgKeyStart + 1; i < max; i ++) {
+        used = 1;
+        for(j = 0; j < pConfigParams->msgKeyMax; j ++) {
+            if(keyCache[j] == i || keyCache[j] == 0) {
+                if(keyCache[j] == 0) {
+                    used = 0;
+                }
+                break;
+            }
+            if(keyCache[j] == -1 && empty == -1) {
+                empty = j;
+            }
+        }
+        if(!used) {
+            key = i;
+            if(empty >= 0) {
+                keyCache[empty] = i;
+            }
+            else {
+                keyCache[j] = i;
+            }
+            setKey2System(key, name, subName, taskName, pAiotcParams);
+            break;
+        }
+    }
+
+    return key;
+}
+
+static int delMsgKey(int key, aiotcParams *pAiotcParams) {
+    int j;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
+    int *keyCache = pSlaveParams->keyCache;
+
+    for(j = 0; j < pConfigParams->msgKeyMax; j ++) {
+        if(keyCache[j] == key || keyCache[j] == 0) {
+            if(keyCache[j] == key) {
+                keyCache[j] = -1;
+            }
+            break;
+        }
+    }
+
+    return 0;
+}
+
+static void *beat_thread(void *arg) {
+    commonParams *pParams = (commonParams *)arg;
+    pidOps *pOps = (pidOps *)pParams->arga;
+    int sec = *(int *)pParams->argb;
+    NodeCallback   obj_task_beat = pParams->callback;
+
+    pParams->val = 1;
+    while(pOps->running) {
+        if(sec == TASK_BEAT_SLEEP) {
+            gettimeofday(&pOps->tv, NULL);
+        }
+        semWait(&pOps->mutex_pobj);
+        traverseQueue(&pOps->pobjQueue, pOps, obj_task_beat);
+        semPost(&pOps->mutex_pobj);
+        sleep(sec);
+    }
+
+    return NULL;
+}
+
+pidOps *getRealOps(pidOps *pOps) {
+    pid_t pid;
+    int wait = 100;
+    pidOps *p = NULL;
+    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
+
+    pid = getpid();
+    do {
+        p = getOpsByPid(pid, pAiotcParams);
+        if(p != NULL) {
+            break;
+        }
+        usleep(100000);
+    } while(wait --);
+    if(p == NULL) {
+        app_warring("get pid ops failed, pid:%d, %s-%s-%s", pid, pOps->name, pOps->subName, pOps->taskName);
+    }
+
+    return p;
+}
+
+int initTaskOps(pidOps *pOps, taskOps *pTaskOps) {
+    pOps->procTaskOps = pTaskOps;
+    return 0;
+}
+
+int createBeatTask(pidOps *pOps, int (*obj_task_beat)(node_common *, void *), int sec) {
+    pthread_t pid;
+    int wait = 100;
+    commonParams params;
+
+    params.arga = pOps;
+    params.argb = &sec;
+    params.val = 0;
+    params.callback = obj_task_beat;
+    if(pthread_create(&pid, NULL, beat_thread, &params) != 0) {
+        app_err("create thread failed");
+    }
+    else {
+        pthread_detach(pid);
+    }
+
+    do {
+        if(params.val) {
+            break;
+        }
+        usleep(100000);
+    } while(wait --);
+    if(wait <= 0) {
+        app_warring("wait beat thread failed");
+    }
+
+    return 0;
+}
 
 pidOps *getOpsByName(const char *name, const char *subName, const char *taskName) {
     int i;
@@ -186,6 +331,25 @@ static int put2PidQueue(pidOps *pOps, void *arg) {
     return 0;
 }
 
+static int delOpsByPid(pid_t pid, aiotcParams *pAiotcParams) {
+    node_common *p = NULL;
+    shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
+    pidsParams *pPidsParams = (pidsParams *)pAiotcParams->pidsArgs;
+
+    semWait(&pPidsParams->mutex_pid);
+    delFromQueue(&pPidsParams->pidQueue, &pid, &p, conditionByPid);
+    semPost(&pPidsParams->mutex_pid);
+    if(p != NULL) {
+        pidOps *pOps = (pidOps *)p->name;
+        delMsgKey(pOps->msgKey, pAiotcParams);
+        freeShmQueue(pShmParams->headsp, &pOps->pobjQueue, NULL);
+        sem_destroy(&pOps->mutex_pobj);
+        shmFree(pShmParams->headsp, p);
+    }
+
+    return 0;
+}
+
 static int putObj2pidQue(objParam *pObjParam, pidOps *pOps) {
     node_common node;
     objParam *p = (objParam *)node.name;
@@ -195,79 +359,10 @@ static int putObj2pidQue(objParam *pObjParam, pidOps *pOps) {
 
     memset(&node, 0, sizeof(node));
     memcpy(p, pObjParam, sizeof(objParam));
+    p->reserved = pOps;
     semWait(&pOps->mutex_pobj);
     putToShmQueue(pShmParams->headsp, &pOps->pobjQueue, &node, pConfigParams->slaveObjMax);
     semPost(&pOps->mutex_pobj);
-
-    return 0;
-}
-
-static int setKey2System(key_t key, const char *name, const char *subName, 
-        const char *taskName, aiotcParams *pAiotcParams) {
-    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
-
-    if(!strcmp(name, "rest")) {
-        pSlaveParams->restMsgKey = key;
-    }
-    else if(!strcmp(name, "work")) {
-        pSlaveParams->workMsgKey = key;
-    }
-
-    return 0;
-}
-
-static key_t getMsgKey(const char *name, const char *subName, const char *taskName, aiotcParams *pAiotcParams) {
-    key_t key = -1;
-    int i, j, max, used, empty;
-    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
-    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
-    int *keyCache = pSlaveParams->keyCache;
-
-    empty = -1;
-    max = pConfigParams->msgKeyStart + pConfigParams->msgKeyMax;
-    for(i = pConfigParams->msgKeyStart + 1; i < max; i ++) {
-        used = 1;
-        for(j = 0; j < pConfigParams->msgKeyMax; j ++) {
-            if(keyCache[j] == i || keyCache[j] == 0) {
-                if(keyCache[j] == 0) {
-                    used = 0;
-                }
-                break;
-            }
-            if(keyCache[j] == -1 && empty == -1) {
-                empty = j;
-            }
-        }
-        if(!used) {
-            key = i;
-            if(empty >= 0) {
-                keyCache[empty] = i;
-            }
-            else {
-                keyCache[j] = i;
-            }
-            setKey2System(key, name, subName, taskName, pAiotcParams);
-            break;
-        }
-    }
-
-    return key;
-}
-
-int delMsgKey(int key, aiotcParams *pAiotcParams) {
-    int j;
-    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
-    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
-    int *keyCache = pSlaveParams->keyCache;
-
-    for(j = 0; j < pConfigParams->msgKeyMax; j ++) {
-        if(keyCache[j] == key || keyCache[j] == 0) {
-            if(keyCache[j] == key) {
-                keyCache[j] = -1;
-            }
-            break;
-        }
-    }
 
     return 0;
 }
@@ -313,12 +408,18 @@ int creatProcByPid(pid_t oldPid, int status, void *arg) {
     struct timeval tv;
     aiotcParams *pAiotcParams = (aiotcParams *)arg;
 
-    gettimeofday(&tv, NULL);
     pOps = getOpsByPid(oldPid, pAiotcParams);
     if(pOps == NULL) {
         app_warring("get ops by pid %d failed", oldPid);
         return -1;
     }
+    if(!pOps->running) {
+        app_debug("pid %d stop normaly, %s-%s-%s", oldPid, pOps->name, pOps->subName, pOps->taskName);
+        delOpsByPid(oldPid, pAiotcParams);
+        return 0;
+    }
+
+    gettimeofday(&tv, NULL);
     if((int)tv.tv_sec - pOps->lastReboot < 300) {
         app_warring("proc %s-%s-%s, pid %d, restart too high frequency, don't run it", 
                 pOps->name, pOps->subName, pOps->taskName, pid);

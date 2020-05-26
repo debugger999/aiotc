@@ -22,16 +22,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "share.h"
+
+#define TASK_BEAT_SLEEP     1
+#define TASK_BEAT_TIMEOUT   20
+
+typedef struct {
+    CommonObjFunc init;
+    CommonObjFunc uninit;
+    CommonObjFunc start;
+    CommonObjFunc stop;
+    CommonObjFunc ctrl;
+} taskOps;
 
 typedef struct {
     int livestream;
-    int liveBeat;
+    int liveBeat;       // for proc running
+    int liveTaskBeat;   // for obj task running
+    void *liveArgs;
+
     int capture;
     int captureBeat;
+    int captureTaskBeat;
+    void *captureArgs;
+
     int record;
     int recordBeat;
+    int recordTaskBeat;
+    void *recordArgs;
+
     char preview[32];
     int previewBeat;
+    int previewTaskBeat;
+    void *previewArgs;
+
     sem_t mutex_alg;
     queue_common algQueue; // algParams
 } taskParams;

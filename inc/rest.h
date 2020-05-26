@@ -43,7 +43,6 @@ do {                                                \
 } while(0);
 
 typedef struct {
-    int running;
     void *tokenArgs;
     void *arg; // aiotcParams
 } restParams;

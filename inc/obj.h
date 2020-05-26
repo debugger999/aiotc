@@ -33,6 +33,7 @@ typedef struct {
     void *slave; // slaveParams
     void *task; // taskParams
     char *originaldata;
+    void *reserved; // pidOps
     void *arg; // aiotcParams
 } objParam;
 

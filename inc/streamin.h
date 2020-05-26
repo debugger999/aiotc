@@ -22,7 +22,6 @@
 #include "platform.h"
 
 typedef struct {
-    int running;
     void *arg; // aiotcParams
 } streaminParams;
 

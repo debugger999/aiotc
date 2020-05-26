@@ -847,15 +847,22 @@ int masterProcess(void *arg) {
     pidOps *pOps = (pidOps *)arg;
     aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
 
+    pOps = getRealOps(pOps);
+    if(pOps == NULL) {
+        return -1;
+    }
+
     masterInit(pAiotcParams);
     mstartTask(pAiotcParams);
 
-    while(pAiotcParams->running) {
+    pOps->running = 1;
+    while(pOps->running) {
         sleep(2);
     }
-
     masterUninit(pAiotcParams);
-    app_debug("run over");
+    pOps->running = 0;
+
+    app_debug("pid:%d, run over", getpid());
 
     return 0;
 }

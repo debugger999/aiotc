@@ -27,15 +27,14 @@
 #include "share.h"
 #include "obj.h"
 
-typedef int (*CommonObjFunc)(void *buf, void *arg);
-typedef int (*COMMONCALLBACK)(void *argA, void *argB, void *argC);
-
 typedef struct {
     void *arga;
     void *argb;
     void *argc;
     void *argd;
     void *arge;
+    int  val;
+    NodeCallback   callback;
     COMMONCALLBACK func;
 } commonParams;
 

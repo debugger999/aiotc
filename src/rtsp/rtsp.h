@@ -22,6 +22,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "playerapi.h"
+
+#define DEFAULT_RTSP_BUFFER_SIZE    (1024*1024)
+
+typedef struct {
+    player_params player;
+    void *arg; // objParam
+} rtspParams;
 
 int rtspProcess(void *arg);
 

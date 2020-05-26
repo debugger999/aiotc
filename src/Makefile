@@ -8,6 +8,7 @@ CFLAGS += -I../work/share/inc
 CFLAGS += -I../work/slab/inc
 CFLAGS += -I../work/libevent/inc
 CFLAGS += -I../work/mongodb/inc
+CFLAGS += -I../work/rtsp/inc
 CFLAGS += -Ialg/face
 CFLAGS += -Istream -Irtsp -Igb28181 -Igat1400 -Iftp -Ihik/ehome -Ihik/sdk
 
@@ -31,7 +32,9 @@ LDFLAGS += -L../work/cjson/lib
 LDFLAGS += -L../work/slab/lib
 LDFLAGS += -L../work/libevent/lib
 LDFLAGS += -L../work/mongodb/lib
+LDFLAGS += -L../work/rtsp/lib
 LDFLAGS += -L../work/lib
+LDFLAGS += -lplayer -lliveMedia -lgroupsock -lBasicUsageEnvironment -lUsageEnvironment
 LDFLAGS += -lshare -lcjson -lslab
 LDFLAGS += -lmongoc -lbson
 LDFLAGS += -levent_pthreads -levent

@@ -21,10 +21,99 @@
 #include "msg.h"
 #include "obj.h"
 #include "task.h"
+#include "rtsp.h"
+
+static int rtsp_callback(unsigned char *p_buf, int size, void *param) {
+    //char buf[4] = {0x00, 0x00, 0x00, 0x01};
+    objParam *pObjParam = (objParam *)param;
+    pidOps *pOps = (pidOps *)pObjParam->reserved;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+    int nowSec = (int)pOps->tv.tv_sec;
+
+    if(pTaskParams->liveTaskBeat != nowSec) {
+        pTaskParams->liveTaskBeat = nowSec;
+    }
+
+    return 0; 
+}
+
+static int rtsp_start(const void *buf, void *arg) {
+    int tcp;
+    char *url = NULL;
+    objParam *pObjParam = (objParam *)arg;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+    char *buff = pObjParam->originaldata;
+
+    if(pTaskParams->liveArgs == NULL) {
+        pTaskParams->liveArgs = malloc(sizeof(rtspParams)); // TODO : free it if proc is empty long time
+        if(pTaskParams->liveArgs == NULL) {
+            app_err("malloc failed");
+            return -1;
+        }
+        memset(pTaskParams->liveArgs, 0, sizeof(rtspParams));
+    }
+
+    rtspParams *pRtspParams = (rtspParams *)pTaskParams->liveArgs;
+    player_params *player = &pRtspParams->player;
+    if(player->playhandle != NULL) {
+        app_warring("rtsp %s is already running", player->url);
+        return -1;
+    }
+
+    tcp = getIntValFromJson(buff, "data", "tcpEnable", NULL);
+    url = getStrValFromJson(buff, "data", "url", NULL);
+    if(tcp < 0 || url == NULL) {
+        printf("get rtsp json params failed, id:%d\n", pObjParam->id);
+        goto end;
+    }
+    player->cb = rtsp_callback;
+    player->streamUsingTCP = tcp;
+    player->buffersize = DEFAULT_RTSP_BUFFER_SIZE;
+    strncpy((char *)player->url, url, sizeof(player->url));
+    player->arg = pObjParam;
+    if(player_start_play(player)) {
+        app_err("player_start_play %s failed ", player->url);
+        goto end;
+    }
+    printf("rtsp start ok, id:%d\n", pObjParam->id);
+
+end:
+    if(url != NULL) {
+        free(url);
+    }
+
+    return 0;
+}
+
+static int rtsp_stop(const void *buf, void *arg) {
+    objParam *pObjParam = (objParam *)arg;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+    rtspParams *pRtspParams = (rtspParams *)pTaskParams->liveArgs;
+
+    if(pRtspParams == NULL) {
+        app_warring("id:%d, rtsp params is null", pObjParam->id);
+        return -1;
+    }
+    player_params *player = &pRtspParams->player;
+
+    player->threadDoneFlag = 1;
+    if(player->playhandle != NULL) {
+        player_stop_play(player);
+    }
+    printf("rtsp stop ok, id:%d\n", pObjParam->id);
+
+    return 0;
+}
+
+static taskOps rtspTaskOps = {
+    .init = NULL,
+    .uninit = NULL,
+    .start = rtsp_start,
+    .stop = rtsp_stop,
+    .ctrl = NULL
+};
 
 static int rtspStartTask(char *buf, void *arg) {
-    //aiotcParams *pAiotcParams = (aiotcParams *)(arg);
-    //app_debug("##test, localIp:%s, buf:%s", pAiotcParams->localIp, buf);
     return 0;
 }
 
@@ -33,59 +122,38 @@ static cmdTaskParams g_CmdParams[] = {
     {"null",            NULL}
 };
 
-static int objTaskBeat(node_common *p, void *arg) {
-    struct timeval *tv = (struct timeval *)arg;
+static int rtspProcBeat(node_common *p, void *arg) {
+    pidOps *pOps = (pidOps *)arg;
     objParam *pObjParam = (objParam *)p->name;
     taskParams *pTaskParams = (taskParams *)pObjParam->task;
 
-    // TODO
-    pTaskParams->liveBeat = (int)tv->tv_sec;
-    pTaskParams->previewBeat = (int)tv->tv_sec;
+    if(pTaskParams->livestream) {
+        pTaskParams->liveBeat = (int)pOps->tv.tv_sec;
+    }
 
     return 0;
 }
 
-static void *rtsp_beat_thread(void *arg) {
-    struct timeval tv;
+static int rtspTaskBeat(node_common *p, void *arg) {
     pidOps *pOps = (pidOps *)arg;
-    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
+    objParam *pObjParam = (objParam *)p->name;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+    taskOps *pTaskOps = (taskOps *)pOps->procTaskOps;
+    int nowSec = (int)pOps->tv.tv_sec;
 
-    while(pAiotcParams->running) {
-        gettimeofday(&tv, NULL);
-        semWait(&pOps->mutex_pobj);
-        traverseQueue(&pOps->pobjQueue, &tv, objTaskBeat);
-        semPost(&pOps->mutex_pobj);
-        sleep(3);
-    }
-
-    return NULL;
-}
-
-static int createBeatTask(pidOps *pOps) {
-    pid_t pid;
-    pthread_t ptid;
-    int wait = 100;
-    pidOps *p = NULL;
-    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
-
-    pid = getpid();
-    do {
-        p = getOpsByPid(pid, pAiotcParams);
-        if(p != NULL) {
-            break;
+    if(pTaskParams->livestream) {
+        printf("##test, id:%d, %d, liveBeat:%d, liveTaskBeat:%d\n", 
+                pObjParam->id, nowSec, pTaskParams->liveBeat, pTaskParams->liveTaskBeat);
+        if(pTaskParams->liveTaskBeat == 0) {
+            pTaskOps->start("live", pObjParam);
+            pTaskParams->liveTaskBeat = nowSec;
         }
-        usleep(100000);
-    } while(wait --);
-
-    if(p == NULL) {
-        app_warring("get pid ops failed, pid:%d, %s-%s-%s", pid, pOps->name, pOps->subName, pOps->taskName);
-        return -1;
-    }
-    if(pthread_create(&ptid, NULL, rtsp_beat_thread, p) != 0) {
-        app_err("create rtsp beat thread failed");
-    }
-    else {
-        pthread_detach(ptid);
+        else if(nowSec - pTaskParams->liveTaskBeat > TASK_BEAT_TIMEOUT) {
+            app_warring("id:%d, detected exception, restart it ...", pObjParam->id);
+            pTaskOps->stop("live", pObjParam);
+            pTaskOps->start("live", pObjParam);
+            pTaskParams->liveTaskBeat = nowSec;
+        }
     }
 
     return 0;
@@ -94,21 +162,30 @@ static int createBeatTask(pidOps *pOps) {
 int rtspProcess(void *arg) {
     msgParams msgParam;
     pidOps *pOps = (pidOps *)arg;
-    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
+
+    pOps = getRealOps(pOps);
+    if(pOps == NULL) {
+        return -1;
+    }
+    pOps->running = 1;
+
+    initTaskOps(pOps, &rtspTaskOps);
+    createBeatTask(pOps, rtspProcBeat, 5);
+    createBeatTask(pOps, rtspTaskBeat, TASK_BEAT_SLEEP);
 
     memset(&msgParam, 0, sizeof(msgParam));
     msgParam.key = pOps->msgKey;
     msgParam.pUserCmdParams = g_CmdParams;
-    msgParam.arg = pAiotcParams;
+    msgParam.arg = pOps->arg;
     msgParam.running = 1;
     createMsgThread(&msgParam);
-    createBeatTask(pOps);
 
-    while(pAiotcParams->running) {
+    while(pOps->running) {
         sleep(2);
     }
+    pOps->running = 0;
 
-    app_debug("run over");
+    app_debug("pid:%d, run over", getpid());
 
     return 0;
 }

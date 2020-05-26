@@ -718,18 +718,26 @@ static int startRestTask(aiotcParams *pAiotcParams) {
     return 0;
 }
 
+
 int restProcess(void *arg) {
     pidOps *pOps = (pidOps *)arg;
     aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
     slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
 
+    pOps = getRealOps(pOps);
+    if(pOps == NULL) {
+        return -1;
+    }
     pSlaveParams->systemInit = 0;
     startRestTask(pAiotcParams);
-    while(pAiotcParams->running) {
+
+    pOps->running = 1;
+    while(pOps->running) {
         sleep(2);
     }
+    pOps->running = 0;
 
-    app_debug("run over");
+    app_debug("pid:%d, run over", getpid());
 
     return 0;
 }

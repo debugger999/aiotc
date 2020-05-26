@@ -182,6 +182,8 @@ static int startObjTask(const char *name, const char *taskName, objParam *pObjPa
         //snprintf(cmd, sizeof(cmd), "{\"cmd\":\"startTask\",\"data\":{\"id\":%d,\"val\":\"%s\"}}",
         //        pObjParam->id, taskName);
         //msgSend(cmd, pOps->msgKey, pSlaveParams->mainMsgKey, 10);
+        app_debug("get empty proc success, pid:%d, id:%d,%s,%s,%s", 
+                pOps->pid, pObjParam->id, name, pObjParam->subtype, taskName);
     }
     else {
         printf("get empty proc failed, id:%d,%s,%s,%s\n", 
@@ -213,30 +215,48 @@ static int stopTask(const char *name, const char *taskName, objParam *pObjParam)
 
 static int objManager(node_common *p, void *arg) {
     pidOps *pOps;
+    char taskName[32];
     int nowSec = (int)(*(__time_t *)arg);
     objParam *pObjParam = (objParam *)p->name;
     taskParams *pTaskParams = (taskParams *)pObjParam->task;
 
-    printf("objManager, id:%d, type:%s, subtype:%s, livestream:%d, capture:%d, record:%d, preview:%s, "
-            "liveBeat:%d, captureBeat:%d, recordBeat:%d, previewBeat:%d, nowSec:%d\n", 
-            pObjParam->id, pObjParam->type, pObjParam->subtype, pTaskParams->livestream, 
-            pTaskParams->capture, pTaskParams->record, pTaskParams->preview, pTaskParams->liveBeat, 
-            pTaskParams->captureBeat, pTaskParams->recordBeat, pTaskParams->previewBeat, nowSec);
-    // check start
+    /*
+    printf("main objManager, id:%d, type:%s, subtype:%s, "
+            "live:%d-%d, capture:%d-%d, record:%d-%d, preview:%s-%d, nowSec:%d\n", 
+            pObjParam->id, pObjParam->type, pObjParam->subtype, pTaskParams->livestream, pTaskParams->liveBeat,
+            pTaskParams->capture, pTaskParams->captureBeat, pTaskParams->record, pTaskParams->recordBeat, 
+            pTaskParams->preview,  pTaskParams->previewBeat, nowSec);
+    */
     if(pTaskParams->livestream && (nowSec - pTaskParams->liveBeat) > PROC_BEAT_TIMEOUT) {
-        startObjTask("obj", "live", pObjParam);
+        strncpy(taskName, "live", sizeof(taskName));
+        if(pTaskParams->liveBeat > 0) {
+            app_warring("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
+        }
+        startObjTask("obj", taskName, pObjParam);
         pTaskParams->liveBeat = nowSec;
     }
     if(pTaskParams->capture && (nowSec - pTaskParams->captureBeat) > PROC_BEAT_TIMEOUT) {
-        startObjTask("obj", "capture", pObjParam);
+        strncpy(taskName, "capture", sizeof(taskName));
+        if(pTaskParams->captureBeat > 0) {
+            app_warring("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
+        }
+        startObjTask("obj", taskName, pObjParam);
         pTaskParams->captureBeat = nowSec;
     }
     if(pTaskParams->record && (nowSec - pTaskParams->recordBeat) > PROC_BEAT_TIMEOUT) {
-        startObjTask("obj", "record", pObjParam);
+        strncpy(taskName, "record", sizeof(taskName));
+        if(pTaskParams->recordBeat > 0) {
+            app_warring("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
+        }
+        startObjTask("obj", taskName, pObjParam);
         pTaskParams->recordBeat = nowSec;
     }
     if(strlen(pTaskParams->preview) > 0 && (nowSec - pTaskParams->previewBeat) > PROC_BEAT_TIMEOUT) {
-        startObjTask("obj", "preview", pObjParam);
+        strncpy(taskName, "preview", sizeof(taskName));
+        if(pTaskParams->previewBeat > 0) {
+            app_warring("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
+        }
+        startObjTask("obj", taskName, pObjParam);
         pTaskParams->previewBeat = nowSec;
     }
     if(0) {
