@@ -284,7 +284,7 @@ int request_cb(struct evhttp_request *req, void (*httpTask)(struct evhttp_reques
     cbuf[POST_BUF_MAX - 1] = '\0';
 
     if(strcmp(cmdtype, "GET")) {
-        app_debug("%s:%s", url, cbuf);
+        app_debug("pid:%d, %s:%s", getpid(), url, cbuf);
     }
     if(httpTask != NULL) {
         commonParams params;
@@ -331,9 +331,12 @@ static void request_system_status(struct evhttp_request *req, void *arg) {
     commonParams *pParams = (commonParams *)arg;
     char **ppbody = (char **)pParams->argb;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
+    objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
     slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
 
     // TODO : load
+    pSlaveParams->load = pObjParams->objQueue.queLen*100 / pConfigParams->slaveObjMax;
     *ppbody = (char *)malloc(256);
      snprintf(*ppbody, 256, "{\"code\":0,\"msg\":\"success\",\"data\":"
              "{\"systemInit\":%d,\"load\":%d}}", pSlaveParams->systemInit, pSlaveParams->load);
@@ -344,13 +347,19 @@ static void request_obj_add(struct evhttp_request *req, void *arg) {
     commonParams params;
     commonParams *pParams = (commonParams *)arg;
     char *buf = (char *)pParams->arga;
+    char **ppbody = (char **)pParams->argb;
     aiotcParams *pAiotcParams = (aiotcParams *)pParams->argc;
     objParams *pObjParams = (objParams *)pAiotcParams->objArgs;
+    slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
     configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
 
     params.arga = &pObjParams->mutex_obj;
     params.argb = &pObjParams->objQueue;
     addObj(buf, pAiotcParams, pConfigParams->slaveObjMax, &params);
+
+    pSlaveParams->load = pObjParams->objQueue.queLen*100 / pConfigParams->slaveObjMax;
+    *ppbody = (char *)malloc(256);
+    snprintf(*ppbody, 256, "{\"code\":0,\"msg\":\"success\",\"data\":{\"load\":%d}}", pSlaveParams->load);
 }
 
 static void request_obj_del(struct evhttp_request *req, void *arg) {
@@ -728,16 +737,17 @@ int restProcess(void *arg) {
     if(pOps == NULL) {
         return -1;
     }
+    pOps->running = 1;
+
     pSlaveParams->systemInit = 0;
     startRestTask(pAiotcParams);
 
-    pOps->running = 1;
     while(pOps->running) {
         sleep(2);
     }
     pOps->running = 0;
 
-    app_debug("pid:%d, run over", getpid());
+    app_debug("pid:%d, run over", pOps->pid);
 
     return 0;
 }

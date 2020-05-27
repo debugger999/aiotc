@@ -30,7 +30,7 @@ typedef struct {
     int workMsgKey;
     int restMsgKey;
     int *keyCache;
-    int load;
+    int load; // TODO
     void *arg; // aiotcParams
 } slaveParams;
 

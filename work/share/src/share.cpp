@@ -982,14 +982,16 @@ int searchFromQueue(queue_common *queue, void *arg, node_common **new_p, int (*c
 }
 
 int traverseQueue(queue_common *queue, void *arg, int (*callBack)(node_common *p, void *arg)) {
+    node_common *next;
     node_common *p = queue->head;
     while(p != NULL) {
+        next = p->next;
         if(callBack(p, arg) != 0) {
             break;
         }
-        p = p->next;
+        p = next;
     }
-    
+
     return 0;
 }
 

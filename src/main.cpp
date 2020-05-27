@@ -265,19 +265,13 @@ static int objManager(node_common *p, void *arg) {
         }
     }
 
-    // check stop
     /*
-    if(pTaskParams->livestream == 0 && pTaskParams->liveBeat > 0) {
-        stopTask("obj", "live", pObjParam);
-    }
-    if(pTaskParams->capture == 0 && pTaskParams->captureBeat > 0) {
-        stopTask("obj", "capture", pObjParam);
-    }
-    if(pTaskParams->record == 0 && pTaskParams->recordBeat > 0) {
-        stopTask("obj", "record", pObjParam);
-    }
-    if(strlen(pTaskParams->preview) == 0 && pTaskParams->previewBeat > 0) {
-        stopTask("obj", "preview", pObjParam);
+    if(pTaskParams->livestream == 0 && pTaskParams->liveTaskBeat == 0 &&
+            pTaskParams->capture == 0 && pTaskParams->captureTaskBeat == 0 &&
+            pTaskParams->record == 0 && pTaskParams->recordTaskBeat == 0 &&
+            strlen(pTaskParams->preview) == 0 && pTaskParams->previewTaskBeat == 0 &&
+            pTaskParams->algQueue.queLen == 0) {
+        delObjFromPidQue();
     }
     */
 

@@ -32,7 +32,7 @@ int ftpProcess(void *arg) {
     }
     pOps->running = 0;
 
-    app_debug("pid:%d, run over", getpid());
+    app_debug("pid:%d, run over", pOps->pid);
 
     return 0;
 }

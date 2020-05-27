@@ -258,7 +258,7 @@ static void master_request_obj_del(struct evhttp_request *req, void *arg) {
 
     params.arga = &pMasterParams->mutex_mobj;
     params.argb = &pMasterParams->mobjQueue;
-    delObj(buf, pAiotcParams, &params);
+    delObj(buf, pAiotcParams, &params); // TODO : del slave obj
 }
 
 static void master_request_stream_start(struct evhttp_request *req, void *arg) {
@@ -679,7 +679,6 @@ static void *slave_load_thread(void *arg) {
     return NULL;
 }
 
-// TODO : load应该与obj类型关联
 static int _getlowestLoadSlave(node_common *p, void *arg) {
     slaveParam **ppLowestSlave = (slaveParam **)arg;
     slaveParam *pSlaveParam = (slaveParam *)p->name;
@@ -711,7 +710,7 @@ slaveParam *getLowestLoadSlave(objParam *pObjParam) {
     return pLowestSlave;
 }
 
-static int slaveIsNormal(int id, slaveParam *pSlaveParam) {
+static int slaveIsNormal(objParam *pObjParam, slaveParam *pSlaveParam) {
     int normal = 1;
     struct timeval tv;
 
@@ -722,7 +721,7 @@ static int slaveIsNormal(int id, slaveParam *pSlaveParam) {
             int sec = (int)tv.tv_sec - pSlaveParam->offline;
             if(sec < 120) {
                 printf("objId:%d, old slave %s is offline, wait %d seconds ...\n", 
-                        id, pSlaveParam->ip, 120 - sec);
+                        pObjParam->id, pSlaveParam->ip, 120 - sec);
                 normal = 0;
             }
         }
@@ -734,6 +733,7 @@ static int slaveIsNormal(int id, slaveParam *pSlaveParam) {
 // slave离线的等待一定时间,如果还未上线,重新分配相关obj slave
 // old slave负载有空闲优先
 // 其次分配到最空闲slave
+// TODO : 分配obj到slave应该与taskParams有关，比如显卡资源，算法资源等
 static int mobjManager(node_common *p, void *arg) {
     int redirect = 0;
     objParam *pObjParam = (objParam *)p->name;
@@ -742,7 +742,7 @@ static int mobjManager(node_common *p, void *arg) {
     if(pObjParam->slave != NULL && pObjParam->attachSlave == 0) {
         int normal;
         slaveParam *pSlave = (slaveParam *)pObjParam->slave;
-        normal = slaveIsNormal(pObjParam->id, pSlave);
+        normal = slaveIsNormal(pObjParam, pSlave);
         if(normal == 1) {
             redirect = 1;
             pObjParam->attachSlave = 1;
@@ -769,13 +769,20 @@ static int mobjManager(node_common *p, void *arg) {
 
     if(redirect) {
         char url[256];
+        char ack[256] = {0};
         char *originaldata;
+        httpAckParams ackParam;
         slaveParam *pSlaveParam = (slaveParam *)pObjParam->slave;
 
         originaldata = delObjJson(pObjParam->originaldata, "slave", NULL, NULL);
         if(originaldata != NULL) {
+            ackParam.buf = ack;
+            ackParam.max = sizeof(ack);
             snprintf(url, sizeof(url), "http://%s:%d/obj/add", pSlaveParam->ip, pSlaveParam->restPort);
-            httpPost(url, originaldata, NULL, 3);
+            httpPost(url, originaldata, &ackParam, 3);
+            if(strstr(ack,"load") != NULL) {
+                pSlaveParam->load = getIntValFromJson(ack, "data", "load", NULL);
+            }
             free(originaldata);
         }
     }
@@ -851,18 +858,18 @@ int masterProcess(void *arg) {
     if(pOps == NULL) {
         return -1;
     }
+    pOps->running = 1;
 
     masterInit(pAiotcParams);
     mstartTask(pAiotcParams);
 
-    pOps->running = 1;
     while(pOps->running) {
         sleep(2);
     }
     masterUninit(pAiotcParams);
     pOps->running = 0;
 
-    app_debug("pid:%d, run over", getpid());
+    app_debug("pid:%d, run over", pOps->pid);
 
     return 0;
 }

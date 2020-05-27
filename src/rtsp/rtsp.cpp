@@ -30,7 +30,11 @@ static int rtsp_callback(unsigned char *p_buf, int size, void *param) {
     taskParams *pTaskParams = (taskParams *)pObjParam->task;
     int nowSec = (int)pOps->tv.tv_sec;
 
-    if(pTaskParams->liveTaskBeat != nowSec) {
+    static int cnt = 0;
+    if(cnt++ % 200 == 0) {
+        printf("rtsp, id:%d, framesize:%d\n", pObjParam->id, size);
+    }
+    if(pTaskParams->liveTaskBeat != nowSec && pTaskParams->liveTaskBeat > 0) {
         pTaskParams->liveTaskBeat = nowSec;
     }
 
@@ -45,7 +49,7 @@ static int rtsp_start(const void *buf, void *arg) {
     char *buff = pObjParam->originaldata;
 
     if(pTaskParams->liveArgs == NULL) {
-        pTaskParams->liveArgs = malloc(sizeof(rtspParams)); // TODO : free it if proc is empty long time
+        pTaskParams->liveArgs = malloc(sizeof(rtspParams));
         if(pTaskParams->liveArgs == NULL) {
             app_err("malloc failed");
             return -1;
@@ -75,7 +79,7 @@ static int rtsp_start(const void *buf, void *arg) {
         app_err("player_start_play %s failed ", player->url);
         goto end;
     }
-    printf("rtsp start ok, id:%d\n", pObjParam->id);
+    printf("id:%d, rtsp start ...\n", pObjParam->id);
 
 end:
     if(url != NULL) {
@@ -100,7 +104,10 @@ static int rtsp_stop(const void *buf, void *arg) {
     if(player->playhandle != NULL) {
         player_stop_play(player);
     }
-    printf("rtsp stop ok, id:%d\n", pObjParam->id);
+    free(pTaskParams->liveArgs);
+    pTaskParams->liveArgs = NULL;
+
+    printf("id:%d, rtsp stop ok\n", pObjParam->id);
 
     return 0;
 }
@@ -130,6 +137,10 @@ static int rtspProcBeat(node_common *p, void *arg) {
     if(pTaskParams->livestream) {
         pTaskParams->liveBeat = (int)pOps->tv.tv_sec;
     }
+    else if(pTaskParams->livestream == 0 && pTaskParams->liveTaskBeat == 0) {
+        delObjFromPidQue(pObjParam->id, pOps, 0);
+        pTaskParams->liveBeat = 0;
+    }
 
     return 0;
 }
@@ -142,18 +153,37 @@ static int rtspTaskBeat(node_common *p, void *arg) {
     int nowSec = (int)pOps->tv.tv_sec;
 
     if(pTaskParams->livestream) {
-        printf("##test, id:%d, %d, liveBeat:%d, liveTaskBeat:%d\n", 
-                pObjParam->id, nowSec, pTaskParams->liveBeat, pTaskParams->liveTaskBeat);
+        //printf("id:%d, %d, liveBeat:%d, liveTaskBeat:%d\n", 
+        //        pObjParam->id, nowSec, pTaskParams->liveBeat, pTaskParams->liveTaskBeat);
         if(pTaskParams->liveTaskBeat == 0) {
             pTaskOps->start("live", pObjParam);
             pTaskParams->liveTaskBeat = nowSec;
         }
         else if(nowSec - pTaskParams->liveTaskBeat > TASK_BEAT_TIMEOUT) {
-            app_warring("id:%d, detected exception, restart it ...", pObjParam->id);
+            if(pTaskParams->liveRestart ++ == 0) {
+                app_warring("id:%d, %s, detected exception, restart it ...", pObjParam->id, pOps->taskName);
+            }
+            else {
+                printf("id:%d, %s, detected exception, restart it ...\n", pObjParam->id, pOps->taskName);
+            }
             pTaskOps->stop("live", pObjParam);
             pTaskOps->start("live", pObjParam);
             pTaskParams->liveTaskBeat = nowSec;
         }
+    }
+    else if(pTaskParams->liveTaskBeat > 0) {
+        pTaskOps->stop("live", pObjParam);
+        pTaskParams->liveTaskBeat = 0;
+    }
+
+    return 0;
+}
+
+static int rtspInit(pidOps *pOps) {
+    pOps->taskMax = getIntValFromFile(AIOTC_CFG, "proc", "rtsp", "taskMax");
+    if(pOps->taskMax <= 0) {
+        app_warring("get task max failed, %s-%s-%s", pOps->name, pOps->subName, pOps->taskName);
+        pOps->taskMax = 1;
     }
 
     return 0;
@@ -169,6 +199,7 @@ int rtspProcess(void *arg) {
     }
     pOps->running = 1;
 
+    rtspInit(pOps);
     initTaskOps(pOps, &rtspTaskOps);
     createBeatTask(pOps, rtspProcBeat, 5);
     createBeatTask(pOps, rtspTaskBeat, TASK_BEAT_SLEEP);
@@ -185,7 +216,7 @@ int rtspProcess(void *arg) {
     }
     pOps->running = 0;
 
-    app_debug("pid:%d, run over", getpid());
+    app_debug("pid:%d, run over", pOps->pid);
 
     return 0;
 }

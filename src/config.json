@@ -40,6 +40,11 @@
             "dbName": "null"
         }
     },
+    "proc": {
+        "rtsp": {
+            "taskMax": 10
+        }
+    },
     "alg": {
     },
     "msgKey": {

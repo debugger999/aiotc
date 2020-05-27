@@ -25,7 +25,7 @@
 #include "share.h"
 #include "task.h"
 
-#define PROC_LOAD_MAX       90
+#define PROC_LOAD_MAX       100
 #define PROC_BEAT_TIMEOUT   20
 
 typedef int (*ProcFunc)(void *arg);
@@ -42,6 +42,7 @@ typedef struct {
     queue_common    pobjQueue;      // objParam
     void            *procTaskOps;   // taskOps
     int             load;
+    int             taskMax;
     int             lastReboot;
     int             running;
     void            *arg; // aiotcParams
@@ -52,6 +53,7 @@ pidOps *getOpsByPid(pid_t pid, void *arg);
 pidOps *getOpsByName(const char *name, const char *subName, const char *taskName);
 pidOps *getEmptyProc(const char *name, const char *subName, const char *taskName, void *arg);
 pidOps *getTaskProc(const char *name, const char *subName, const char *taskName, void *arg);
+int delObjFromPidQue(int id, pidOps *pOps, int lock);
 int initTaskOps(pidOps *pOps, taskOps *pTaskOps);
 int createBeatTask(pidOps *pOps, int (*obj_task_beat)(node_common *, void *), int sec);
 int creatProcByPid(pid_t oldPid, int status, void *arg);

@@ -25,7 +25,7 @@
 #include "share.h"
 
 #define TASK_BEAT_SLEEP     1
-#define TASK_BEAT_TIMEOUT   20
+#define TASK_BEAT_TIMEOUT   30
 
 typedef struct {
     CommonObjFunc init;
@@ -39,21 +39,25 @@ typedef struct {
     int livestream;
     int liveBeat;       // for proc running
     int liveTaskBeat;   // for obj task running
+    int liveRestart;
     void *liveArgs;
 
     int capture;
     int captureBeat;
     int captureTaskBeat;
+    int captureRestart;
     void *captureArgs;
 
     int record;
     int recordBeat;
     int recordTaskBeat;
+    int recordRestart;
     void *recordArgs;
 
     char preview[32];
     int previewBeat;
     int previewTaskBeat;
+    int previewRestart;
     void *previewArgs;
 
     sem_t mutex_alg;

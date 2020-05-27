@@ -20,13 +20,82 @@
 #include "pids.h"
 #include "obj.h"
 #include "task.h"
+#include "db.h"
 
-static int previewTaskBeat(node_common *p, void *arg) {
-    struct timeval *tv = (struct timeval *)arg;
+static int preview_start(const void *buf, void *arg) {
+    objParam *pObjParam = (objParam *)arg;
+    printf("id:%d, preview start ...\n", pObjParam->id);
+
+    return 0;
+}
+
+static int preview_stop(const void *buf, void *arg) {
+    objParam *pObjParam = (objParam *)arg;
+    printf("id:%d, preview stop ok\n", pObjParam->id);
+
+    return 0;
+}
+
+static taskOps previewTaskOps = {
+    .init = NULL,
+    .uninit = NULL,
+    .start = preview_start,
+    .stop = preview_stop,
+    .ctrl = NULL
+};
+
+static int previewProcBeat(node_common *p, void *arg) {
+    pidOps *pOps = (pidOps *)arg;
     objParam *pObjParam = (objParam *)p->name;
     taskParams *pTaskParams = (taskParams *)pObjParam->task;
 
-    pTaskParams->previewBeat = (int)tv->tv_sec;
+    if(strlen(pTaskParams->preview) > 0) {
+        pTaskParams->previewBeat = (int)pOps->tv.tv_sec;
+    }
+
+    return 0;
+}
+
+static int previwTaskBeat(node_common *p, void *arg) {
+    pidOps *pOps = (pidOps *)arg;
+    objParam *pObjParam = (objParam *)p->name;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+    //taskOps *pTaskOps = (taskOps *)pOps->procTaskOps;
+    int nowSec = (int)pOps->tv.tv_sec;
+
+    if(strlen(pTaskParams->preview) > 0) {
+        if(pTaskParams->previewTaskBeat == 0) {
+            //pTaskOps->start("preview", pObjParam);
+            pTaskParams->previewTaskBeat = nowSec;
+        }
+        else if(nowSec - pTaskParams->previewTaskBeat > TASK_BEAT_TIMEOUT) {
+            //if(pTaskParams->previewRestart ++ < 3) {
+            //    app_warring("id:%d, %s, detected exception, restart it ...", pObjParam->id, pOps->taskName);
+            //}
+            //else {
+            //    printf("id:%d, %s, detected exception, restart it ...\n", pObjParam->id, pOps->taskName);
+            //}
+            //pTaskOps->stop("preview", pObjParam);
+            //pTaskOps->start("preview", pObjParam);
+            pTaskParams->previewTaskBeat = nowSec;
+        }
+    }
+    else if(pTaskParams->previewTaskBeat > 0) {
+        //pTaskOps->stop("preview", pObjParam);
+        pTaskParams->previewTaskBeat = 0;
+    }
+
+    return 0;
+}
+
+static int previewInit(pidOps *pOps) {
+    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+    pOps->taskMax = pConfigParams->slaveObjMax;
+    if(pOps->taskMax <= 0) {
+        app_warring("get task max failed, %s-%s-%s", pOps->name, pOps->subName, pOps->taskName);
+        pOps->taskMax = 1;
+    }
 
     return 0;
 }
@@ -38,15 +107,19 @@ int previewProcess(void *arg) {
     if(pOps == NULL) {
         return -1;
     }
-    createBeatTask(pOps, previewTaskBeat, 5);
-
     pOps->running = 1;
+
+    previewInit(pOps);
+    initTaskOps(pOps, &previewTaskOps);
+    createBeatTask(pOps, previewProcBeat, 5);
+    createBeatTask(pOps, previwTaskBeat, TASK_BEAT_SLEEP);
+
     while(pOps->running) {
         sleep(2);
     }
     pOps->running = 0;
 
-    app_debug("pid:%d, run over", getpid());
+    app_debug("pid:%d, run over", pOps->pid);
 
     return 0;
 }

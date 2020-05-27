@@ -181,7 +181,9 @@ pidOps *getRealOps(pidOps *pOps) {
 }
 
 int initTaskOps(pidOps *pOps, taskOps *pTaskOps) {
+    gettimeofday(&pOps->tv, NULL);
     pOps->procTaskOps = pTaskOps;
+
     return 0;
 }
 
@@ -351,18 +353,47 @@ static int delOpsByPid(pid_t pid, aiotcParams *pAiotcParams) {
 }
 
 static int putObj2pidQue(objParam *pObjParam, pidOps *pOps) {
+    int wait = 100;
     node_common node;
     objParam *p = (objParam *)node.name;
     aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
     shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
-    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+
+    do {
+        if(pOps->taskMax > 0) {
+            break;
+        }
+        usleep(100000);
+    } while(wait --);
+    if(pOps->taskMax <= 0) {
+        app_warring("wait proc init failed, pid:%d, %s-%s-%s", 
+                pOps->pid, pOps->name, pOps->subName, pOps->taskName);
+        return -1;
+    }
 
     memset(&node, 0, sizeof(node));
     memcpy(p, pObjParam, sizeof(objParam));
     p->reserved = pOps;
     semWait(&pOps->mutex_pobj);
-    putToShmQueue(pShmParams->headsp, &pOps->pobjQueue, &node, pConfigParams->slaveObjMax);
+    putToShmQueue(pShmParams->headsp, &pOps->pobjQueue, &node, pOps->taskMax);
+    pOps->load = pOps->pobjQueue.queLen*100/pOps->taskMax;
     semPost(&pOps->mutex_pobj);
+
+    return 0;
+}
+
+int delObjFromPidQue(int id, pidOps *pOps, int lock) {
+    node_common *p = NULL;
+    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
+    shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
+
+    if(lock) semWait(&pOps->mutex_pobj);
+    delFromQueue(&pOps->pobjQueue, &id, &p, conditionByObjId);
+    pOps->load = pOps->pobjQueue.queLen*100/pOps->taskMax;
+    if(lock) semPost(&pOps->mutex_pobj);
+    if(p != NULL) {
+        shmFree(pShmParams->headsp, p);
+    }
 
     return 0;
 }

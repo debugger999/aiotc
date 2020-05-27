@@ -26,14 +26,14 @@ int streamProcess(void *arg) {
     if(pOps == NULL) {
         return -1;
     }
-
     pOps->running = 1;
+
     while(pOps->running) {
         sleep(2);
     }
     pOps->running = 0;
 
-    app_debug("pid:%d, run over", getpid());
+    app_debug("pid:%d, run over", pOps->pid);
 
     return 0;
 }
