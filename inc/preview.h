@@ -23,6 +23,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct {
+    CommonObjFunc init;
+    CommonObjFunc start;
+    CommonObjFunc stop;
+    CommonObjFunc ctrl;
+    CommonObjFunc uninit;
+    void *arg; // objParam
+} previewParams;
+
 int previewProcess(void *arg);
 
 #endif

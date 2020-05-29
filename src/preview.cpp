@@ -21,22 +21,98 @@
 #include "obj.h"
 #include "task.h"
 #include "db.h"
+#include "preview.h"
+#include "hls.h"
+#include "httpflv.h"
+#include "wspreview.h"
+
+static taskOps previewOps[] = {
+    {
+        .type = "hls",
+        .init = NULL,
+        .uninit = NULL,
+        .start = hls_start,
+        .stop = hls_stop,
+        .ctrl = NULL
+    },
+    {
+        .type = "http-flv",
+        .init = NULL,
+        .uninit = NULL,
+        .start = httpflv_start,
+        .stop = httpflv_stop,
+        .ctrl = NULL
+    },
+    {
+        .type = "ws",
+        .init = NULL,
+        .uninit = NULL,
+        .start = wspreview_start,
+        .stop = wspreview_stop,
+        .ctrl = NULL
+    }
+};
+
+static int initPreviewOps(taskParams *pTaskParams) {
+    int i;
+    taskOps *p;
+    int num = sizeof(previewOps) / sizeof(taskOps);
+
+    if(pTaskParams->previewArgs == NULL) {
+        pTaskParams->previewArgs = malloc(sizeof(previewParams));
+        if(pTaskParams->previewArgs == NULL) {
+            app_err("malloc failed");
+            return -1;
+        }
+        memset(pTaskParams->previewArgs, 0, sizeof(previewParams));
+    }
+
+    previewParams *pPreviewParams = (previewParams *)pTaskParams->previewArgs;
+    for(i = 0; i < num; i ++) {
+        p = previewOps + i;
+        if(!strcmp(pTaskParams->preview, p->type)) {
+            pPreviewParams->start = p->start;
+            pPreviewParams->stop = p->stop;
+            break;
+        }
+    }
+    if(pPreviewParams->start == NULL) {
+        app_warring("get preview ops failed, type:%s", pTaskParams->preview);
+        return -1;
+    }
+
+    return 0;
+}
 
 static int preview_start(const void *buf, void *arg) {
+    previewParams *pPreviewParams;
     objParam *pObjParam = (objParam *)arg;
-    printf("id:%d, preview start ...\n", pObjParam->id);
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+
+    if(initPreviewOps(pTaskParams) != 0) {
+        return -1;
+    }
+
+    pPreviewParams = (previewParams *)pTaskParams->previewArgs;
+    pPreviewParams->start("preview", pObjParam);
 
     return 0;
 }
 
 static int preview_stop(const void *buf, void *arg) {
     objParam *pObjParam = (objParam *)arg;
-    printf("id:%d, preview stop ok\n", pObjParam->id);
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+    previewParams *pPreviewParams = (previewParams *)pTaskParams->previewArgs;
+
+    if(pPreviewParams != NULL && pPreviewParams->stop != NULL) {
+        pPreviewParams->stop("preview", pObjParam);
+    }
 
     return 0;
 }
 
 static taskOps previewTaskOps = {
+    .type = NULL,
     .init = NULL,
     .uninit = NULL,
     .start = preview_start,
@@ -52,6 +128,10 @@ static int previewProcBeat(node_common *p, void *arg) {
     if(strlen(pTaskParams->preview) > 0) {
         pTaskParams->previewBeat = (int)pOps->tv.tv_sec;
     }
+    else if(strlen(pTaskParams->preview) == 0 && pTaskParams->previewTaskBeat == 0) {
+        delObjFromPidQue(pObjParam->id, pOps, 0);
+        pTaskParams->previewBeat = 0;
+    }
 
     return 0;
 }
@@ -60,12 +140,12 @@ static int previwTaskBeat(node_common *p, void *arg) {
     pidOps *pOps = (pidOps *)arg;
     objParam *pObjParam = (objParam *)p->name;
     taskParams *pTaskParams = (taskParams *)pObjParam->task;
-    //taskOps *pTaskOps = (taskOps *)pOps->procTaskOps;
+    taskOps *pTaskOps = (taskOps *)pOps->procTaskOps;
     int nowSec = (int)pOps->tv.tv_sec;
 
     if(strlen(pTaskParams->preview) > 0) {
         if(pTaskParams->previewTaskBeat == 0) {
-            //pTaskOps->start("preview", pObjParam);
+            pTaskOps->start("preview", pObjParam);
             pTaskParams->previewTaskBeat = nowSec;
         }
         else if(nowSec - pTaskParams->previewTaskBeat > TASK_BEAT_TIMEOUT) {
@@ -81,7 +161,7 @@ static int previwTaskBeat(node_common *p, void *arg) {
         }
     }
     else if(pTaskParams->previewTaskBeat > 0) {
-        //pTaskOps->stop("preview", pObjParam);
+        pTaskOps->stop("preview", pObjParam);
         pTaskParams->previewTaskBeat = 0;
     }
 

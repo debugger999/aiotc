@@ -15,54 +15,16 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  *
  ******************************************************************************/
-
-#ifndef __AIOTC_TASK_H__
-#define __AIOTC_TASK_H__
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "share.h"
 
-#define TASK_BEAT_SLEEP     1
-#define TASK_BEAT_TIMEOUT   30
+int httpflv_start(const void *buf, void *arg) {
+    return 0;
+}
 
-typedef struct {
-    const char    *type;
-    CommonObjFunc init;
-    CommonObjFunc uninit;
-    CommonObjFunc start;
-    CommonObjFunc stop;
-    CommonObjFunc ctrl;
-} taskOps;
+int httpflv_stop(const void *buf, void *arg) {
+    return 0;
+}
 
-typedef struct {
-    int livestream;
-    int liveBeat;       // for proc running
-    int liveTaskBeat;   // for obj task running
-    int liveRestart;
-    void *liveArgs;
 
-    int capture;
-    int captureBeat;
-    int captureTaskBeat;
-    int captureRestart;
-    void *captureArgs;
-
-    int record;
-    int recordBeat;
-    int recordTaskBeat;
-    int recordRestart;
-    void *recordArgs;
-
-    char preview[32];
-    int previewBeat;
-    int previewTaskBeat;
-    int previewRestart;
-    void *previewArgs;
-
-    sem_t mutex_alg;
-    queue_common algQueue; // algParams
-} taskParams;
-
-#endif

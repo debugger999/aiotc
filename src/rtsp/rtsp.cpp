@@ -113,6 +113,7 @@ static int rtsp_stop(const void *buf, void *arg) {
 }
 
 static taskOps rtspTaskOps = {
+    .type = NULL,
     .init = NULL,
     .uninit = NULL,
     .start = rtsp_start,
@@ -160,7 +161,7 @@ static int rtspTaskBeat(node_common *p, void *arg) {
             pTaskParams->liveTaskBeat = nowSec;
         }
         else if(nowSec - pTaskParams->liveTaskBeat > TASK_BEAT_TIMEOUT) {
-            if(pTaskParams->liveRestart ++ == 0) {
+            if(pTaskParams->liveRestart ++ < 3) {
                 app_warring("id:%d, %s, detected exception, restart it ...", pObjParam->id, pOps->taskName);
             }
             else {

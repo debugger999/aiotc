@@ -28,8 +28,64 @@ static int initHeadShm(shmParams *pShmParams, int shmHeadSize) {
     ncx_slab_init(pShmParams->headsp);
     pShmParams->headsp->mutex = (sem_t *)ncx_slab_alloc_locked(pShmParams->headsp, sizeof(sem_t)); 
     if(sem_init(pShmParams->headsp->mutex, 1, 1) < 0) {
-      app_err("sem init failed");
-      return -1;
+        app_err("sem init failed");
+        return -1;
+    }
+
+    return 0;
+}
+
+static int initShmSlab(shmParam *pShm, int poolSize, shmParams *pShmParams) {
+    pShm->sp = (ncx_slab_pool_t *)pShm->shmAddr;
+    pShm->sp->addr = pShm->shmAddr;
+    pShm->sp->min_shift = 3;
+    pShm->sp->end = (u_char *)pShm->shmAddr + poolSize;
+    ncx_slab_init(pShm->sp);
+    pShm->sp->mutex = (sem_t *)shmMalloc(pShmParams->headsp, sizeof(sem_t)); 
+    if(sem_init(pShm->sp->mutex, 1, 1) < 0) {
+        app_err("sem init failed");
+        return -1;
+    }
+
+    pShm->queue = (queue_common *)shmMalloc(pShmParams->headsp, sizeof(queue_common));
+    memset(pShm->queue, 0, sizeof(queue_common));
+    pShm->mutex_shm = (sem_t *)shmMalloc(pShmParams->headsp, sizeof(sem_t)); 
+    if(sem_init(pShm->mutex_shm, 1, 1) < 0) {
+        app_err("sem init failed");
+        return -1;
+    }
+
+    return 0;
+}
+
+int initShmArray(shmParams *pShmParams) {
+    int i, j;
+    long long int offset = 0;
+    aiotcParams *pAiotcParams = (aiotcParams *)pShmParams->arg;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+    int videoShmSize = pConfigParams->videoFrameSizeMax*pConfigParams->videoQueLen;
+    int captureShmSize = pConfigParams->captureFrameSizeMax*pConfigParams->captureQueLen;
+
+    pShmParams->num = pConfigParams->videoMax + pConfigParams->captureMax;
+    pShmParams->pShmArray = (shmParam *)shmMalloc(pShmParams->headsp, sizeof(shmParam)*pShmParams->num);
+    memset(pShmParams->pShmArray, 0, sizeof(shmParam)*pShmParams->num);
+
+    offset += pConfigParams->shmHeadSize;
+    for(i = 0; i < pConfigParams->videoMax; i ++) {
+        shmParam *pShm = pShmParams->pShmArray + i;
+        pShm->shmAddr = (char *)pShmParams->shmAddr + offset;
+        initShmSlab(pShm, videoShmSize, pShmParams);
+        strncpy(pShm->type, "video", sizeof(pShm->type));
+        pShm->id = i+1;
+        offset += videoShmSize;
+    }
+    for(j = 0; j < pConfigParams->captureMax; j ++, i ++) {
+        shmParam *pShm = pShmParams->pShmArray + i;
+        pShm->shmAddr = (char *)pShmParams->shmAddr + offset;
+        initShmSlab(pShm, captureShmSize, pShmParams);
+        strncpy(pShm->type, "capture", sizeof(pShm->type));
+        pShm->id = i+1;
+        offset += captureShmSize;
     }
 
     return 0;

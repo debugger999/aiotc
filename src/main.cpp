@@ -103,6 +103,7 @@ static int miscInit(aiotcParams *pAiotcParams) {
     slaveParams *pSlaveParams = (slaveParams *)pAiotcParams->slaveArgs;
     configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
 
+    initShmArray(pShmParams);
     pSlaveParams->keyCache = (int *)shmMalloc(pShmParams->headsp, pConfigParams->msgKeyMax*sizeof(int));
     if(pSlaveParams->keyCache == NULL) {
         app_err("shm malloc %ld failed", pConfigParams->msgKeyMax*sizeof(int));
@@ -334,6 +335,7 @@ static int startMsgThread(msgParams *pMsgParams, aiotcParams *pAiotcParams) {
     return 0;
 }
 
+// TODO: detect main panic
 int main(int argc, char *argv[]) {
     msgParams msgParam;
     aiotcParams *pAiotcParams = NULL;

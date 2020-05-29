@@ -25,19 +25,45 @@
 #include <unistd.h>
 #include "ncx_slab.h"
 #include "db.h"
+#include "share.h"
 
 typedef struct {
-    int shmId;
-    void *shmAddr;
-    long long int shmTotalSize;
-    long long int shmUsedOffset;
+    int             type;
+    char            *ptr;
+    int             size;
+    long long int   frameId;
+    int             user;
+    void            *arg;
+} shmFrame;
+
+typedef struct {
+    int                 id;
+    char                type[32];
+    void                *shmAddr;
+    ncx_slab_pool_t     *sp;
+
+    sem_t               *mutex_shm;
+    queue_common        *queue;
+    int                 used;
+
+    void                *arg; // objParam
+} shmParam;
+
+typedef struct {
+    int             shmId;
+    void            *shmAddr;
+    long long int   shmTotalSize;
 
     ncx_slab_pool_t *headsp;
 
-    void *arg; // aiotcParams
+    int             num;
+    shmParam        *pShmArray;
+
+    void            *arg; // aiotcParams
 } shmParams;
 
 int shmInit(configParams *pConfigParams, shmParams *pShmParams);
+int initShmArray(shmParams *pShmParams);
 int shmDestroy(void *ptr);
 
 inline void *shmMalloc(ncx_slab_pool_t *pool, size_t size) {
