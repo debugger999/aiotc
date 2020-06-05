@@ -25,8 +25,10 @@
 #include <unistd.h>
 
 typedef struct {
-    char *sysOrgData;
-    void *arg; // aiotcParams
+    char    *sysOrgData;
+    int     httpPort;
+    int     httpFlvPort;
+    void    *arg; // aiotcParams
 } systemParams;
 
 #endif

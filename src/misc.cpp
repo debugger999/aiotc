@@ -24,6 +24,7 @@
 #include "task.h"
 #include "rest.h"
 #include "alg.h"
+#include "camera.h"
 
 static int createDir(const char *sPathName) {
     char dirName[4096];
@@ -92,6 +93,26 @@ int systemInits(char *buf, aiotcParams *pAiotcParams) {
     return 0;
 }
 
+static int initObjArg(char *type, objParam *pObjParam) {
+    aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
+    shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
+
+    if(!strcmp(type, "camera")) {
+        pObjParam->objArg = shmMalloc(pShmParams->headsp, sizeof(cameraParams));
+        if(pObjParam->objArg == NULL) {
+            app_err("malloc failed");
+            return -1;
+        }
+        memset(pObjParam->objArg, 0, sizeof(cameraParams));
+    }
+    else {
+        app_warring("unsupport obj type : %s", type);
+        return -1;
+    }
+
+    return 0;
+}
+
 static int initObjTask(char *buf, objParam *pObjParam) {
     int livestream, capture, record;
     char *slaveIp = NULL, *preview = NULL;
@@ -132,6 +153,7 @@ static int initObjTask(char *buf, objParam *pObjParam) {
 }
 
 int addObj(char *buf, aiotcParams *pAiotcParams, int max, void *arg) {
+    int ret;
     node_common node;
     taskParams *pTaskParams;
     char *name = NULL, *type = NULL, *subtype = NULL;
@@ -168,10 +190,16 @@ int addObj(char *buf, aiotcParams *pAiotcParams, int max, void *arg) {
     }
     pObjParam->arg = pAiotcParams;
     initObjTask(buf, pObjParam);
+    if(initObjArg(type, pObjParam) != 0) {
+        goto end;
+    }
 
     semWait(mutex);
-    putToShmQueue(pShmParams->headsp, queue, &node, max);
+    ret = putToShmQueue(pShmParams->headsp, queue, &node, max);
     semPost(mutex);
+    if(ret != 0) {
+        shmFree(pShmParams->headsp, pObjParam->originaldata);
+    }
 
 end:
     if(name != NULL) {
@@ -211,6 +239,9 @@ int delObj(char *buf, aiotcParams *pAiotcParams, void *arg) {
         }
         if(pObjParam->originaldata != NULL) {
             shmFree(pShmParams->headsp, pObjParam->originaldata);
+        }
+        if(pObjParam->objArg != NULL) {
+            shmFree(pShmParams->headsp, pObjParam->objArg);
         }
         if(p->arg != NULL) {
             shmFree(pShmParams->headsp, p->arg);
@@ -398,6 +429,24 @@ int clearSystemIpc(aiotcParams *pAiotcParams) {
         }
         fclose(fp);
     } 
+    return 0;
+}
+
+int allocVideoShm(objParam *pObjParam) {
+    cameraParams *pCameraParams = (cameraParams *)pObjParam->objArg;
+    aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
+    shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
+
+    if(pCameraParams->videoShm != NULL) {
+        return 0;
+    }
+    pCameraParams->videoShm = getFreeShm(pShmParams, "video");
+    if(pCameraParams->videoShm == NULL) {
+        app_warring("get free shm failed, id:%d", pObjParam->id);
+        return -1;
+    }
+    app_debug("get free shm success, id:%d, shmid:%d", pObjParam->id, pCameraParams->videoShm->id);
+
     return 0;
 }
 

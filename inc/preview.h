@@ -24,12 +24,21 @@
 #include <string.h>
 
 typedef struct {
-    CommonObjFunc init;
-    CommonObjFunc start;
-    CommonObjFunc stop;
-    CommonObjFunc ctrl;
-    CommonObjFunc uninit;
-    void *arg; // objParam
+    CommonObjFunc   init;
+    CommonObjFunc   start;
+    CommonObjFunc   stop;
+    CommonObjFunc   ctrl;
+    CommonObjFunc   uninit;
+
+    int             findIDR;
+    int             streamOk;
+    int             videoindex;
+    int             lastTsNum;
+    int             lastTsSameCnt;
+    CommonObjFunc   checkFunc;
+    void            *prewFFmpeg;
+    int             running;
+    void            *arg; // objParam
 } previewParams;
 
 int previewProcess(void *arg);

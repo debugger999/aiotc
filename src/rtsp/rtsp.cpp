@@ -22,20 +22,34 @@
 #include "obj.h"
 #include "task.h"
 #include "rtsp.h"
+#include "camera.h"
+#include "preview.h"
+#include "typedef.h"
 
 static int rtsp_callback(unsigned char *p_buf, int size, void *param) {
-    //char buf[4] = {0x00, 0x00, 0x00, 0x01};
     objParam *pObjParam = (objParam *)param;
     pidOps *pOps = (pidOps *)pObjParam->reserved;
     taskParams *pTaskParams = (taskParams *)pObjParam->task;
+    aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
+    cameraParams *pCameraParams = (cameraParams *)pObjParam->objArg;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+    previewParams *pPreviewParams = (previewParams *)pTaskParams->previewArgs;
     int nowSec = (int)pOps->tv.tv_sec;
 
-    static int cnt = 0;
+    /*static int cnt = 0;
     if(cnt++ % 200 == 0) {
-        printf("rtsp, id:%d, framesize:%d\n", pObjParam->id, size);
+        printf("rtsp, id:%d, framesize:%d, %02x:%02x:%02x:%02x:%02x, shm:%lx\n", pObjParam->id, 
+                size, p_buf[0], p_buf[1], p_buf[2], p_buf[3], p_buf[4], (long int)pCameraParams->videoShm);
+    }*/
+    if(pCameraParams->videoShm != NULL && pCameraParams->videoShm->queue.useMax > 0) {
+        copyToShm(pCameraParams->videoShm, (char *)p_buf, size, 
+                ++pCameraParams->videoFrameId, ccLiveStream, pConfigParams->videoQueLen, NULL);
     }
     if(pTaskParams->liveTaskBeat != nowSec && pTaskParams->liveTaskBeat > 0) {
         pTaskParams->liveTaskBeat = nowSec;
+    }
+    if(pPreviewParams != NULL && !pPreviewParams->streamOk) {
+        pPreviewParams->streamOk = 1;
     }
 
     return 0; 
@@ -193,6 +207,7 @@ static int rtspInit(pidOps *pOps) {
 int rtspProcess(void *arg) {
     msgParams msgParam;
     pidOps *pOps = (pidOps *)arg;
+    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
 
     pOps = getRealOps(pOps);
     if(pOps == NULL) {
@@ -200,8 +215,8 @@ int rtspProcess(void *arg) {
     }
     pOps->running = 1;
 
-    rtspInit(pOps);
     initTaskOps(pOps, &rtspTaskOps);
+    rtspInit(pOps);
     createBeatTask(pOps, rtspProcBeat, 5);
     createBeatTask(pOps, rtspTaskBeat, TASK_BEAT_SLEEP);
 
@@ -212,7 +227,7 @@ int rtspProcess(void *arg) {
     msgParam.running = 1;
     createMsgThread(&msgParam);
 
-    while(pOps->running) {
+    while(pAiotcParams->running && pOps->running) {
         sleep(2);
     }
     pOps->running = 0;

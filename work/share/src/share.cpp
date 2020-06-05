@@ -962,7 +962,47 @@ int delFromQueue(queue_common *queue, void *arg, node_common **new_p, int (*cond
         prev = p;
         p = p->next;
     }
-    
+
+    return 0;
+}
+
+int delFromQueueByUser(queue_common *queue, void *arg, node_common **new_p, int (*condition)(node_common *p, void *arg)) {
+    int ret;
+    node_common *prev = queue->head;
+    node_common *p = queue->head;
+    while(p != NULL) {
+        ret = condition(p, arg);
+        if(ret == 1) {
+            if(new_p != NULL) {
+                *new_p = p;
+            }
+            p->val ++;
+            if(p->val >= queue->useMax) {
+                if(p == queue->head && p == queue->tail) {
+                    queue->head = queue->tail = NULL;
+                }
+                else if(p == queue->head) {
+                    queue->head = p->next;
+                }
+                else if(p == queue->tail) {
+                    prev->next = NULL;
+                    queue->tail = prev;
+                }
+                else {
+                    prev->next = p->next;
+                }
+                queue->queLen --;
+                if(queue->queLen < 0) {
+                    app_warring("exception queLen : %d", queue->queLen);
+                    queue->queLen = 0;
+                }
+            }
+            break;
+        }
+        prev = p;
+        p = p->next;
+    }
+
     return 0;
 }
 
@@ -1043,6 +1083,7 @@ int putToShmQueue(void *sp, queue_common *queue, node_common *new_node, int max)
         if (cnt++ % 200 == 0) {
             printf("shm, queLen is too large, %d\n", queue->queLen);
         }
+        return -1;
     }
 
     return 0;
@@ -1067,5 +1108,11 @@ int freeShmQueue(void *sp, queue_common *queue, int (*callBack)(void *arg)) {
     queue->queLen = 0;
 
     return 0;
+}
+
+int file_size(const char* filename) {
+    struct stat statbuf;
+    stat(filename, &statbuf);
+    return statbuf.st_size;
 }
 

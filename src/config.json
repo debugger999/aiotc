@@ -17,8 +17,8 @@
         "max": 3,
         "defaultPixW": 1920,
         "defaultPixH": 1080,
-        "frameSizeMax": 2097152,
-        "queueLen": 10
+        "frameSizeMax": 1048576,
+        "queueLen": 20
     },
     "capture": {
         "max": 3,

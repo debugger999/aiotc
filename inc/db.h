@@ -78,7 +78,7 @@ typedef struct {
 } dbParams;
 
 int configInit(configParams *pConfigParams);
-int dbInit(aiotcParams *pAiotcParams);
+int dbInit(void *aiotcArg);
 int dbOpen(void *dbArgs);
 int dbWrite(void *dbArgs, const char *table, const char *name, char *json, 
         const char *selectName, const void *selIntVal, const void *selStrVal);
@@ -92,5 +92,6 @@ int dbTraverse(void *dbArgs, const char *table, void *arg, int (*callBack)(char 
 int dbDel(void *dbArgs, const char *table, 
         const char *selectName, const void *selIntVal, const void *selStrVal);
 int dbClose(void *dbArgs);
+int initHttpPort(void *aiotcArg);
 
 #endif

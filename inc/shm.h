@@ -32,8 +32,8 @@ typedef struct {
     char            *ptr;
     int             size;
     long long int   frameId;
-    int             user;
-    void            *arg;
+    int             used;
+    void            *arg; // shmParam
 } shmFrame;
 
 typedef struct {
@@ -42,9 +42,9 @@ typedef struct {
     void                *shmAddr;
     ncx_slab_pool_t     *sp;
 
-    sem_t               *mutex_shm;
-    queue_common        *queue;
-    int                 used;
+    sem_t               mutex_shm;
+    queue_common        queue;
+    int                 usedd;
 
     void                *arg; // objParam
 } shmParam;
@@ -65,6 +65,13 @@ typedef struct {
 int shmInit(configParams *pConfigParams, shmParams *pShmParams);
 int initShmArray(shmParams *pShmParams);
 int shmDestroy(void *ptr);
+int setShmUser(shmParam *pShm, int val);
+shmParam *getFreeShm(shmParams *pShmParams, const char *type);
+int releaseShm(shmParam *pShm);
+int copyToShm(shmParam *pShm, char *buf, int size, 
+        long long int frameId, int type, int max, int (*copy)(char *ptr, void *arg));
+int copyFromShm(shmParam *pShm, shmFrame *pShmFrame);
+int copyFromShmWithFrameId(shmParam *pShm, long long int frameId, node_common **ppNode, int *useMax);
 
 inline void *shmMalloc(ncx_slab_pool_t *pool, size_t size) {
     return ncx_slab_alloc(pool, size);

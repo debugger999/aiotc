@@ -32,6 +32,7 @@ typedef struct {
     int  attachSlave;
     void *slave; // slaveParams
     void *task; // taskParams
+    void *objArg; // cameraParams, audioParams, etc ...
     char *originaldata;
     void *reserved; // pidOps
     void *arg; // aiotcParams

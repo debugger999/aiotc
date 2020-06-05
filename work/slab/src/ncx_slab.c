@@ -73,7 +73,6 @@ ncx_slab_init(ncx_slab_pool_t *pool)
 
     /*pagesize*/
     ncx_pagesize = getpagesize();
-    //printf("##test, %s:%d, pagesize:%d\n", __FILE__, __LINE__, (int)ncx_pagesize);
     for (n = ncx_pagesize, ncx_pagesize_shift = 0; 
             n >>= 1; ncx_pagesize_shift++) { /* void */ }
 
@@ -160,10 +159,7 @@ ncx_slab_alloc_locked(ncx_slab_pool_t *pool, size_t size)
     ncx_uint_t        i, slot, shift, map;
     ncx_slab_page_t  *page, *prev, *slots;
 
-    //printf("##test, %s:%d, size:%d, ncx_slab_max_size:%d\n", __FILE__, __LINE__, size, ncx_slab_max_size);
     if (size >= ncx_slab_max_size) {
-
-        debug("slab alloc: %zu", size);
 
         page = ncx_slab_alloc_pages(pool, (size >> ncx_pagesize_shift)
                                           + ((size % ncx_pagesize) ? 1 : 0));
@@ -388,9 +384,6 @@ ncx_slab_alloc_locked(ncx_slab_pool_t *pool, size_t size)
     p = 0;
 
 done:
-
-    debug("slab alloc: %p", (void *)p);
-
     return (void *) p;
 }
 
@@ -426,8 +419,6 @@ ncx_slab_free_locked(ncx_slab_pool_t *pool, void *p)
     uintptr_t         slab, m, *bitmap;
     ncx_uint_t        n, type, slot, shift, map;
     ncx_slab_page_t  *slots, *page;
-
-    debug("slab free: %p", p);
 
     if ((u_char *) p < pool->start || (u_char *) p > pool->end) {
         error("ncx_slab_free(): outside of pool");

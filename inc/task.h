@@ -34,6 +34,7 @@ typedef struct {
     CommonObjFunc start;
     CommonObjFunc stop;
     CommonObjFunc ctrl;
+    void          *arg; // expand anything, global hls params, http-flv patams etc ...
 } taskOps;
 
 typedef struct {

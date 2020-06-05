@@ -21,6 +21,7 @@
 
 int ehomeProcess(void *arg) {
     pidOps *pOps = (pidOps *)arg;
+    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
 
     pOps = getRealOps(pOps);
     if(pOps == NULL) {
@@ -28,7 +29,7 @@ int ehomeProcess(void *arg) {
     }
     pOps->running = 1;
 
-    while(pOps->running) {
+    while(pAiotcParams->running) {
         sleep(2);
     }
     pOps->running = 0;

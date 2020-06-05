@@ -29,6 +29,7 @@
 #include "pids.h"
 
 static int addSlave(char *buf, aiotcParams *pAiotcParams) {
+    int ret;
     node_common node;
     char *slaveIp = NULL, *internetIp = NULL;
     slaveParam *pSlaveParam = (slaveParam *)node.name;
@@ -55,8 +56,11 @@ static int addSlave(char *buf, aiotcParams *pAiotcParams) {
     }
     strcpy((char *)node.arg, buf);
     semWait(&pMasterParams->mutex_slave);
-    putToShmQueue(pShmParams->headsp, &pMasterParams->slaveQueue, &node, 1000);
+    ret = putToShmQueue(pShmParams->headsp, &pMasterParams->slaveQueue, &node, 1000);
     semPost(&pMasterParams->mutex_slave);
+    if(ret != 0) {
+        shmFree(pShmParams->headsp, node.arg);
+    }
 
 end:
     if(slaveIp != NULL) {
@@ -863,7 +867,7 @@ int masterProcess(void *arg) {
     masterInit(pAiotcParams);
     mstartTask(pAiotcParams);
 
-    while(pOps->running) {
+    while(pAiotcParams->running) {
         sleep(2);
     }
     masterUninit(pAiotcParams);

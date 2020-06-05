@@ -46,11 +46,7 @@ static int initShmSlab(shmParam *pShm, int poolSize, shmParams *pShmParams) {
         app_err("sem init failed");
         return -1;
     }
-
-    pShm->queue = (queue_common *)shmMalloc(pShmParams->headsp, sizeof(queue_common));
-    memset(pShm->queue, 0, sizeof(queue_common));
-    pShm->mutex_shm = (sem_t *)shmMalloc(pShmParams->headsp, sizeof(sem_t)); 
-    if(sem_init(pShm->mutex_shm, 1, 1) < 0) {
+    if(sem_init(&pShm->mutex_shm, 1, 1) < 0) {
         app_err("sem init failed");
         return -1;
     }
@@ -128,5 +124,153 @@ int shmInit(configParams *pConfigParams, shmParams *pShmParams) {
 
 int shmDestroy(void *ptr) {
     return 0;
+}
+
+static int freeShmPtr(void *arg) {
+    node_common *p = (node_common *)arg;
+    shmFrame *pShmFrame = (shmFrame *)p->name;
+    shmParam *pShm = (shmParam *)pShmFrame->arg;
+
+    if(pShmFrame->ptr != NULL) {
+        shmFree(pShm->sp, pShmFrame->ptr); 
+    }
+
+    return 0;
+}
+
+int setShmUser(shmParam *pShm, int val) {
+    sem_wait(&pShm->mutex_shm);
+    if(val) {
+        pShm->queue.useMax ++;
+    }
+    else {
+        pShm->queue.useMax --;
+        if(pShm->queue.useMax < 0) {
+            app_warring("exception use max:%d, shmId:%d", pShm->queue.useMax, pShm->id);
+            pShm->queue.useMax = 0;
+        }
+    }
+    freeShmQueue(pShm->sp, &pShm->queue, freeShmPtr); // TODO: it is dangerous when shm user is larger than 1
+    sem_post(&pShm->mutex_shm);
+
+    return 0;
+}
+
+void shmStat(shmParam *pShm) {
+    ncx_slab_stat_t sstat;
+    ncx_slab_stat(pShm->sp, &sstat);
+    printf("shm stat, id:%d, pages:%ld, free pages:%ld\n", pShm->id, sstat.pages, sstat.free_page);
+}
+
+shmParam *getFreeShm(shmParams *pShmParams, const char *type) {
+    int i;
+    shmParam *p;
+    shmParam *pShm = NULL;
+
+    for(i = 0; i < pShmParams->num; i ++) {
+        p = pShmParams->pShmArray + i;
+        if(!strncmp(p->type, type, sizeof(p->type)) && !p->usedd) {
+            p->usedd = 1;
+            pShm = p;
+            break;
+        }
+    }
+
+    return pShm;
+}
+
+int clearShmQueue(shmParam *pShm) {
+    sem_wait(&pShm->mutex_shm);
+    freeShmQueue(pShm->sp, &pShm->queue, freeShmPtr);
+    sem_post(&pShm->mutex_shm);
+
+    return 0;
+}
+
+int releaseShm(shmParam *pShm) {
+    clearShmQueue(pShm);
+    pShm->usedd = 0;
+
+    return 0;
+}
+
+int copyToShm(shmParam *pShm, char *buf, int size, 
+        long long int frameId, int type, int max, int (*copy)(char *ptr, void *arg)) {
+    int ret;
+    node_common new_node;
+    shmFrame *pShmFrame;
+
+    memset(&new_node, 0, sizeof(node_common));
+    pShmFrame = (shmFrame *)new_node.name;
+    pShmFrame->type = type;
+    pShmFrame->size = size;
+    pShmFrame->frameId = frameId;
+    pShmFrame->ptr = (char *)shmMalloc(pShm->sp, size);
+    if(pShmFrame->ptr == NULL) {
+        static int cnt = 0;
+        if(cnt ++ % 200 == 0) {
+            printf("warring, %s:%d, shm malloc failed, id:%d, type:%s\n",
+                    __FILE__, __LINE__, pShm->id, pShm->type);
+            //shmStat(pShm);
+        }
+        return -1;
+    }
+    pShmFrame->arg = pShm;
+
+    if(copy != NULL) {
+        copy(pShmFrame->ptr, buf);
+    }
+    else {
+        memcpy(pShmFrame->ptr, buf, size);
+    }
+
+    sem_wait(&pShm->mutex_shm);
+    ret = putToShmQueue(pShm->sp, &pShm->queue, &new_node, max);
+    sem_post(&pShm->mutex_shm);
+    if(ret != 0) {
+        //shmStat(pShm);
+        shmFree(pShm->sp, pShmFrame->ptr); 
+        return -1;
+    }
+
+    return 0;
+}
+
+static int conditionByFrameId(node_common *p, void *arg) {
+    long long int frameId = *(long long int *)arg;
+    shmFrame *pShmFrame = (shmFrame *)p->name;
+    return pShmFrame->frameId > frameId;
+}
+
+int copyFromShm(shmParam *pShm, shmFrame *pShmFrame) {
+    int valid = 0;
+    node_common *new_p = NULL;
+
+    sem_wait(&pShm->mutex_shm);
+    getFromQueue(&pShm->queue, &new_p);
+    sem_post(&pShm->mutex_shm);
+    if(new_p != NULL) {
+        memcpy(pShmFrame, new_p->name, sizeof(shmFrame));
+        shmFree(pShm->sp, new_p); 
+        valid = 1;
+    }
+
+    return valid;
+}
+
+int copyFromShmWithFrameId(shmParam *pShm, long long int frameId, node_common **ppNode, int *useMax) {
+    int valid = 0;
+    node_common *new_p = NULL;
+
+    sem_wait(&pShm->mutex_shm);
+    delFromQueueByUser(&pShm->queue, &frameId, &new_p, conditionByFrameId);
+    if(new_p != NULL) {
+        *ppNode = new_p;
+        *useMax = pShm->queue.useMax;
+        valid = 1;
+    }
+    sem_post(&pShm->mutex_shm);
+
+    return valid;
 }
 

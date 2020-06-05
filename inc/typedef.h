@@ -46,6 +46,13 @@ typedef  unsigned long long UINT64;
 typedef  signed long long   INT64;
 #endif
 
+enum aiotcDataType {
+    ccKeepLive = 100,
+    ccLiveStream,
+    ccRealVideo,
+    ccRealCapture,
+};
+
 #endif
 
 

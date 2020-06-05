@@ -74,6 +74,7 @@ static int initPtr(aiotcParams *pAiotcParams, shmParams *pShmParams) {
     ((dbParams *)pAiotcParams->dbArgs)->arg = pAiotcParams;
     ((systemParams *)pAiotcParams->systemArgs)->arg = pAiotcParams;
     ((systemParams *)pAiotcParams->objArgs)->arg = pAiotcParams;
+    pShmParams->arg = pAiotcParams;
 
     masterParams *pMasterParams = (masterParams *)pAiotcParams->masterArgs;
     pidsParams *pPidsParams = (pidsParams *)pAiotcParams->pidsArgs;
@@ -111,6 +112,8 @@ static int miscInit(aiotcParams *pAiotcParams) {
     }
     memset(pSlaveParams->keyCache, 0, pConfigParams->msgKeyMax*sizeof(int));
     pSlaveParams->mainMsgKey = pConfigParams->msgKeyStart;
+
+    initHttpPort(pAiotcParams);
 
     clearSystemIpc(pAiotcParams);
 

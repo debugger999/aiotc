@@ -49,5 +49,6 @@ int addAlg(char *buf, int id, char *algName, aiotcParams *pAiotcParams, void *ar
 int delAlg(char *buf, int id, char *algName, aiotcParams *pAiotcParams, void *arg);
 int httpPostSlave(const char *url, char *buf, objParam *pObjParam);
 int clearSystemIpc(aiotcParams *pAiotcParams);
+int allocVideoShm(objParam *pObjParam);
 
 #endif

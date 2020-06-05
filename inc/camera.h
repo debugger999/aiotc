@@ -22,5 +22,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "shm.h"
+
+typedef struct {
+    shmParam        *videoShm;
+    shmParam        *captureShm;
+    long long int   videoFrameId;
+    long long int   captureFrameId;
+    void            *arg; // objParam
+} cameraParams;
 
 #endif

@@ -27,7 +27,7 @@ int poseProcess(void *arg) {
     }
     pOps->running = 1;
 
-    while(pOps->running) {
+    while(pAiotcParams->running && pOps->running) {
         sleep(2);
     }
     pOps->running = 0;

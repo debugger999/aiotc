@@ -19,6 +19,7 @@
 #include "platform.h"
 #include "share.h"
 #include "db.h"
+#include "system.h"
 
 int configInit(configParams *pConfigParams) {
     char *str;
@@ -79,10 +80,78 @@ int configInit(configParams *pConfigParams) {
     }
     pConfigParams->dbPort = getIntValFromFile(config, "db", pConfigParams->dbType, "port");
 
+    str = getStrValFromFile(config, "slave", "workdir", NULL);
+    if(str != NULL) {
+        strncpy(pConfigParams->workdir, str, sizeof(pConfigParams->workdir));
+        free(str);
+    }
+
     return 0;
 }
 
-int dbInit(aiotcParams *pAiotcParams) {
+static int getNginxPort(char *nginx_config_path, int *port) {
+    int cfgSize;
+    char *buf = NULL;
+    char *p1, *p2;
+
+    FILE *fp = fopen(nginx_config_path, "rb");
+    if(fp == NULL) {
+        app_warring("fopen %s failed", nginx_config_path);
+        goto err;
+    }
+    fseek(fp, 0L, SEEK_END);
+    cfgSize = ftell(fp);
+    fseek(fp, 0L, SEEK_SET);
+    buf = (char *)malloc(cfgSize/1024*1024 + 1024);
+    if(buf == NULL) {
+        app_err("malloc failed");
+        goto err;
+    }
+    if(fread(buf, 1, cfgSize, fp)){
+    }
+    p1 = strstr(buf, "listen");
+    if(p1 != NULL) {
+        p2 = strstr(p1, ";");
+        if(p2 != NULL) {
+            *p2 = '\0';
+            p1 += strlen("listen") + 1;
+            *port = atoi(p1);
+        }
+    }
+
+err:
+    if(buf != NULL) {
+        free(buf);
+    }
+    if(fp != NULL) {
+        fclose(fp);
+    }
+
+    return 0;
+}
+
+int initHttpPort(void *aiotcArg) {
+    char cfgName[256];
+    aiotcParams *pAiotcParams = (aiotcParams *)aiotcArg;
+    systemParams *pSystemParams = (systemParams *)pAiotcParams->systemArgs;
+
+    snprintf(cfgName, 256, "%s/conf/servers/hls.conf", (char *)NGINX_PATH);
+    getNginxPort(cfgName, &(pSystemParams->httpPort));
+    if(pSystemParams->httpPort == 0) {
+        pSystemParams->httpPort = 8088;
+    }
+    snprintf(cfgName, 256, "%s/conf/nginx.conf", (char *)NGINX_PATH);
+    getNginxPort(cfgName, &(pSystemParams->httpFlvPort));
+    if(pSystemParams->httpFlvPort == 0) {
+        pSystemParams->httpFlvPort = 8068;
+    }
+    app_debug("httpPort:%d, httpFlvPort:%d", pSystemParams->httpPort, pSystemParams->httpFlvPort);
+
+    return 0;
+}
+
+int dbInit(void *aiotcArg) {
+    aiotcParams *pAiotcParams = (aiotcParams *)aiotcArg;
     configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
     dbParams *pDBParams = (dbParams *)pAiotcParams->dbArgs;
 

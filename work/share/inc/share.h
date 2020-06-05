@@ -58,6 +58,7 @@ int putToQueue(queue_common *queue, node_common *new_node, int max);
 int putToQueueDelFirst(queue_common *queue, node_common *new_node, int max, int (*callBack)(void *arg));
 int getFromQueue(queue_common *queue, node_common **new_p);
 int delFromQueue(queue_common *queue, void *arg, node_common **new_p, int (*condition)(node_common *p, void *arg));
+int delFromQueueByUser(queue_common *queue, void *arg, node_common **new_p, int (*condition)(node_common *p, void *arg));
 int searchFromQueue(queue_common *queue, void *arg, node_common **new_p, int (*condition)(node_common *p, void *arg));
 int traverseQueue(queue_common *queue, void *arg, int (*callBack)(node_common *p, void *arg));
 int freeQueue(queue_common *queue, int (*callBack)(void *arg));
@@ -74,6 +75,7 @@ double getDoubleValFromFile(const char *fileName, const char *nameSub1, const ch
 char *getArrayBufFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3, int &size);
 char *delObjJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 long long int getSysFreeMem(void);
+int file_size(const char* filename);
 
 inline void semWait(sem_t *mutex) {
     int tryCnt = 0;
@@ -93,6 +95,16 @@ inline void semPost(sem_t *mutex) {
     if(sem_post(mutex) == -1) {
         app_warring("sem post failed, %d:%s", errno, strerror(errno));
     }
+}
+
+// __sync_fetch_and_add(&count, 1);
+inline int fetch_and_add(int* variable, int value) {
+    __asm__ volatile("lock; xaddl %0, %1"
+            : "+r" (value), "+m" (*variable) // input+output
+            : // No input-only
+            : "memory"
+        );
+    return value;
 }
 
 #endif
