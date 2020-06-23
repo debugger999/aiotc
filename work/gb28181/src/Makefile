@@ -15,6 +15,7 @@ LDFLAGS += -llzma -ldl -lz -lm -lpthread -lrt
 all:
 	$(CC) $(CFLAGS) -c *.cpp
 	$(AR) rcs ../lib/libgb28181Server.a *.o 
+	rm -f *.o
 clean:
 	rm -f *.o ../lib/*
 

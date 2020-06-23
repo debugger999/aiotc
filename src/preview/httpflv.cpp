@@ -42,6 +42,7 @@ int httpflv_init(const void *buf, void *arg) {
 
 static void *httpflv_thread(void *arg) {
     int ret;
+    int init = 1;
     shmParam *pVideoShm;
     objParam *pObjParam = (objParam *)arg;
     taskParams *pTaskParams = (taskParams *)pObjParam->task;
@@ -60,6 +61,7 @@ static void *httpflv_thread(void *arg) {
     pPreviewParams->running = 1;
     ret = previewInit(pObjParam);
     if(ret != 0) {
+        init = 0;
         pPreviewParams->running = 0;
         app_err("preview init failed, id:%d", pObjParam->id);
     }
@@ -73,7 +75,9 @@ static void *httpflv_thread(void *arg) {
     if(pVideoShm->queue.useMax == 0) {
         releaseShm(pVideoShm);
     }
-    previewUnInit(pObjParam);
+    if(init) {
+        previewUnInit(pObjParam);
+    }
     shmFree(pShmParams->headsp, pTaskParams->previewArgs);
     pTaskParams->previewArgs = NULL;
 

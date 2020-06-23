@@ -18,6 +18,69 @@
 
 #include "platform.h"
 #include "pids.h"
+#include "work.h"
+#include "shm.h"
+
+static void *output_thread(void *arg) {
+    pidOps *pOps = (pidOps *)arg;
+    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
+
+    while(pAiotcParams->running && pOps->running) {
+        sleep(1);
+    }
+
+    app_debug("run over");
+
+    return NULL;
+}
+
+int workProcInit(void *arg) {
+    taskOps *pTaskOps;
+    outParams *pOutParams;
+    workParams *pWorkParams;
+    pidOps *pOps = (pidOps *)arg;
+    aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
+    shmParams *pShmParams = (shmParams *)pAiotcParams->shmArgs;
+
+    pOps->procTaskOps = shmMalloc(pShmParams->headsp, sizeof(taskOps));
+    if(pOps->procTaskOps == NULL) {
+        app_err("shm malloc failed");
+        return -1;
+    }
+    memset(pOps->procTaskOps, 0, sizeof(taskOps));
+    pTaskOps = (taskOps *)pOps->procTaskOps;
+    pTaskOps->arg = shmMalloc(pShmParams->headsp, sizeof(workParams));
+    if(pTaskOps->arg == NULL) {
+        app_err("shm malloc failed");
+        shmFree(pShmParams->headsp, pOps->procTaskOps);
+        return -1;
+    }
+    pWorkParams = (workParams *)pTaskOps->arg;
+    pOutParams = (outParams *)&pWorkParams->outParam;
+
+    if(sem_init(&pOutParams->mutex_out, 1, 1) < 0) {
+        app_err("sem_init failed");
+        shmFree(pShmParams->headsp, pOps->procTaskOps);
+        shmFree(pShmParams->headsp, pTaskOps->arg);
+        pTaskOps->arg = NULL;
+        return -1;
+    }
+
+    return 0;
+}
+
+static int workInit(pidOps *pOps) {
+    pthread_t pid;
+
+    if(pthread_create(&pid, NULL, output_thread, pOps) != 0) {
+        app_err("create output thread failed");
+    }
+    else {
+        pthread_detach(pid);
+    }
+
+    return 0;
+}
 
 int workProcess(void *arg) {
     pidOps *pOps = (pidOps *)arg;
@@ -29,7 +92,9 @@ int workProcess(void *arg) {
     }
     pOps->running = 1;
 
-    while(pAiotcParams->running) {
+    workInit(pOps);
+
+    while(pAiotcParams->running && pOps->running) {
         sleep(2);
     }
     pOps->running = 0;

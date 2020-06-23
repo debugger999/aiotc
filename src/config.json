@@ -43,6 +43,12 @@
     "proc": {
         "rtsp": {
             "taskMax": 10
+        },
+        "gat1400": {
+            "threadNum": 3,
+            "authEnable": 0,
+            "username": "admin",
+            "password": "admin"
         }
     },
     "alg": {

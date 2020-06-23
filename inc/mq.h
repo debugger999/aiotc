@@ -16,24 +16,21 @@
  *
  ******************************************************************************/
 
-#include "platform.h"
+#ifndef __AIOTC_MQ_H__
+#define __AIOTC_MQ_H__
 
-int gat1400Process(void *arg) {
-    pidOps *pOps = (pidOps *)arg;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-    pOps = getRealOps(pOps);
-    if(pOps == NULL) {
-        return -1;
-    }
-    pOps->running = 1;
+typedef struct {
+    char host[128];
+    int  port;
+    char userName[64];
+    char passWord[64];
+    char exchange[256];
+    char objExchange[256];
+    char routingKey[256];
+} mqOutParams;
 
-    while(pAiotcParams->running) {
-        sleep(2);
-    }
-    pOps->running = 0;
-
-    app_debug("pid:%d, run over", pOps->pid);
-
-    return 0;
-}
-
+#endif

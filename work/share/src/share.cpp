@@ -266,8 +266,8 @@ end:
     return val;
 }
 
-char *getArrayBufFromJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3, int &size){
-        char name[256];
+char *getArrayBufFromJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3, int &size) {
+    char name[256];
     char *val = NULL;
     cJSON *pArray = NULL;
     cJSON *root, *pSub1, *pSub2, *pSub3;
@@ -760,16 +760,17 @@ int connectServer(char *ip, int port) {
     return fd;
 }
 
-int blockSend(unsigned int connfd, char *src, int size) {
+int blockSend(unsigned int connfd, char *src, int size, int max) {
+    int ret;
+    fd_set rw;                      
+    int maxx = max;
     int k, l_sendedsize;
     int l_connfd=connfd;
     int l_size=size;
-    int ret;
+    struct timeval timeout;
+
     k = 0;
     l_sendedsize = 0;
-    struct timeval timeout;
-    fd_set rw;                      
-
     while(1) {
         FD_ZERO(&rw);
         FD_SET(connfd, &rw);
@@ -781,19 +782,20 @@ int blockSend(unsigned int connfd, char *src, int size) {
             return -6;
         }
         else if(ret == 0) {
-            if(errno == EPIPE || errno == ECONNRESET) {
-                app_err("err : select timeout, fd:%d, %d:%s", connfd,  errno, strerror(errno));
-                return -5;
+            if(maxx--) {
+                continue;
             }
             else {
-                if(errno != 0) {
-                    app_err("select err, fd:%d, %d:%s", connfd, errno, strerror(errno));
-                    return -4;
+                static int cnt = 0;
+                if(cnt++ % 10 == 0) {
+                    app_warring("%d, send, select timeout, fd:%d, %d, %d:%d", 
+                            cnt, connfd, max, l_sendedsize, l_size);
                 }
                 else {
-                    //printf("select err, fd:%d, errno:%d, %s\n", connfd, errno, strerror(errno));
-                    return 0;
+                    printf("%d, send, select timeout, fd:%d, %d, %d:%d\n", 
+                            cnt, connfd, max, l_sendedsize, l_size);
                 }
+                return -7;
             }
         }
         else {
@@ -816,33 +818,34 @@ int blockSend(unsigned int connfd, char *src, int size) {
         }
 
         l_sendedsize += k;
-        if (l_sendedsize == l_size) {
+        if(l_sendedsize == l_size) {
             return 0;
         } 
     } 
 }
 
-int blockRecv(unsigned int connfd, char *dst, int size, int timeOutSec) {
+int blockRecv(unsigned int connfd, char *dst, int size, int max, void *arg, CommonCB callback) {
+    int ret;
+    fd_set rw;
+    int maxx = max;
     int k, l_recvedsize;
     int l_connfd=connfd;
     int l_size=size;
-    int ret;
     struct timeval timeout;
-    fd_set rw;                      
 
     k = 0;
     l_recvedsize = 0;
     while(1) {
         FD_ZERO(&rw);
         FD_SET(connfd, &rw);
-        timeout.tv_sec = timeOutSec;
+        timeout.tv_sec = 3;
         timeout.tv_usec =0;
         ret = select(connfd+1, &rw, NULL, NULL, &timeout);  
         if(ret > 0) {
             if(FD_ISSET(connfd, &rw)) {
                 k = recv(l_connfd, dst + l_recvedsize, l_size - l_recvedsize, MSG_NOSIGNAL);
                 if(k == 0) {
-                    app_err("recv err, peer shutdown, %d:%s", errno, strerror(errno));
+                    printf("recv err, peer shutdown, %d:%s\n", errno, strerror(errno));
                     return -1;
                 }
                 else if(k < 0) {
@@ -861,14 +864,16 @@ int blockRecv(unsigned int connfd, char *dst, int size, int timeOutSec) {
             }
         }
         else if(ret == 0) {
-            if(errno != 0) {
-                app_err("select err, fd:%d, errno:%d, %s", connfd, errno, strerror(errno));
+            if(callback != NULL && callback(arg) != 0) {
                 return -4;
             }
-            else {
-                //printf("select timeout, fd:%d, errno:%d, %s\n", connfd, errno, strerror(errno));
-                return TIME_OUT;
+            if(maxx--) {
+                continue;
             }
+            if(l_size > 16) {
+                app_warring("recv, select timeout, fd:%d, %d, %d:%d", connfd, max, l_recvedsize, l_size);
+            }
+            return TIME_OUT;
         }
         else {
             app_err("err!! select -1");
@@ -1107,6 +1112,19 @@ int freeShmQueue(void *sp, queue_common *queue, int (*callBack)(void *arg)) {
     queue->head = queue->tail = NULL;
     queue->queLen = 0;
 
+    return 0;
+}
+
+int writeFile(char *fileName, void *buf, int size) {
+    FILE *fp = fopen(fileName, "wb");
+    if(fp == NULL) {
+        app_err("fopen %s failed", fileName);
+        return -1;
+    }
+    if(buf != NULL) {
+        fwrite(buf, 1, size, fp);
+    }
+    fclose(fp);
     return 0;
 }
 

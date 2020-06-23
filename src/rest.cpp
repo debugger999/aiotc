@@ -742,7 +742,7 @@ int restProcess(void *arg) {
     pSlaveParams->systemInit = 0;
     startRestTask(pAiotcParams);
 
-    while(pAiotcParams->running) {
+    while(pAiotcParams->running && pOps->running) {
         sleep(2);
     }
     pOps->running = 0;

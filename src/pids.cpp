@@ -27,6 +27,7 @@
 #include "record.h"
 #include "stream.h"
 #include "rtsp.h"
+#include "gat1400.h"
 #include "ehome.h"
 #include "preview.h"
 #include "decode.h"
@@ -45,28 +46,28 @@
 // 进程任务启动依赖obj任务监控模块，避免rest命令传输启动导致的进程间状态耦合和维护；
 // 为了防止各种算法进程编译库冲突，alg模块独立为自己的编译工程，不适合fork
 static pidOps g_pid_ops[] = {
-    {"master",  "null",     "null",         masterProcess},
-    {"rest",    "null",     "null",         restProcess},
-    {"work",    "null",     "null",         workProcess},
-    {"obj",     "rtsp",     "live",         rtspProcess},
-    {"obj",     "rtsp",     "preview",      previewProcess},
-    {"obj",     "rtsp",     "record",       recordProcess},
-    {"obj",     "ehome",    "live",         ehomeProcess},
-    {"obj",     "ehome",    "capture",      ehomeProcess},
-    {"obj",     "ehome",    "preview",      previewProcess},
-    {"obj",     "ehome",    "record",       recordProcess},
-    {"obj",     "tcp",      "live",         streamProcess},
-    {"decode",  "video",    "null",         decodeProcess},
-    {"alg",     "face",     "null",         faceProcess},
+    {"master",  "null",     "null",         masterProcess,  NULL},
+    {"rest",    "null",     "null",         restProcess,    NULL},
+    {"work",    "null",     "null",         workProcess,    workProcInit},
+    {"obj",     "rtsp",     "live",         rtspProcess,    NULL},
+    {"obj",     "rtsp",     "preview",      previewProcess, NULL},
+    {"obj",     "rtsp",     "record",       recordProcess,  NULL},
+    {"obj",     "ehome",    "live",         ehomeProcess,   NULL},
+    {"obj",     "ehome",    "capture",      ehomeProcess,   NULL},
+    {"obj",     "ehome",    "preview",      previewProcess, NULL},
+    {"obj",     "ehome",    "record",       recordProcess,  NULL},
+    {"obj",     "tcp",      "live",         streamProcess,  NULL},
+    {"decode",  "video",    "null",         decodeProcess,  NULL},
+    {"alg",     "face",     "null",         faceProcess,    NULL},
+    {"obj",     "gat1400",  "capture",      gat1400Process, NULL},
     /*
-    {"obj",     "gb28181",  "null",         gb28181Process},
-    {"obj",     "gat1400",  "null",         gat1400Process},
-    {"obj",     "ftp",      "null",         ftpProcess},
-    {"alg",     "veh",      "null",         vehProcess},
-    {"alg",     "pose",     "null",         poseProcess},
-    {"alg",     "yolo",     "null",         yoloProcess},
+    {"obj",     "gb28181",  "null",         gb28181Process, NULL},
+    {"obj",     "ftp",      "null",         ftpProcess,     NULL},
+    {"alg",     "veh",      "null",         vehProcess,     NULL},
+    {"alg",     "pose",     "null",         poseProcess,    NULL},
+    {"alg",     "yolo",     "null",         yoloProcess,    NULL},
     */
-    {"null",    "null",     "null",         NULL}
+    {"null",    "null",     "null",         NULL,           NULL}
 };
 
 static int setKey2System(key_t key, const char *name, const char *subName, 
@@ -412,6 +413,10 @@ pid_t createProcess(const char *name, const char *subName, const char *taskName,
     pOps->msgKey = getMsgKey(name, subName, taskName, pAiotcParams);
     if(pOps->msgKey < 0) {
         app_warring("get msg key failed, %s-%s-%s", name, subName, taskName);
+        return -1;
+    }
+    if(pOps->procInit != NULL && pOps->procInit(pOps) != 0) {
+        app_warring("proc init failed, %s-%s-%s", name, subName, taskName);
         return -1;
     }
 

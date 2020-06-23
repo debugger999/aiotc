@@ -35,6 +35,7 @@ typedef struct {
     char            subName[24];
     char            taskName[24];
     ProcFunc        proc;
+    ProcFunc        procInit;
     pid_t           pid;
     key_t           msgKey;
     struct timeval  tv;

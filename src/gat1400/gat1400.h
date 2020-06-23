@@ -16,11 +16,36 @@
  *
  ******************************************************************************/
 
-#ifndef __AIOTC_OUTPUT_H__
-#define __AIOTC_OUTPUT_H__
+#ifndef __AIOTC_GAT1400_H__
+#define __AIOTC_GAT1400_H__
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define GAT1400_PLATFROM_MAX    10
+
+typedef struct {
+    char platformId[128];
+    char platformIp[64];
+    int  platformPort;
+    char platformUsername[64];
+    char platformPassword[64];
+    char platformName[64];
+} gat1400Platform;
+
+typedef struct {
+    void    *handle;
+    int     threadNum;
+    char    localGatServerId[128];
+    char    localGatHostIp[128];
+    int     localGatPort;
+    int     authEnable;
+    char    userName[128];
+    char    password[128];
+    gat1400Platform platform[GAT1400_PLATFROM_MAX];
+} gat1400Params;
+
+int gat1400Process(void *arg);
 
 #endif

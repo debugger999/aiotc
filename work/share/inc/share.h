@@ -46,14 +46,15 @@ typedef struct {
     int queLen;
 } queue_common;
 
+typedef int (*CommonCB)(void *arg);
 typedef int (*NodeCallback)(node_common *p, void *arg);
 typedef int (*CommonObjFunc)(const void *buf, void *arg);
 typedef int (*COMMONCALLBACK)(void *argA, void *argB, void *argC);
 
 int getLocalIp(char hostIp[128]);
 int connectServer(char *ip, int port);
-int blockSend(unsigned int connfd, char *src, int size);
-int blockRecv(unsigned int connfd, char *dst, int size, int timeOutSec);
+int blockSend(unsigned int connfd, char *src, int size, int max);
+int blockRecv(unsigned int connfd, char *dst, int size, int max, void *arg = NULL, CommonCB callback = NULL);
 int putToQueue(queue_common *queue, node_common *new_node, int max);
 int putToQueueDelFirst(queue_common *queue, node_common *new_node, int max, int (*callBack)(void *arg));
 int getFromQueue(queue_common *queue, node_common **new_p);
@@ -72,9 +73,13 @@ char *getObjBufFromJson(char *buf, const char *nameSub1, const char *nameSub2, c
 int getIntValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 char *getStrValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);
 double getDoubleValFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3);
+char *getBufFromArray(char *buf, char *nameSub1, char *nameSub2, char *nameSub3, int index);
+char *getArrayBufFromJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3, int &size);
 char *getArrayBufFromFile(const char *fileName, const char *nameSub1, const char *nameSub2, const char *nameSub3, int &size);
 char *delObjJson(char *buf, const char *nameSub1, const char *nameSub2, const char *nameSub3);
+
 long long int getSysFreeMem(void);
+int writeFile(char *fileName, void *buf, int size);
 int file_size(const char* filename);
 
 inline void semWait(sem_t *mutex) {

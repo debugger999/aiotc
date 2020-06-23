@@ -135,6 +135,7 @@ static taskOps rtspTaskOps = {
     .ctrl = NULL
 };
 
+/*
 static int rtspStartTask(char *buf, void *arg) {
     return 0;
 }
@@ -143,6 +144,7 @@ static cmdTaskParams g_CmdParams[] = {
     {"startTask",       rtspStartTask},
     {"null",            NULL}
 };
+*/
 
 static int rtspProcBeat(node_common *p, void *arg) {
     pidOps *pOps = (pidOps *)arg;
@@ -205,7 +207,7 @@ static int rtspInit(pidOps *pOps) {
 }
 
 int rtspProcess(void *arg) {
-    msgParams msgParam;
+    //msgParams msgParam;
     pidOps *pOps = (pidOps *)arg;
     aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
 
@@ -220,12 +222,14 @@ int rtspProcess(void *arg) {
     createBeatTask(pOps, rtspProcBeat, 5);
     createBeatTask(pOps, rtspTaskBeat, TASK_BEAT_SLEEP);
 
+    /*
     memset(&msgParam, 0, sizeof(msgParam));
     msgParam.key = pOps->msgKey;
     msgParam.pUserCmdParams = g_CmdParams;
     msgParam.arg = pOps->arg;
     msgParam.running = 1;
     createMsgThread(&msgParam);
+    */
 
     while(pAiotcParams->running && pOps->running) {
         sleep(2);

@@ -50,36 +50,55 @@
  * @apiParam {String}   exchange
  * @apiParam {String}   routingKey
  * @apiParam {String}   [gb28181Params]
- * @apiParam {String}   [localHostIp]       本地上级域Host IP地址，可为任意一个slave
- * @apiParam {String}   [localSipId]        本地上级域sipId
- * @apiParam {int}      [localPort]         本地上级域端口
+ * @apiParam {String}   localHostIp         本地上级域Host IP地址，可为任意一个slave
+ * @apiParam {String}   localSipId          本地上级域sipId
+ * @apiParam {int}      localPort           本地上级域端口
  * @apiParam {String}   [gat1400Params]
- * @apiParam {String}   [localGatHostIp]    本地Host IP地址，可为任意一个slave
- * @apiParam {String}   [localGatServerId]  本地服务Id
- * @apiParam {int}      [localGatPort]      本地服务端口
+ * @apiParam {String}   localGatHostIp      本地Host IP地址，可为任意一个slave
+ * @apiParam {String}   localGatServerId    本地服务Id
+ * @apiParam {int}      localGatPort        本地服务端口
+ * @apiParam {String}   platform            对接的1400平台，可以是多个
+ * @apiParam {String}   id                  平台Id
+ * @apiParam {String}   ip                  平台IP地址
+ * @apiParam {int}      port                平台端口
+ * @apiParam {String}   username            平台用户名
+ * @apiParam {String}   password            平台密码
+ * @apiParam {String}   manufactor          厂家名字，用于区分各个厂家的非标协议
  * @apiParamExample {json} 请求样例：
  *                          {
- *                              "masterIp":"192.168.0.100",
- *                              "msgOutParams":[
+ *                              "masterIp": "192.168.0.100",
+ *                              "msgOutParams": [
  *                                  {
- *                                      "type":"mq",
- *                                      "host":"192.168.0.10",
- *                                      "port":5672,
- *                                      "userName":"guest",
- *                                      "passWord":"guest",
- *                                      "exchange":"aiotc.exchange.message",
- *                                      "routingKey":""
+ *                                      "type": "mq",
+ *                                      "host": "192.168.0.10",
+ *                                      "port": 5672,
+ *                                      "userName": "guest",
+ *                                      "passWord": "guest",
+ *                                      "exchange": "aiotc.exchange.message",
+ *                                      "routingKey": ""
  *                                  }
  *                              ],
- *                              "gb28181Params":{
- *                                  "localHostIp":"192.168.0.99",
- *                                  "localSipId":"34010000002000000001",
- *                                  "localPort":5060
+ *                              "gb28181Params": {
+ *                                  "localHostIp": "192.168.0.99",
+ *                                  "localSipId": "34010000002000000001",
+ *                                  "localPort": 5060
  *                              },
- *                              "gat1400Params":{
- *                                  "localGatHostIp":"34010000002000000001",
- *                                  "localGatServerId":"32020200002000000002",
- *                                  "localGatPort":7100
+ *                              "gat1400Params": {
+ *                                  "localGatHostIp": "34010000002000000001",
+ *                                  "localGatServerId": "32020200002000000002",
+ *                                  "localGatPort": 7100,
+ *                                  "platform": [
+ *                                      {
+ *                                          "id": "32020200002000000001",
+ *                                          "ip": "192.168.0.99",
+ *                                          "port": 7200,
+ *                                          "username": "admin",
+ *                                          "password": "admin",
+ *                                          "extra": {
+ *                                              "manufactor": "hik"
+ *                                          }
+ *                                      }
+ *                                  ]
  *                              }
  *                          }
  * @apiSuccess (200) {int}      code    0:成功 1:失败
@@ -194,13 +213,7 @@
  * @apiParam {String}   deviceId        设备Id，一般与某个像机绑定
  * @apiParam {int}      mode            0:推送模式 1:订阅模式
  * @apiParam {String}   [slaveIp]       推送模式时需要指定服务器IP
- * @apiParam {String}   hostServerId    对方服务器ID
- * @apiParam {String}   hostIp          对方服务器IP地址
- * @apiParam {int}      hostPort        对方服务器端口
- * @apiParam {String}   [userName]      对方服务器登录用户名,订阅模式
- * @apiParam {String}   [passWord]      对方服务器登录密码,订阅模式
- * @apiParam {String}   [extra]         扩展字段
- * @apiParam {String}   [manufactor]    厂家名字，用于区分各个厂家的非标协议
+ * @apiParam {String}   platformId      对接平台ID
  * @apiParamExample {json} 请求样例：
  *                          {
  *                              "name":"test",
@@ -211,14 +224,7 @@
  *                                  "deviceId": "32020200002000000003",
  *                                  "mode": 0,
  *                                  "slaveIp": "192.168.0.100",
- *                                  "hostServerId": "32020200002000000001",
- *                                  "hostIp": "192.168.0.64",
- *                                  "hostPort": 5060,
- *                                  "userName": "admin",
- *                                  "passWord": "admin",
- *                                  "extra": {
- *                                      "manufactor": "hik"
- *                                  }
+ *                                  "platformId": "32020200002000000001"
  *                              }
  *                          }
  * @apiSuccess (200) {int}      code    0:成功 1:失败

@@ -182,6 +182,7 @@ static int initPreview(pidOps *pOps) {
     taskOps *pTaskOps = (taskOps *)pOps->procTaskOps;
     aiotcParams *pAiotcParams = (aiotcParams *)pOps->arg;
     configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+
     pOps->taskMax = pConfigParams->slaveObjMax;
     if(pOps->taskMax <= 0) {
         app_warring("get task max failed, %s-%s-%s", pOps->name, pOps->subName, pOps->taskName);

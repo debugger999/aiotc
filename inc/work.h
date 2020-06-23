@@ -22,7 +22,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "mq.h"
 
+typedef struct {
+    mqOutParams     mqOutParam;
+    sem_t           mutex_out;
+    queue_common    pOutQueue;
+} outParams;
+
+typedef struct {
+    outParams outParam;
+} workParams;
+
+int workProcInit(void *arg);
 int workProcess(void *arg);
 
 #endif

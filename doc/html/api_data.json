@@ -82,21 +82,21 @@
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
+            "optional": false,
             "field": "localHostIp",
             "description": "<p>本地上级域Host IP地址，可为任意一个slave</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
+            "optional": false,
             "field": "localSipId",
             "description": "<p>本地上级域sipId</p>"
           },
           {
             "group": "Parameter",
             "type": "int",
-            "optional": true,
+            "optional": false,
             "field": "localPort",
             "description": "<p>本地上级域端口</p>"
           },
@@ -110,30 +110,72 @@
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
+            "optional": false,
             "field": "localGatHostIp",
             "description": "<p>本地Host IP地址，可为任意一个slave</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
+            "optional": false,
             "field": "localGatServerId",
             "description": "<p>本地服务Id</p>"
           },
           {
             "group": "Parameter",
             "type": "int",
-            "optional": true,
+            "optional": false,
             "field": "localGatPort",
             "description": "<p>本地服务端口</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "platform",
+            "description": "<p>对接的1400平台，可以是多个</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>平台Id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "ip",
+            "description": "<p>平台IP地址</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "username",
+            "description": "<p>平台用户名</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>平台密码</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "manufactor",
+            "description": "<p>厂家名字，用于区分各个厂家的非标协议</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"masterIp\":\"192.168.0.100\",\n    \"msgOutParams\":[\n        {\n            \"type\":\"mq\",\n            \"host\":\"192.168.0.10\",\n            \"port\":5672,\n            \"userName\":\"guest\",\n            \"passWord\":\"guest\",\n            \"exchange\":\"aiotc.exchange.message\",\n            \"routingKey\":\"\"\n        }\n    ],\n    \"gb28181Params\":{\n        \"localHostIp\":\"192.168.0.99\",\n        \"localSipId\":\"34010000002000000001\",\n        \"localPort\":5060\n    },\n    \"gat1400Params\":{\n        \"localGatHostIp\":\"34010000002000000001\",\n        \"localGatServerId\":\"32020200002000000002\",\n        \"localGatPort\":7100\n    }\n}",
+          "content": "{\n    \"masterIp\": \"192.168.0.100\",\n    \"msgOutParams\": [\n        {\n            \"type\": \"mq\",\n            \"host\": \"192.168.0.10\",\n            \"port\": 5672,\n            \"userName\": \"guest\",\n            \"passWord\": \"guest\",\n            \"exchange\": \"aiotc.exchange.message\",\n            \"routingKey\": \"\"\n        }\n    ],\n    \"gb28181Params\": {\n        \"localHostIp\": \"192.168.0.99\",\n        \"localSipId\": \"34010000002000000001\",\n        \"localPort\": 5060\n    },\n    \"gat1400Params\": {\n        \"localGatHostIp\": \"34010000002000000001\",\n        \"localGatServerId\": \"32020200002000000002\",\n        \"localGatPort\": 7100,\n        \"platform\": [\n            {\n                \"id\": \"32020200002000000001\",\n                \"ip\": \"192.168.0.99\",\n                \"port\": 7200,\n                \"username\": \"admin\",\n                \"password\": \"admin\",\n                \"extra\": {\n                    \"manufactor\": \"hik\"\n                }\n            }\n        ]\n    }\n}",
           "type": "json"
         }
       ]
@@ -606,57 +648,15 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "hostServerId",
-            "description": "<p>对方服务器ID</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "hostIp",
-            "description": "<p>对方服务器IP地址</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "int",
-            "optional": false,
-            "field": "hostPort",
-            "description": "<p>对方服务器端口</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "userName",
-            "description": "<p>对方服务器登录用户名,订阅模式</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "passWord",
-            "description": "<p>对方服务器登录密码,订阅模式</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "extra",
-            "description": "<p>扩展字段</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "manufactor",
-            "description": "<p>厂家名字，用于区分各个厂家的非标协议</p>"
+            "field": "platformId",
+            "description": "<p>对接平台ID</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"gat1400\",\n        \"deviceId\": \"32020200002000000003\",\n        \"mode\": 0,\n        \"slaveIp\": \"192.168.0.100\",\n        \"hostServerId\": \"32020200002000000001\",\n        \"hostIp\": \"192.168.0.64\",\n        \"hostPort\": 5060,\n        \"userName\": \"admin\",\n        \"passWord\": \"admin\",\n        \"extra\": {\n            \"manufactor\": \"hik\"\n        }\n    }\n}",
+          "content": "{\n    \"name\":\"test\",\n    \"type\":\"camera\",\n    \"id\":99,\n    \"data\":{\n        \"subType\":\"gat1400\",\n        \"deviceId\": \"32020200002000000003\",\n        \"mode\": 0,\n        \"slaveIp\": \"192.168.0.100\",\n        \"platformId\": \"32020200002000000001\"\n    }\n}",
           "type": "json"
         }
       ]
@@ -1827,7 +1827,7 @@
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"id\":999,\n    \"alg\":\"FaceCapture\"\n}",
+          "content": "{\n    \"id\":999,\n    \"alg\":\"faceCapture\"\n}",
           "type": "json"
         }
       ]
@@ -1892,7 +1892,7 @@
       "examples": [
         {
           "title": "请求样例：",
-          "content": "{\n    \"id\":999,\n    \"alg\":\"FaceCapture\"\n}",
+          "content": "{\n    \"id\":999,\n    \"alg\":\"faceCapture\"\n}",
           "type": "json"
         }
       ]

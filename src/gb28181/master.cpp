@@ -27,7 +27,7 @@ int gb28181Process(void *arg) {
     }
     pOps->running = 1;
 
-    while(pAiotcParams->running) {
+    while(pAiotcParams->running && pOps->running) {
         sleep(2);
     }
     pOps->running = 0;

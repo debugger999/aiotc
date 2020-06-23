@@ -313,6 +313,7 @@ static int createTasks(aiotcParams *pAiotcParams) {
         createProcess("master", "null", "null", pAiotcParams);
     }
     if(pConfigParams->masterEnable == 0 || pConfigParams->masterEnable == 2) {
+        createProcess("work", "null", "null", pAiotcParams);
         createProcess("rest", "null", "null", pAiotcParams);
         if(pthread_create(&pid, NULL, slave_objmanager_thread, pAiotcParams) != 0) {
             app_err("pthread_create slave obj manager thread err");
