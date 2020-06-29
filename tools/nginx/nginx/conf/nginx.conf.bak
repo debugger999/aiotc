@@ -1,0 +1,85 @@
+worker_processes  4;
+worker_cpu_affinity  0001 0010 0100 1000;
+
+error_log logs/error.log error;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    keepalive_timeout  65;
+
+    server {
+        listen       80;
+
+        location / {
+            root   /var/www;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        location /live {
+            flv_live on; #open flv live streaming (subscribe)
+            chunked  on; #open 'Transfer-Encoding: chunked' response
+        }
+
+        location /stat {
+            #configuration of push & pull status
+
+            rtmp_stat all;
+            rtmp_stat_stylesheet stat.xsl;
+        }
+
+        location /stat.xsl {
+            root /var/www/rtmp; #specify in where stat.xsl located
+        }
+    }
+}
+
+rtmp_auto_push on;
+rtmp_auto_push_reconnect 1s;
+rtmp_socket_dir /tmp;
+
+rtmp {
+    out_queue   4096;
+    out_cork    8;
+    max_streams 64;
+
+    server {
+        listen 1935;
+        server_name www.test.*; #for suffix wildcard matching of virtual host name
+
+        application myapp {
+            live on;
+            gop_cache on; #open GOP cache for low latency
+        }
+    }
+
+    server {
+        listen 1935;
+        server_name *.test.com; #for prefix wildcard matching of virtual host name
+
+        application myapp {
+            live on;
+            gop_cache on; #open GOP cache for low latency
+        }
+    }
+
+    server {
+        listen 1935;
+        server_name www.test.com; #for completely matching of virtual host name
+
+        application myapp {
+            live on;
+            gop_cache on; #open GOP cache for low latency
+        }
+    }
+}
