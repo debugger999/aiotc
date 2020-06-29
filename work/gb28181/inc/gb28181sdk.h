@@ -16,5 +16,17 @@
  *
  ******************************************************************************/
 
+#ifndef __AIOTC_GB28181SDK_H__
+#define __AIOTC_GB28181SDK_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+int gb28181_init(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

@@ -84,7 +84,7 @@ static int initPreviewOps(taskParams *pTaskParams, void *arg) {
         }
     }
     if(pPreviewParams->start == NULL) {
-        app_warring("get preview ops failed, type:%s", pTaskParams->preview);
+        app_warning("get preview ops failed, type:%s", pTaskParams->preview);
         return -1;
     }
     if(pPreviewParams->init != NULL) {
@@ -160,7 +160,7 @@ static int previwTaskBeat(node_common *p, void *arg) {
         }
         else if(nowSec - pTaskParams->previewTaskBeat > TASK_BEAT_TIMEOUT) {
             //if(pTaskParams->previewRestart ++ < 3) {
-            //    app_warring("id:%d, %s, detected exception, restart it ...", pObjParam->id, pOps->taskName);
+            //    app_warning("id:%d, %s, detected exception, restart it ...", pObjParam->id, pOps->taskName);
             //}
             //else {
             //    printf("id:%d, %s, detected exception, restart it ...\n", pObjParam->id, pOps->taskName);
@@ -185,7 +185,7 @@ static int initPreview(pidOps *pOps) {
 
     pOps->taskMax = pConfigParams->slaveObjMax;
     if(pOps->taskMax <= 0) {
-        app_warring("get task max failed, %s-%s-%s", pOps->name, pOps->subName, pOps->taskName);
+        app_warning("get task max failed, %s-%s-%s", pOps->name, pOps->subName, pOps->taskName);
         pOps->taskMax = 1;
     }
 

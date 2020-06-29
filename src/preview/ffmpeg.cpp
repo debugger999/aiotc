@@ -93,7 +93,7 @@ static int read_video_packet(void *opaque, uint8_t *buf, int size) {
     previewParams *pPreviewParams = (previewParams *)pTaskParams->previewArgs;
 
     do {
-        valid = copyFromShmWithFrameId(pVideoShm, frameId, &p, &useMax);
+        valid = copyFromShmWithUser(pVideoShm, frameId, &p, &useMax);
         if(!valid) {
             usleep(30000);
             continue;
@@ -174,7 +174,7 @@ int previewInit(void *obj) {
         snprintf(pathBuf, sizeof(pathBuf), "rtmp://127.0.0.1:1935/myapp/stream%d", pObjParam->id);
     }
     else {
-        app_warring("unsupport preview type:%s, %d", pTaskParams->preview, pObjParam->id);
+        app_warning("unsupport preview type:%s, %d", pTaskParams->preview, pObjParam->id);
         goto end;
     }
     out_filename_v = pathBuf;
@@ -247,7 +247,7 @@ int previewInit(void *obj) {
             ofmt_ctx = pPrewFFmpeg->ofmt_ctx_v;
         }
         else{
-            app_warring("id:%d, streams:%d, unsupport type : %d, break", pObjParam->id, 
+            app_warning("id:%d, streams:%d, unsupport type : %d, break", pObjParam->id, 
                     pPrewFFmpeg->ifmt_ctx->nb_streams, pPrewFFmpeg->ifmt_ctx->streams[i]->codec->codec_type);
             goto end;
         }
@@ -352,7 +352,7 @@ int previewLoop(void *obj) {
             printf("exception videoindex, %d:%d, %d\n", pkt.stream_index, videoindex, pObjParam->id);
             exception_index ++;
             if(exception_index > 500) {
-                app_warring("exception videoindex, %d:%d, %d", pkt.stream_index, videoindex, pObjParam->id);
+                app_warning("exception videoindex, %d:%d, %d", pkt.stream_index, videoindex, pObjParam->id);
                 pPreviewParams->running = 0;
             }
             continue;

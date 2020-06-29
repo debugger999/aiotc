@@ -630,7 +630,7 @@ static int slaveLoad(node_common *p, void *arg) {
             pSlaveParam->offline = (int)tv.tv_sec;
             pSlaveParam->systemInit = 0;
             detachSlave(pAiotcParams, pSlaveParam);
-            app_warring("detected offline, %s:%d", pSlaveParam->ip, pSlaveParam->restPort);
+            app_warning("detected offline, %s:%d", pSlaveParam->ip, pSlaveParam->restPort);
         }
         if(pSlaveParam->online) {
             pSlaveParam->online = 0;

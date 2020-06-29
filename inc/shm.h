@@ -71,7 +71,7 @@ int releaseShm(shmParam *pShm);
 int copyToShm(shmParam *pShm, char *buf, int size, 
         long long int frameId, int type, int max, int (*copy)(char *ptr, void *arg));
 int copyFromShm(shmParam *pShm, shmFrame *pShmFrame);
-int copyFromShmWithFrameId(shmParam *pShm, long long int frameId, node_common **ppNode, int *useMax);
+int copyFromShmWithUser(shmParam *pShm, long long int frameId, node_common **ppNode, int *useMax);
 
 inline void *shmMalloc(ncx_slab_pool_t *pool, size_t size) {
     return ncx_slab_alloc(pool, size);

@@ -41,7 +41,7 @@ static void readCallback(struct evhttp_request* req, void* arg) {
     struct event_base *base = (struct event_base *)pAckParams->arg;
 
     if(req == NULL) {
-        app_warring("req is null");
+        app_warning("req is null");
         return ;
     }
     evbuf = evhttp_request_get_input_buffer(req);
@@ -278,7 +278,7 @@ int request_cb(struct evhttp_request *req, void (*httpTask)(struct evhttp_reques
         int n;
         n = evbuffer_remove(buf, cbuf, POST_BUF_MAX);
         if (n >= POST_BUF_MAX) {
-            app_warring("content length is too large, %d", n);
+            app_warning("content length is too large, %d", n);
         }
     }
     cbuf[POST_BUF_MAX - 1] = '\0';
@@ -623,7 +623,7 @@ end:
 
 /*
 static void request_gencb(struct evhttp_request *req, void *arg) {
-    app_warring("");
+    app_warning("");
     request_cb(req, NULL, NULL);
 }
 */

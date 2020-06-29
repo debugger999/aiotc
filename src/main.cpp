@@ -142,6 +142,7 @@ static int init(aiotcParams **ppAiotcParams) {
     dbInit(pAiotcParams);
     miscInit(pAiotcParams);
 
+    srand(time(NULL));
     pAiotcParams->running = 1;
     *ppAiotcParams = pAiotcParams;
 
@@ -209,7 +210,7 @@ static int stopTask(const char *name, const char *taskName, objParam *pObjParam)
         msgSend(cmd, pOps->msgKey, 0, 0);
     }
     else {
-        app_warring("get task proc failed, id:%d,%s,%s,%s", 
+        app_warning("get task proc failed, id:%d,%s,%s,%s", 
                 pObjParam->id, name, pObjParam->subtype, taskName);
     }
 
@@ -234,7 +235,7 @@ static int objManager(node_common *p, void *arg) {
     if(pTaskParams->livestream && (nowSec - pTaskParams->liveBeat) > PROC_BEAT_TIMEOUT) {
         strncpy(taskName, "live", sizeof(taskName));
         if(pTaskParams->liveBeat > 0) {
-            app_warring("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
+            app_warning("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
         }
         startObjTask("obj", taskName, pObjParam);
         pTaskParams->liveBeat = nowSec;
@@ -242,7 +243,7 @@ static int objManager(node_common *p, void *arg) {
     if(pTaskParams->capture && (nowSec - pTaskParams->captureBeat) > PROC_BEAT_TIMEOUT) {
         strncpy(taskName, "capture", sizeof(taskName));
         if(pTaskParams->captureBeat > 0) {
-            app_warring("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
+            app_warning("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
         }
         startObjTask("obj", taskName, pObjParam);
         pTaskParams->captureBeat = nowSec;
@@ -250,7 +251,7 @@ static int objManager(node_common *p, void *arg) {
     if(pTaskParams->record && (nowSec - pTaskParams->recordBeat) > PROC_BEAT_TIMEOUT) {
         strncpy(taskName, "record", sizeof(taskName));
         if(pTaskParams->recordBeat > 0) {
-            app_warring("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
+            app_warning("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
         }
         startObjTask("obj", taskName, pObjParam);
         pTaskParams->recordBeat = nowSec;
@@ -258,7 +259,7 @@ static int objManager(node_common *p, void *arg) {
     if(strlen(pTaskParams->preview) > 0 && (nowSec - pTaskParams->previewBeat) > PROC_BEAT_TIMEOUT) {
         strncpy(taskName, "preview", sizeof(taskName));
         if(pTaskParams->previewBeat > 0) {
-            app_warring("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
+            app_warning("id:%d, %s, proc beat timeout, restart obj task", pObjParam->id, taskName);
         }
         startObjTask("obj", taskName, pObjParam);
         pTaskParams->previewBeat = nowSec;

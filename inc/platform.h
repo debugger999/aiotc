@@ -62,6 +62,7 @@ typedef struct {
     void *configArgs;   // configParams
     void *pidsArgs;     // pidsParams
     void *dbArgs;       // dbParams
+    void *workArgs;     // workParams
     void *systemArgs;   // systemParams
     int running;
 } aiotcParams;

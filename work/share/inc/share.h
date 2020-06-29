@@ -86,11 +86,11 @@ inline void semWait(sem_t *mutex) {
     int tryCnt = 0;
     while(sem_wait(mutex) == -1 && tryCnt < 10000) {
         if(errno != EINTR) {
-            app_warring("sem wait failed, %d:%s", errno, strerror(errno));
+            app_warning("sem wait failed, %d:%s", errno, strerror(errno));
             break;
         }
         if(tryCnt == 0) {
-            app_warring("sem wait failed, %d:%s", errno, strerror(errno));
+            app_warning("sem wait failed, %d:%s", errno, strerror(errno));
         }
         tryCnt ++;
     }
@@ -98,7 +98,7 @@ inline void semWait(sem_t *mutex) {
 
 inline void semPost(sem_t *mutex) {
     if(sem_post(mutex) == -1) {
-        app_warring("sem post failed, %d:%s", errno, strerror(errno));
+        app_warning("sem post failed, %d:%s", errno, strerror(errno));
     }
 }
 

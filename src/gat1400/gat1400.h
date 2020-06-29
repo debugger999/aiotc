@@ -22,8 +22,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "work.h"
 
 #define GAT1400_PLATFROM_MAX    10
+
+typedef struct {
+    int  frameId;
+    outJsonParams jsonParams;
+} gat1400ObjParams;
 
 typedef struct {
     char platformId[128];

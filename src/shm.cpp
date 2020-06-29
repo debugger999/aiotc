@@ -146,7 +146,7 @@ int setShmUser(shmParam *pShm, int val) {
     else {
         pShm->queue.useMax --;
         if(pShm->queue.useMax < 0) {
-            app_warring("exception use max:%d, shmId:%d", pShm->queue.useMax, pShm->id);
+            app_warning("exception use max:%d, shmId:%d", pShm->queue.useMax, pShm->id);
             pShm->queue.useMax = 0;
         }
     }
@@ -258,7 +258,7 @@ int copyFromShm(shmParam *pShm, shmFrame *pShmFrame) {
     return valid;
 }
 
-int copyFromShmWithFrameId(shmParam *pShm, long long int frameId, node_common **ppNode, int *useMax) {
+int copyFromShmWithUser(shmParam *pShm, long long int frameId, node_common **ppNode, int *useMax) {
     int valid = 0;
     node_common *new_p = NULL;
 

@@ -23,6 +23,8 @@
 #include "obj.h"
 #include "task.h"
 #include "camera.h"
+#include "work.h"
+#include "mq.h"
 #include "misc.h"
 #include "gat1400.h"
 #include "gat1400sdk.h"
@@ -50,44 +52,111 @@ static int ga1400traverseQueue(queue_common_1400 *queue, void *arg, int (*callBa
     }
     return 0;
 }
-
+    
+// img->Type -- 14:全景, 11:人脸, 10:人员图, 01:车辆大图, 02:车辆彩色小图, 12:非机动车图
 static int parseImage(node_common_1400 *p, void *arg) {
-    char filename[256];
-    objParam *pObjParam = (objParam *)arg;
+    char filename[512];
+    outJsonParams *pJsonParams = (outJsonParams *)arg;
+    objParam *pObjParam = (objParam *)pJsonParams->arg;
     SubImageInfo *img = (SubImageInfo *)p->arg;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+    aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
+    workParams *pWorkParams = (workParams *)pAiotcParams->workArgs;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+    systemParams *pSystemParams = (systemParams *)pAiotcParams->systemArgs;
+    gat1400ObjParams *pGat1400ObjParams = (gat1400ObjParams *)pTaskParams->captureArgs;
+    int randnum = rand();
 
-    // 14:全景, 11:人脸, 10:人员图, 01:车辆大图, 02:车辆彩色小图, 12:非机动车图
-    printf("gat1400 capture, id:%d, type:%s, %dx%d, size:%d\n", 
-            pObjParam->id, img->Type, img->Width, img->Height, img->FileSize);
+    //printf("gat1400 capture, id:%d, type:%s, %dx%d, size:%d\n", 
+    //        pObjParam->id, img->Type, img->Width, img->Height, img->FileSize);
 
-    snprintf(filename, sizeof(filename), "./data/%d_%lld_%s_%d_%d.jpg", 
-            pObjParam->id, gat1400Timestamp(img->ShotTime), img->Type, img->Width, img->Height);
+    if(pJsonParams->timestamp == 0) {
+        pJsonParams->timestamp = gat1400Timestamp(img->ShotTime);
+    }
+    snprintf(filename, sizeof(filename), "%s/webpages/img/%s/%d/%d_%lld_0_%s_%d.jpg", 
+            pConfigParams->workdir, pWorkParams->date, pObjParam->id, 
+            pGat1400ObjParams->frameId, pJsonParams->timestamp, img->Type, randnum);
     writeFile(filename, img->Data, img->FileSize);
+    snprintf(filename, sizeof(filename), "http://%s:%d/img/%s/%d/%d_%lld_0_%s_%d.jpg", 
+            pAiotcParams->localIp, pSystemParams->httpPort, pWorkParams->date, 
+            pObjParam->id, pGat1400ObjParams->frameId, pJsonParams->timestamp, img->Type, randnum);
+    pJsonParams->id = pObjParam->id;
+    if(!strncmp(img->Type, "14", sizeof(img->Type))) {
+        strncpy(pJsonParams->sceneUrl, filename, sizeof(pJsonParams->sceneUrl));
+    }
+    else if(!strncmp(img->Type, "11", sizeof(img->Type))) {
+        strncpy(pJsonParams->faceUrl, filename, sizeof(pJsonParams->faceUrl));
+    }
+    else if(!strncmp(img->Type, "10", sizeof(img->Type))) {
+        strncpy(pJsonParams->personBodyUrl, filename, sizeof(pJsonParams->personBodyUrl));
+    }
+    else if(!strncmp(img->Type, "01", sizeof(img->Type))) {
+        strncpy(pJsonParams->sceneUrl, filename, sizeof(pJsonParams->sceneUrl));
+    }
+    else if(!strncmp(img->Type, "02", sizeof(img->Type))) {
+        strncpy(pJsonParams->vehBodyUrl, filename, sizeof(pJsonParams->vehBodyUrl));
+    }
+    else if(!strncmp(img->Type, "12", sizeof(img->Type))) {
+        strncpy(pJsonParams->personBodyUrl, filename, sizeof(pJsonParams->personBodyUrl));
+    }
+    else {
+        printf("gat1400, unsupport img type:%s\n", img->Type);
+    }
 
     return 0;
 }
 
 static int parseFaceList(node_common_1400 *p, void *arg) {
+    outJsonParams *pJsonParams = (outJsonParams *)arg;
     Face *face = (Face *)p->arg;
-    ga1400traverseQueue(&(face->SubImageList), arg, parseImage);
+
+    pJsonParams->faceRect.x = face->LeftTopX/1000.0;
+    pJsonParams->faceRect.y = face->LeftTopY/1000.0;
+    pJsonParams->faceRect.w = (face->RightBtmX - face->LeftTopX)/1000.0;
+    pJsonParams->faceRect.h = (face->RightBtmY - face->LeftTopY)/1000.0;
+    pJsonParams->timestamp = gat1400Timestamp(face->ShotTime);
+    ga1400traverseQueue(&(face->SubImageList), pJsonParams, parseImage);
+
     return 0;
 }
 
 static int parsePersonList(node_common_1400 *p, void *arg) {
+    outJsonParams *pJsonParams = (outJsonParams *)arg;
     Person *person = (Person *)p->arg;
-    ga1400traverseQueue(&(person->SubImageList), arg, parseImage);
+
+    pJsonParams->personBodyRect.x = person->LeftTopX/1000.0;
+    pJsonParams->personBodyRect.y = person->LeftTopY/1000.0;
+    pJsonParams->personBodyRect.w = (person->RightBtmX - person->LeftTopX)/1000.0;
+    pJsonParams->personBodyRect.h = (person->RightBtmY - person->LeftTopY)/1000.0;
+    pJsonParams->timestamp = gat1400Timestamp(person->ShotTime);
+    ga1400traverseQueue(&(person->SubImageList), pJsonParams, parseImage);
+
     return 0;
 }
 
 static int parseVehList(node_common_1400 *p, void *arg) {
+    outJsonParams *pJsonParams = (outJsonParams *)arg;
     MotorVehicle *veh = (MotorVehicle *)p->arg;
-    ga1400traverseQueue(&(veh->SubImageList), arg, parseImage);
+
+    pJsonParams->vehBodyRect.x = veh->LeftTopX/1000.0;
+    pJsonParams->vehBodyRect.y = veh->LeftTopY/1000.0;
+    pJsonParams->vehBodyRect.w = (veh->RightBtmX - veh->LeftTopX)/1000.0;
+    pJsonParams->vehBodyRect.h = (veh->RightBtmY - veh->LeftTopY)/1000.0;
+    ga1400traverseQueue(&(veh->SubImageList), pJsonParams, parseImage);
+
     return 0;
 }
 
 static int parseNonMotorList(node_common_1400 *p, void *arg) {
-    Person *nonmotor = (Person *)p->arg;
-    ga1400traverseQueue(&(nonmotor->SubImageList), arg, parseImage);
+    outJsonParams *pJsonParams = (outJsonParams *)arg;
+    NonMotorVehicle *nonmotor = (NonMotorVehicle *)p->arg;
+
+    pJsonParams->personBodyRect.x = nonmotor->LeftTopX/1000.0;
+    pJsonParams->personBodyRect.y = nonmotor->LeftTopY/1000.0;
+    pJsonParams->personBodyRect.w = (nonmotor->RightBtmX - nonmotor->LeftTopX)/1000.0;
+    pJsonParams->personBodyRect.h = (nonmotor->RightBtmY - nonmotor->LeftTopY)/1000.0;
+    ga1400traverseQueue(&(nonmotor->SubImageList), pJsonParams, parseImage);
+
     return 0;
 }
 
@@ -95,6 +164,19 @@ static void gat1400_capture_callback(CallData *data, void *userArg) {
     objParam *pObjParam = (objParam *)userArg;
     ObjList *pData = (ObjList *)data->data;
     int (*parseObjList)(node_common_1400 *, void *) = NULL;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
+    aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
+    workParams *pWorkParams = (workParams *)pAiotcParams->workArgs;
+    gat1400ObjParams *pGat1400ObjParams = (gat1400ObjParams *)pTaskParams->captureArgs;
+    outJsonParams *pJsonParams = &pGat1400ObjParams->jsonParams;
+
+    printf("gat1400 capture, id:%d, type:%d\n", pObjParam->id, data->datatype);
+
+    memset(pJsonParams, 0, sizeof(outJsonParams));
+    strncpy(pJsonParams->msgType, "common", sizeof(pJsonParams->msgType));
+    pJsonParams->id = pObjParam->id;
+    pJsonParams->arg = pObjParam;
+    pGat1400ObjParams->frameId ++;
 
     if(data->datatype == GAT1400_FACE) {
         parseObjList = parseFaceList;
@@ -113,7 +195,13 @@ static void gat1400_capture_callback(CallData *data, void *userArg) {
         return ;
     }
 
-    ga1400traverseQueue(&pData->objList, pObjParam, parseObjList);
+    ga1400traverseQueue(&pData->objList, pJsonParams, parseObjList);
+    char *json = makeJson(pJsonParams);
+    if(json != NULL) {
+        //printf("json:%s\n", json);
+        copyToMqQueue(json, pWorkParams);
+        free(json);
+    }
 }
 
 static int gat1400_start(const void *buf, void *arg) {
@@ -122,19 +210,29 @@ static int gat1400_start(const void *buf, void *arg) {
     char *buff = pObjParam->originaldata;
     pidOps *pOps = (pidOps *)pObjParam->reserved;
     taskOps *pTaskOps = (taskOps *)pOps->procTaskOps;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
     gat1400Params *pGat1400Params = (gat1400Params *)pTaskOps->arg;
     char *deviceId = NULL, *platformId = NULL;
 
     if(pGat1400Params->handle == NULL) {
-        app_warring("id:%d, please init first", pObjParam->id);
+        app_warning("id:%d, please init first", pObjParam->id);
         goto end;
     }
     mode = getIntValFromJson(buff, "data", "mode", NULL);
     deviceId = getStrValFromJson(buff, "data", "deviceId", NULL);
     platformId = getStrValFromJson(buff, "data", "platformId", NULL);
     if(deviceId == NULL || platformId == NULL) {
-        app_warring("id:%d, get obj params failed", pObjParam->id);
+        app_warning("id:%d, get obj params failed", pObjParam->id);
         goto end;
+    }
+
+    if(pTaskParams->captureArgs == NULL) {
+        pTaskParams->captureArgs = malloc(sizeof(gat1400ObjParams));
+        if(pTaskParams->captureArgs == NULL) {
+            app_err("malloc failed");
+            goto end;
+        }
+        memset(pTaskParams->captureArgs, 0, sizeof(gat1400ObjParams));
     }
 
     gat1400_start_capture(pGat1400Params->handle, deviceId, gat1400_capture_callback, 
@@ -157,19 +255,24 @@ static int gat1400_stop(const void *buf, void *arg) {
     char *buff = pObjParam->originaldata;
     pidOps *pOps = (pidOps *)pObjParam->reserved;
     taskOps *pTaskOps = (taskOps *)pOps->procTaskOps;
+    taskParams *pTaskParams = (taskParams *)pObjParam->task;
     gat1400Params *pGat1400Params = (gat1400Params *)pTaskOps->arg;
 
     if(pGat1400Params->handle == NULL) {
-        app_warring("id:%d, please init first", pObjParam->id);
+        app_warning("id:%d, please init first", pObjParam->id);
         goto end;
     }
     deviceId = getStrValFromJson(buff, "data", "deviceId", NULL);
     if(deviceId == NULL) {
-        app_warring("id:%d, get obj params failed", pObjParam->id);
+        app_warning("id:%d, get obj params failed", pObjParam->id);
         goto end;
     }
 
     gat1400_stop_capture(pGat1400Params->handle, deviceId);
+    if(pTaskParams->captureArgs != NULL) {
+        free(pTaskParams->captureArgs);
+        pTaskParams->captureArgs = NULL;
+    }
 
 end:
     if(deviceId != NULL) {
@@ -198,7 +301,7 @@ static int initGat1400Params(pidOps *pOps) {
 
     buf = pSystemParams->sysOrgData;
     if(buf == NULL) {
-        app_warring("please system init first");
+        app_warning("please system init first");
         return -1;
     }
 
@@ -309,7 +412,7 @@ static int gat1400Init(pidOps *pOps) {
 
     pOps->taskMax = pConfigParams->slaveObjMax;
     if(pOps->taskMax <= 0) {
-        app_warring("get task max failed, %s-%s-%s", pOps->name, pOps->subName, pOps->taskName);
+        app_warning("get task max failed, %s-%s-%s", pOps->name, pOps->subName, pOps->taskName);
         pOps->taskMax = 1;
     }
 

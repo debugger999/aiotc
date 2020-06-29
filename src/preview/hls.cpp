@@ -40,7 +40,7 @@ static int delOldTs(const void *ptr, void *obj) {
     if(!access(m3u8File, F_OK)) {
         fp = fopen(m3u8File, "rb");
         if(fp == NULL) {
-            app_warring("fopen %s failed", m3u8File);
+            app_warning("fopen %s failed", m3u8File);
             return -1;
         }
 
@@ -89,7 +89,7 @@ static int delOldTs(const void *ptr, void *obj) {
             else {
                 pPreviewParams->lastTsSameCnt ++;
                 if(pPreviewParams->lastTsSameCnt > 60) {
-                    app_warring("stream%d, last ts file is too long, rm m3u8File", pObjParam->id);
+                    app_warning("stream%d, last ts file is too long, rm m3u8File", pObjParam->id);
                     remove(m3u8File);
                     pPreviewParams->lastTsSameCnt = 0;
                 }

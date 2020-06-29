@@ -54,7 +54,7 @@ int configInit(configParams *pConfigParams) {
             strncpy(pConfigParams->dbType, str, sizeof(pConfigParams->dbType));
         }
         else {
-            app_warring("unsupport db type : %s", str);
+            app_warning("unsupport db type : %s", str);
         }
         free(str);
     }
@@ -96,7 +96,7 @@ static int getNginxPort(char *nginx_config_path, int *port) {
 
     FILE *fp = fopen(nginx_config_path, "rb");
     if(fp == NULL) {
-        app_warring("fopen %s failed", nginx_config_path);
+        app_warning("fopen %s failed", nginx_config_path);
         goto err;
     }
     fseek(fp, 0L, SEEK_END);
@@ -405,7 +405,7 @@ int dbUpdate(void *dbArgs, const char *table, bool upsert, const char *cmd,
         update = BCON_NEW(cmd, "{", updateName, BCON_UTF8((char *)updStrVal), "}");
     }
     else {
-        app_warring("update val is null");
+        app_warning("update val is null");
         goto end;
     }
 

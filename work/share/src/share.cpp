@@ -655,7 +655,7 @@ int getIntValFromFile(const char *fileName, const char *nameSub1, const char *na
         free(buf);
     }
     else {
-        app_warring("%s, readFile2Buf failed", fileName);
+        app_warning("%s, readFile2Buf failed", fileName);
     }
 
     return val;
@@ -669,7 +669,7 @@ char *getStrValFromFile(const char *fileName, const char *nameSub1, const char *
         free(buf);
     }
     else {
-        app_warring("%s, readFile2Buf failed", fileName);
+        app_warning("%s, readFile2Buf failed", fileName);
     }
 
     return val;
@@ -683,7 +683,7 @@ double getDoubleValFromFile(const char *fileName, const char *nameSub1, const ch
         free(buf);
     }
     else {
-        app_warring("%s, readFile2Buf failed", fileName);
+        app_warning("%s, readFile2Buf failed", fileName);
     }
 
     return val;
@@ -697,7 +697,7 @@ char *getArrayBufFromFile(const char *fileName, const char *nameSub1, const char
         free(buf);
     }
     else {
-        app_warring("%s, readFile2Buf failed", fileName);
+        app_warning("%s, readFile2Buf failed", fileName);
     }
 
     return val;
@@ -788,7 +788,7 @@ int blockSend(unsigned int connfd, char *src, int size, int max) {
             else {
                 static int cnt = 0;
                 if(cnt++ % 10 == 0) {
-                    app_warring("%d, send, select timeout, fd:%d, %d, %d:%d", 
+                    app_warning("%d, send, select timeout, fd:%d, %d, %d:%d", 
                             cnt, connfd, max, l_sendedsize, l_size);
                 }
                 else {
@@ -871,7 +871,7 @@ int blockRecv(unsigned int connfd, char *dst, int size, int max, void *arg, Comm
                 continue;
             }
             if(l_size > 16) {
-                app_warring("recv, select timeout, fd:%d, %d, %d:%d", connfd, max, l_recvedsize, l_size);
+                app_warning("recv, select timeout, fd:%d, %d, %d:%d", connfd, max, l_recvedsize, l_size);
             }
             return TIME_OUT;
         }
@@ -907,7 +907,7 @@ int putToQueue(queue_common *queue, node_common *new_node, int max) {
         queue->queLen ++;
     }
     else {
-        //app_warring("queLen is too large, %s:%d", new_node->name, queue->queLen);
+        //app_warning("queLen is too large, %s:%d", new_node->name, queue->queLen);
         printf("queLen is too large, %d\n", queue->queLen);
         return queue->queLen;
     }
@@ -924,7 +924,7 @@ int getFromQueue(queue_common *queue, node_common **new_p) {
         }
         queue->queLen --;
         if(queue->queLen < 0) {
-            app_warring("exception queLen : %d", queue->queLen);
+            app_warning("exception queLen : %d", queue->queLen);
             queue->queLen = 0;
             return -1;
         }
@@ -959,7 +959,7 @@ int delFromQueue(queue_common *queue, void *arg, node_common **new_p, int (*cond
             }
             queue->queLen --;
             if(queue->queLen < 0) {
-                app_warring("exception queLen : %d", queue->queLen);
+                app_warning("exception queLen : %d", queue->queLen);
                 queue->queLen = 0;
             }
             break;
@@ -998,7 +998,7 @@ int delFromQueueByUser(queue_common *queue, void *arg, node_common **new_p, int 
                 }
                 queue->queLen --;
                 if(queue->queLen < 0) {
-                    app_warring("exception queLen : %d", queue->queLen);
+                    app_warning("exception queLen : %d", queue->queLen);
                     queue->queLen = 0;
                 }
             }

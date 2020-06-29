@@ -32,7 +32,7 @@
 #define request_first_stage                         \
 do {                                                \
     if(req == NULL) {                               \
-        app_warring("req is null");                 \
+        app_warning("req is null");                 \
         return ;                                    \
     }                                               \
     if(req != (struct evhttp_request *)(-1)) {      \

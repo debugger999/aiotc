@@ -132,11 +132,11 @@ ncx_slab_alloc(ncx_slab_pool_t *pool, size_t size)
 
     while(sem_wait(pool->mutex) == -1 && tryCnt < 10000) {
         if(errno != EINTR) {
-            app_warring("sem wait failed, %d:%s", errno, strerror(errno));
+            app_warning("sem wait failed, %d:%s", errno, strerror(errno));
             break;
         }
         if(tryCnt == 0) {
-            app_warring("sem wait failed, %d:%s", errno, strerror(errno));
+            app_warning("sem wait failed, %d:%s", errno, strerror(errno));
         }
         tryCnt ++;
     }
@@ -144,7 +144,7 @@ ncx_slab_alloc(ncx_slab_pool_t *pool, size_t size)
     p = ncx_slab_alloc_locked(pool, size);
 
     if(sem_post(pool->mutex) == -1) {
-        app_warring("sem post failed, %d:%s", errno, strerror(errno));
+        app_warning("sem post failed, %d:%s", errno, strerror(errno));
     }
 
     return p;
@@ -395,11 +395,11 @@ ncx_slab_free(ncx_slab_pool_t *pool, void *p)
 
     while(sem_wait(pool->mutex) == -1 && tryCnt < 10000) {
         if(errno != EINTR) {
-            app_warring("sem wait failed, %d:%s", errno, strerror(errno));
+            app_warning("sem wait failed, %d:%s", errno, strerror(errno));
             break;
         }
         if(tryCnt == 0) {
-            app_warring("sem wait failed, %d:%s", errno, strerror(errno));
+            app_warning("sem wait failed, %d:%s", errno, strerror(errno));
         }
         tryCnt ++;
     }
@@ -407,7 +407,7 @@ ncx_slab_free(ncx_slab_pool_t *pool, void *p)
     ncx_slab_free_locked(pool, p);
 
     if(sem_post(pool->mutex) == -1) {
-        app_warring("sem post failed, %d:%s", errno, strerror(errno));
+        app_warning("sem post failed, %d:%s", errno, strerror(errno));
     }
 }
 
@@ -753,11 +753,11 @@ ncx_slab_stat(ncx_slab_pool_t *pool, ncx_slab_stat_t *statt)
 
     while(sem_wait(pool->mutex) == -1 && tryCnt < 10000) {
         if(errno != EINTR) {
-            app_warring("sem wait failed, %d:%s", errno, strerror(errno));
+            app_warning("sem wait failed, %d:%s", errno, strerror(errno));
             break;
         }
         if(tryCnt == 0) {
-            app_warring("sem wait failed, %d:%s", errno, strerror(errno));
+            app_warning("sem wait failed, %d:%s", errno, strerror(errno));
         }
         tryCnt ++;
     }
@@ -864,7 +864,7 @@ ncx_slab_stat(ncx_slab_pool_t *pool, ncx_slab_stat_t *statt)
     }
 
     if(sem_post(pool->mutex) == -1) {
-        app_warring("sem post failed, %d:%s", errno, strerror(errno));
+        app_warning("sem post failed, %d:%s", errno, strerror(errno));
     }
 
     statt->pool_size = pool->end - pool->start;

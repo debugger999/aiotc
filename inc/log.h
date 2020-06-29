@@ -22,7 +22,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <pthread.h>
 #include <sys/time.h>
 
@@ -58,7 +60,7 @@
         } \
     } while(0)
 
-#define app_warring(format, args...) \
+#define app_warning(format, args...) \
     do { \
         struct timeval tv; \
         struct tm _time; \

@@ -50,5 +50,6 @@ int delAlg(char *buf, int id, char *algName, aiotcParams *pAiotcParams, void *ar
 int httpPostSlave(const char *url, char *buf, objParam *pObjParam);
 int clearSystemIpc(aiotcParams *pAiotcParams);
 int allocVideoShm(objParam *pObjParam);
+int checkObjDir(objParam *pObjParam);
 
 #endif

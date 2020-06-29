@@ -113,7 +113,7 @@ static int msgTask(char *buf, void *arg) {
     for(i = 0; ; i ++) {
         pCmdParams = pMsgParams->pUserCmdParams + i;
         if(!strncmp(pCmdParams->cmd, "null", 64)) {
-            app_warring("unsupport cmd : %s", cmd);
+            app_warning("unsupport cmd : %s", cmd);
             break;
         }
         if(!strncmp(pCmdParams->cmd, cmd, 64)) {
@@ -153,11 +153,11 @@ static void *msgThread(void *arg) {
                 continue;
             }
             if(errno == EIDRM) {
-                app_warring("msgrcv EIDRM, pid:%d, key:%x, %d:%s, restart ...", getpid(), pMsgParams->key, errno, strerror(errno));
+                app_warning("msgrcv EIDRM, pid:%d, key:%x, %d:%s, restart ...", getpid(), pMsgParams->key, errno, strerror(errno));
                 exit(-1);
             }
             if(errcnt ++ == 0) {
-                app_warring("msgrcv failed, pid:%d, key:%x, %d:%s", getpid(), pMsgParams->key, errno, strerror(errno));
+                app_warning("msgrcv failed, pid:%d, key:%x, %d:%s", getpid(), pMsgParams->key, errno, strerror(errno));
             }
             else {
                 printf("msgrcv failed, key:%x, %s\n", pMsgParams->key, strerror(errno));

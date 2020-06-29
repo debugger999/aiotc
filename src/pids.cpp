@@ -175,7 +175,7 @@ pidOps *getRealOps(pidOps *pOps) {
         usleep(100000);
     } while(wait --);
     if(p == NULL) {
-        app_warring("get pid ops failed, pid:%d, %s-%s-%s", pid, pOps->name, pOps->subName, pOps->taskName);
+        app_warning("get pid ops failed, pid:%d, %s-%s-%s", pid, pOps->name, pOps->subName, pOps->taskName);
     }
 
     return p;
@@ -211,7 +211,7 @@ int createBeatTask(pidOps *pOps, int (*obj_task_beat)(node_common *, void *), in
         usleep(100000);
     } while(wait --);
     if(wait <= 0) {
-        app_warring("wait beat thread failed");
+        app_warning("wait beat thread failed");
     }
 
     return 0;
@@ -225,7 +225,7 @@ pidOps *getOpsByName(const char *name, const char *subName, const char *taskName
     for(i = 0; ; i ++) {
         pOps = g_pid_ops + i;
         if(!strncmp(pOps->name, "null", sizeof(pOps->name))) {
-            app_warring("get proc by name failed, %s %s %s", name, subName, taskName);
+            app_warning("get proc by name failed, %s %s %s", name, subName, taskName);
             break;
         }
         if(strncmp(name, pOps->name, sizeof(pOps->name)) == 0 &&
@@ -367,7 +367,7 @@ static int putObj2pidQue(objParam *pObjParam, pidOps *pOps) {
         usleep(100000);
     } while(wait --);
     if(pOps->taskMax <= 0) {
-        app_warring("wait proc init failed, pid:%d, %s-%s-%s", 
+        app_warning("wait proc init failed, pid:%d, %s-%s-%s", 
                 pOps->pid, pOps->name, pOps->subName, pOps->taskName);
         return -1;
     }
@@ -406,17 +406,17 @@ pid_t createProcess(const char *name, const char *subName, const char *taskName,
 
     pOps = getOpsByName(name, subName, taskName);
     if(pOps == NULL) {
-        app_warring("get ops by name failed, %s-%s-%s", name, subName, taskName);
+        app_warning("get ops by name failed, %s-%s-%s", name, subName, taskName);
         return -1;
     }
     pOps->arg = pAiotcParams;
     pOps->msgKey = getMsgKey(name, subName, taskName, pAiotcParams);
     if(pOps->msgKey < 0) {
-        app_warring("get msg key failed, %s-%s-%s", name, subName, taskName);
+        app_warning("get msg key failed, %s-%s-%s", name, subName, taskName);
         return -1;
     }
     if(pOps->procInit != NULL && pOps->procInit(pOps) != 0) {
-        app_warring("proc init failed, %s-%s-%s", name, subName, taskName);
+        app_warning("proc init failed, %s-%s-%s", name, subName, taskName);
         return -1;
     }
 
@@ -446,7 +446,7 @@ int creatProcByPid(pid_t oldPid, int status, void *arg) {
 
     pOps = getOpsByPid(oldPid, pAiotcParams);
     if(pOps == NULL) {
-        app_warring("get ops by pid %d failed", oldPid);
+        app_warning("get ops by pid %d failed", oldPid);
         return -1;
     }
     if(!pOps->running) {
@@ -457,11 +457,11 @@ int creatProcByPid(pid_t oldPid, int status, void *arg) {
 
     gettimeofday(&tv, NULL);
     if((int)tv.tv_sec - pOps->lastReboot < 300) {
-        app_warring("proc %s-%s-%s, pid %d, restart too high frequency, don't run it", 
+        app_warning("proc %s-%s-%s, pid %d, restart too high frequency, don't run it", 
                 pOps->name, pOps->subName, pOps->taskName, pid);
         return -1;
     }
-    app_warring("proc %s-%s-%s, pid %d quit, exit status %d, restart it ...", 
+    app_warning("proc %s-%s-%s, pid %d quit, exit status %d, restart it ...", 
             pOps->name, pOps->subName, pOps->taskName, oldPid, status);
 
     pid = fork();
@@ -518,7 +518,7 @@ pidOps *getEmptyProc(const char *name, const char *subName, const char *taskName
             pid = createProcess(name, subName, taskName, pAiotcParams);
         }
         else {
-            app_warring("slave load is too high : %d", pSlaveParams->load);
+            app_warning("slave load is too high : %d", pSlaveParams->load);
         }
     }
 

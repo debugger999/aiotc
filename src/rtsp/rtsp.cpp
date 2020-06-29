@@ -74,7 +74,7 @@ static int rtsp_start(const void *buf, void *arg) {
     rtspParams *pRtspParams = (rtspParams *)pTaskParams->liveArgs;
     player_params *player = &pRtspParams->player;
     if(player->playhandle != NULL) {
-        app_warring("rtsp %s is already running", player->url);
+        app_warning("rtsp %s is already running", player->url);
         return -1;
     }
 
@@ -109,7 +109,7 @@ static int rtsp_stop(const void *buf, void *arg) {
     rtspParams *pRtspParams = (rtspParams *)pTaskParams->liveArgs;
 
     if(pRtspParams == NULL) {
-        app_warring("id:%d, rtsp params is null", pObjParam->id);
+        app_warning("id:%d, rtsp params is null", pObjParam->id);
         return -1;
     }
     player_params *player = &pRtspParams->player;
@@ -178,7 +178,7 @@ static int rtspTaskBeat(node_common *p, void *arg) {
         }
         else if(nowSec - pTaskParams->liveTaskBeat > TASK_BEAT_TIMEOUT) {
             if(pTaskParams->liveRestart ++ < 3) {
-                app_warring("id:%d, %s, detected exception, restart it ...", pObjParam->id, pOps->taskName);
+                app_warning("id:%d, %s, detected exception, restart it ...", pObjParam->id, pOps->taskName);
             }
             else {
                 printf("id:%d, %s, detected exception, restart it ...\n", pObjParam->id, pOps->taskName);
@@ -199,7 +199,7 @@ static int rtspTaskBeat(node_common *p, void *arg) {
 static int rtspInit(pidOps *pOps) {
     pOps->taskMax = getIntValFromFile(AIOTC_CFG, "proc", "rtsp", "taskMax");
     if(pOps->taskMax <= 0) {
-        app_warring("get task max failed, %s-%s-%s", pOps->name, pOps->subName, pOps->taskName);
+        app_warning("get task max failed, %s-%s-%s", pOps->name, pOps->subName, pOps->taskName);
         pOps->taskMax = 1;
     }
 

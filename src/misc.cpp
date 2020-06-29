@@ -25,6 +25,7 @@
 #include "rest.h"
 #include "alg.h"
 #include "camera.h"
+#include "work.h"
 
 static int createDir(const char *sPathName) {
     char dirName[4096];
@@ -36,17 +37,13 @@ static int createDir(const char *sPathName) {
 
     len = strlen(dirName);
     int i=0;
-    for(i=1; i<len; i++)
-    {
-        if(dirName[i]=='/')
-        {
+    for(i=1; i<len; i++) {
+        if(dirName[i]=='/') {
             dirName[i] = 0;
-            if(access(dirName, R_OK)!=0)
-            {
-                if(mkdir(dirName, 0755)==-1)
-                {
+            if(access(dirName, R_OK)!=0) {
+                if(mkdir(dirName, 0755)==-1) {
                     //TODO:errno:ENOSPC(No space left on device)
-                    app_err("path %s error %s", dirName, strerror(errno));
+                    app_err("create path %s failed, %s", dirName, strerror(errno));
                     return -1;
                 }
             }
@@ -62,6 +59,29 @@ int dirCheck(const char *dir) {
         return createDir(dir);
     else
         return closedir(pdir);   
+}
+
+int checkObjDir(objParam *pObjParam) {
+    char path[256];
+    aiotcParams *pAiotcParams = (aiotcParams *)pObjParam->arg;
+    workParams *pWorkParams = (workParams *)pAiotcParams->workArgs;
+    configParams *pConfigParams = (configParams *)pAiotcParams->configArgs;
+
+    if(pWorkParams->date[0] == '\0') {
+        char date[32];
+        struct tm _time;
+        struct timeval tv;
+        gettimeofday(&tv, NULL);
+        localtime_r(&tv.tv_sec, &_time);
+        snprintf(date, sizeof(date), "%d%02d%02d", _time.tm_year + 1900, _time.tm_mon + 1, _time.tm_mday);
+        strncpy(pWorkParams->date, date, sizeof(date));
+    }
+
+    snprintf(path, sizeof(path), "%s/webpages/img/%s/%d", 
+            pConfigParams->workdir, pWorkParams->date, pObjParam->id);
+    dirCheck(path);
+
+    return 0;
 }
 
 int conditionByObjId(node_common *p, void *arg) {
@@ -106,7 +126,7 @@ static int initObjArg(char *type, objParam *pObjParam) {
         memset(pObjParam->objArg, 0, sizeof(cameraParams));
     }
     else {
-        app_warring("unsupport obj type : %s", type);
+        app_warning("unsupport obj type : %s", type);
         return -1;
     }
 
@@ -200,6 +220,7 @@ int addObj(char *buf, aiotcParams *pAiotcParams, int max, void *arg) {
     if(ret != 0) {
         shmFree(pShmParams->headsp, pObjParam->originaldata);
     }
+    checkObjDir(pObjParam);
 
 end:
     if(name != NULL) {
@@ -442,7 +463,7 @@ int allocVideoShm(objParam *pObjParam) {
     }
     pCameraParams->videoShm = getFreeShm(pShmParams, "video");
     if(pCameraParams->videoShm == NULL) {
-        app_warring("get free shm failed, id:%d", pObjParam->id);
+        app_warning("get free shm failed, id:%d", pObjParam->id);
         return -1;
     }
     app_debug("get free shm success, id:%d, shmid:%d", pObjParam->id, pCameraParams->videoShm->id);

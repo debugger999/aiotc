@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "amqp.h"
+#include "amqp_tcp_socket.h"
 
 typedef struct {
     char host[128];
@@ -32,5 +34,10 @@ typedef struct {
     char objExchange[256];
     char routingKey[256];
 } mqOutParams;
+
+int initMqParams(mqOutParams *pMqParams, char *buf);
+int mqOpenConnect(mqOutParams *pmqOutParams, amqp_connection_state_t *ppConn, int timeoutsec);
+int mqCloseConnect(amqp_connection_state_t conn);
+int sendMsg2Mq(mqOutParams *pmqOutParams, amqp_connection_state_t *pp_mq_conn, char *json);
 
 #endif

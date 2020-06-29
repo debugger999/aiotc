@@ -25,16 +25,50 @@
 #include "mq.h"
 
 typedef struct {
+    float x;
+    float y;
+    float w;
+    float h;
+} Rectt;
+
+typedef struct {
+    char            msgType[32];
+    int             id;
+    long long int   timestamp;
+
+    char            sceneUrl[512];
+
+    char            faceUrl[512];
+    Rectt           faceRect;
+    float           faceQuality;
+    char            personBodyUrl[512];
+    Rectt           personBodyRect;
+
+    char            plateNo[64];
+    char            plateColor[64];
+    char            plateUrl[512];
+    Rectt           plateRect;
+    char            vehBodyUrl[512];
+    Rectt           vehBodyRect;
+
+    void            *arg;
+} outJsonParams;
+
+typedef struct {
     mqOutParams     mqOutParam;
     sem_t           mutex_out;
     queue_common    pOutQueue;
 } outParams;
 
 typedef struct {
+    char date[32];
     outParams outParam;
+    void *arg; // aiotcParams
 } workParams;
 
 int workProcInit(void *arg);
 int workProcess(void *arg);
+int copyToMqQueue(char *json, workParams *pWorkParams);
+char *makeJson(outJsonParams *pJsonParams);
 
 #endif
