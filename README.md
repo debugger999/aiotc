@@ -5,6 +5,9 @@ AIoT视频云平台
 ## 文档
 [RESTAPI接口](https://debugger999.github.io/aiotc/doc/html/index.html)
 
+## 测试步骤
+[链接](https://debugger999.github.io/2020/06/29/js-version)
+
 ## 特性
 * [接口](#文本)
     * RESTful + json
