@@ -33,7 +33,7 @@
     "db": {
         "type": "mongodb",
         "mongodb": {
-            "host": "10.10.1.230",
+            "host": "192.168.0.99",
             "port": 27017,
             "user": "null",
             "password": "null",
