@@ -40,3 +40,5 @@ AIoT视频云平台
 ## 开发日记
 [主页](https://debugger999.github.io)
 
+## 技术交流QQ群
+652045690
